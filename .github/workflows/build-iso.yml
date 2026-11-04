@@ -4,11 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: "Publish a GitHub Release if verification passes"
+        description: "Publish a GitHub Release if verification passes (off by default)"
         type: boolean
-        default: true
-  push:
-    tags: ["v*"]
+        default: false
 
 permissions:
   contents: write
@@ -86,7 +84,7 @@ jobs:
   release:
     name: Publish release
     needs: [build, verify]
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.release) || startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ inputs.release }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
