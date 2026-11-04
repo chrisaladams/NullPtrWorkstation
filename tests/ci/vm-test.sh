@@ -73,8 +73,10 @@ tr -d '\r' <"$OUT/guest.log" | grep -a '^RESULT ' >>"$OUT/results.log"
 
 # ------------------------------------------------------------------ 5. tty2 = plain text console (recovery)
 log "Checking tty2"
-q key ctrl-alt-f2; sleep 4; q type 'nullptr\n'; sleep 3; q type 'nullptr-ci-test\n'; sleep 6
-q type 'echo "TTY2 tty=$(tty) display=[${DISPLAY:-}] xorgs=$(pgrep -c Xorg)" > /dev/ttyS1\n'; sleep 4
+q key ctrl-alt-f2; sleep 8
+q shot "$OUT/screens/vm-06a-tty2-before-login.png"
+q type 'nullptr\n'; sleep 4; q type 'nullptr-ci-test\n'; sleep 15
+q type 'echo "TTY2 tty=$(tty) display=[${DISPLAY:-}] xorgs=$(pgrep -c Xorg)" > /dev/ttyS1\n'; sleep 6
 q shot "$OUT/screens/vm-06-tty2-text-console.png"
 if tr -d '\r' <"$OUT/guest.log" | grep -aq '^TTY2 tty=/dev/tty2 display=\[\] xorgs=1$'; then
   echo "RESULT PASS tty2 login stays a text console (no second X server)" >>"$OUT/results.log"
@@ -84,6 +86,7 @@ fi
 q type 'exit\n'; sleep 2; q key ctrl-alt-f1; sleep 3
 
 q quit 2>/dev/null; wait $VM 2>/dev/null
+log "Full guest log:"; tr -d '\r' <"$OUT/guest.log" | tee -a "$OUT/vm-test.log"
 pass=$(grep -c '^RESULT PASS' "$OUT/results.log"); fail=$(grep -c '^RESULT FAIL' "$OUT/results.log")
 { echo "# VM verification: $pass passed, $fail failed"; echo; echo '```'; cat "$OUT/results.log"; echo '```'; } >"$OUT/SUMMARY.md"
 cat "$OUT/SUMMARY.md"

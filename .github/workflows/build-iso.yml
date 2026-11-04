@@ -80,6 +80,20 @@ jobs:
         with:
           name: vm-test-results
           path: ci-out
+      - name: Publish results to the ci-results branch (logs + screenshots, never the ISO)
+        if: always()
+        run: |
+          rm -rf /tmp/res && cp -r ci-out /tmp/res
+          find /tmp/res -name '*.log' -size +5M -exec sh -c 'tail -c 2M "$1" > "$1.tail" && mv "$1.tail" "$1"' _ {} \;
+          git config user.name "Chris Adams"
+          git config user.email "chrisaladams@gmail.com"
+          git checkout -q --orphan ci-results-tmp
+          git rm -rfq .
+          cp -r /tmp/res/. .
+          echo "VM test results for ${GITHUB_SHA} (run ${GITHUB_RUN_ID})" > README.md
+          git add -A
+          git commit -qm "VM test results for ${GITHUB_SHA::7} (run ${GITHUB_RUN_ID})"
+          git push -qf origin HEAD:ci-results
 
   release:
     name: Publish release

@@ -31,8 +31,8 @@ r "Xorg running on tty1" sh -c 'ps -o tty= -C Xorg | grep -q tty1'
 r "i3 running" pgrep -x i3
 r "kitty (nullptr-dev) running" pgrep -f 'kitty --class nullptr-dev'
 r "tmux session dev with windows 1-5" sh -c '[ "$(tmux list-windows -t dev -F "#I:#W" | head -5 | tr "\n" " ")" = "1:editor 2:build 3:lazygit 4:shell 5:btop " ]'
-r "AstroVim running in window 1" sh -c "nvim --server '$sock' --remote-expr 1 | grep -q 1"
-r "AstroVim shows the dashboard" sh -c "nvim --server '$sock' --remote-expr '&filetype' | grep -q snacks_dashboard"
+r "AstroVim running in window 1" sh -c "nvim --server '$sock' --remote-expr 1 2>&1 | grep -q 1"
+r "AstroVim shows the dashboard" sh -c "nvim --server '$sock' --remote-expr '&filetype' 2>&1 | grep -q snacks_dashboard"
 r "kitty is fullscreen on workspace 1" sh -c 'env -u I3SOCK i3-msg -t get_tree | python3 -c "
 import json,sys
 t=json.load(sys.stdin)
@@ -72,7 +72,7 @@ shot vm-01-editor-after-login
 (run-game raylib-hello >/dev/null 2>&1 &) ; sleep 12; shot vm-02-raylib-running; pkill -x raylib-hello; sleep 2
 projects use gameboy-hello >/dev/null 2>&1
 gb-run gameboy-hello >/dev/null 2>&1; sleep 25
-r "Emulicious window opens with the ROM" sh -c 'xdotool search --class -i emulicious | grep -q . || xdotool search --name -i emulicious | grep -q .'
+r "Emulicious window opens with the ROM" sh -c 'xdotool search --name "[Ee]mulicious" | grep -q . || xdotool search --class "[Ee]mulicious" | grep -q .'
 shot vm-03-gameboy-emulicious
 pkill -f Emulicious.jar; sleep 2
 art >/dev/null 2>&1; sleep 12; shot vm-04-libresprite; pkill -x libresprite

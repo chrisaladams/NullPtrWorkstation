@@ -127,9 +127,20 @@ lb config >/dev/null
 mkdir -p config/hooks/live config/package-lists
 cp -a "$REPO"/config/live/hooks/live/*.hook.chroot config/hooks/live/
 # package lists
+# live.list is installed only in the live pass: debian-installer removes those packages
+# from the installed system. Everything else is installed in the main pass (kept).
 for f in "$REPO"/packages/*.list; do
-  grep -v '^\s*#' "$f" | sed '/^\s*$/d' >"config/package-lists/$(basename "${f%.list}").list.chroot"
+  name="$(basename "${f%.list}")"; ext=list.chroot
+  [ "$name" = live ] && ext=list.chroot_live
+  grep -v '^\s*#' "$f" | sed '/^\s*$/d' >"config/package-lists/$name.$ext"
 done
+# Local .deb packages must be installed in the main pass too, otherwise the installer
+# removes them (it drops every package that was added after that pass, e.g. by hooks).
+mkdir -p config/packages.chroot
+if [ "${NULLPTR_WITH_VSCODIUM:-1}" = 1 ]; then
+  curl -fsSL --retry 4 -o config/packages.chroot/codium_amd64.deb "$VSCODIUM_URL"
+  echo "$VSCODIUM_SHA256  config/packages.chroot/codium_amd64.deb" | sha256sum -c --quiet - || die "VSCodium SHA-256 mismatch"
+fi
 # the repository itself goes into the image: the hooks install from it, and it
 # documents exactly how the image was built (/usr/local/src/nullptr-workstation)
 SRC=config/includes.chroot/usr/local/src/nullptr-workstation

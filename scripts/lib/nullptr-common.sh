@@ -76,7 +76,8 @@ nw_active_set() {
   tmp="$(mktemp "$NW_STATE_DIR/.active.XXXXXX")"
   printf '%s\n' "$root" >"$tmp" && mv -f "$tmp" "$NW_ACTIVE_FILE"
   tmp="$(mktemp "$NW_STATE_DIR/.recent.XXXXXX")"
-  { printf '%s\n' "$root"; grep -vxF -- "$root" "$NW_RECENT_FILE" 2>/dev/null; } | head -n 20 >"$tmp"
+  # (grep exits 1 when there are no other recent projects — not an error)
+  { printf '%s\n' "$root"; grep -vxF -- "$root" "$NW_RECENT_FILE" 2>/dev/null || true; } | head -n 20 >"$tmp"
   mv -f "$tmp" "$NW_RECENT_FILE"
   # Let tmux show the project in its status bar (ignored outside tmux).
   if [ -n "${TMUX:-}" ] || tmux has-session -t dev 2>/dev/null; then

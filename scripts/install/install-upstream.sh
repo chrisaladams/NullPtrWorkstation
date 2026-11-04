@@ -139,7 +139,8 @@ do_vscodium() {
   log "VSCodium $VSCODIUM_VERSION + Emulicious Debugger $EMULICIOUS_VSIX_VERSION (fallback debugger UI)"
   fetch "$VSCODIUM_URL" "$VSCODIUM_SHA256" "$CACHE/codium.deb"
   fetch "$EMULICIOUS_VSIX_URL" "$EMULICIOUS_VSIX_SHA256" "$CACHE/emulicious-debugger.vsix"
-  apt-get install -y --no-install-recommends "$CACHE/codium.deb"
+  # the ISO build installs the .deb via live-build's packages.chroot (main pass); elsewhere apt does it
+  dpkg -s codium >/dev/null 2>&1 || apt-get install -y --no-install-recommends "$CACHE/codium.deb"
   install -D -m644 "$CACHE/emulicious-debugger.vsix" "$SHARE/emulicious-debugger.vsix"
   local ud; ud="$(mktemp -d)"
   codium --no-sandbox --user-data-dir "$ud" --extensions-dir /etc/skel/.vscode-oss/extensions \
