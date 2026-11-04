@@ -134,11 +134,16 @@ nw_validate_name() {
 # nw_in_graphical — true if we can open X11 windows
 nw_in_graphical() { [ -n "${DISPLAY:-}" ]; }
 
+# nw_i3 ARGS… — i3-msg that always reaches the *running* i3. I3SOCK is ignored on purpose:
+# a tmux server outlives an i3 restart (exit i3, startx again) and keeps the old socket path;
+# without I3SOCK, i3-msg reads the live path from the X root window.
+nw_i3() { env -u I3SOCK i3-msg "$@"; }
+
 # nw_i3_workspace N — switch i3 to workspace N (1 code, 2 art, 3 game, 4 tools) if i3 runs
 nw_i3_workspace() {
   local name
   case "$1" in 1) name="1: code" ;; 2) name="2: art" ;; 3) name="3: game" ;; 4) name="4: tools" ;; *) name="$1" ;; esac
-  if nw_in_graphical && nw_have i3-msg; then i3-msg -q "workspace number $name" >/dev/null 2>&1 || true; fi
+  if nw_in_graphical && nw_have i3-msg; then nw_i3 -q "workspace number $name" >/dev/null 2>&1 || true; fi
 }
 
 # nw_editor_running — true if the dev AstroVim instance is listening

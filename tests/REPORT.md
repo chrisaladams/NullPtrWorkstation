@@ -85,7 +85,14 @@ Consequences:
 4. **clangd errors on GBDK headers** (SDCC keywords). Fixed in the template `.clangd`.
 5. **Treesitter parser installs** failed when GitHub archive downloads are unavailable.
    Parsers now come from git at the exact pinned revisions.
-6. LuaJIT syntax error (`//`) in the help module; `.xinitrc` sourced a file twice; Emulicious
+6. **Workspace switching broke after restarting X** while tmux kept running: tmux kept the
+   dead i3's `I3SOCK`, so `run-game` couldn't switch to workspace 3 and the game hung behind
+   the editor. All i3 calls now ignore `I3SOCK` and find the live socket through X (verified
+   in exactly that state).
+7. The in-editor build split stopped following output once focus returned to the code (so
+   `✔ Built` was off-screen), and could fail to reopen after a plugin reload (stale buffer
+   name). Both fixed.
+8. LuaJIT syntax error (`//`) in the help module; `.xinitrc` sourced a file twice; Emulicious
    settings would have been written into `/opt`. All fixed.
 
 ## Known test-environment artifacts (not workstation defects)

@@ -215,9 +215,14 @@ function M.term(cmd, on_success)
       end)
     end,
   })
-  vim.api.nvim_buf_set_name(term_buf, "nullptr://" .. table.concat(cmd, " "))
+  local bufname = "nullptr://" .. table.concat(cmd, " ")
+  local stale = vim.fn.bufnr(bufname)
+  if stale > 0 and stale ~= term_buf then pcall(vim.api.nvim_buf_delete, stale, { force = true }) end
+  pcall(vim.api.nvim_buf_set_name, term_buf, bufname)
   vim.keymap.set("n", "q", "<Cmd>close<CR>", { buffer = term_buf, desc = "Close" })
   vim.cmd.stopinsert()
+  -- keep the cursor on the last line so the split follows new output after focus leaves it
+  vim.cmd "normal! G"
   if vim.api.nvim_win_is_valid(origin) then vim.api.nvim_set_current_win(origin) end
 end
 
@@ -256,7 +261,8 @@ local ws_names = { "1: code", "2: art", "3: game", "4: tools" }
 --- Show i3 workspace n (no-op outside the graphical session)
 function M.workspace(n)
   if vim.env.DISPLAY and vim.fn.executable "i3-msg" == 1 then
-    vim.system { "i3-msg", "-q", "workspace number " .. ws_names[n] }
+    -- ignore I3SOCK: tmux (and this editor) may outlive an i3 restart and hold a dead path
+    vim.system { "env", "-u", "I3SOCK", "i3-msg", "-q", "workspace number " .. ws_names[n] }
   end
 end
 

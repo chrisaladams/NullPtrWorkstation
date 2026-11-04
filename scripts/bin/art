@@ -12,7 +12,7 @@ nw_in_graphical || nw_die "LibreSprite needs the graphical session."
 bin="$(command -v libresprite || true)"
 [ -n "$bin" ] || nw_die "LibreSprite is not installed."
 if [ $# -eq 0 ] && pgrep -u "$(id -u)" -x libresprite >/dev/null 2>&1; then
-  i3-msg -q '[class="(?i)libresprite"] focus' 2>/dev/null || nw_i3_workspace 2
+  nw_i3 -q '[class="(?i)libresprite"] focus' 2>/dev/null || nw_i3_workspace 2
   exit 0
 fi
 dir="$HOME"

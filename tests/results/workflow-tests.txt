@@ -1,3 +1,4 @@
+ ✔  Active project: raylib-hello (raylib)
 PASS  new-raylib creates project
 PASS  new-raylib project builds
 PASS  raylib Debug binary exists

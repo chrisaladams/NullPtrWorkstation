@@ -19,14 +19,66 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 > [tests/REPORT.md](tests/REPORT.md) for every result (PASS / FAIL / NOT TESTED) and
 > [Build the ISO](#build-the-iso) to produce it.
 
-## Screenshots (from the test run)
+## Screenshots
 
-| | |
-|---|---|
-| ![dashboard](tests/screenshots/01-session-dashboard.png) | ![raylib](tests/screenshots/02-raylib-hello-running.png) |
-| AstroVim dashboard inside tmux `dev` | `raylib-hello` started with `Space m r` |
-| ![debug](tests/screenshots/03-raylib-gdb-breakpoint-astrovim.png) | ![gameboy](tests/screenshots/04-gameboy-hello-rom-mgba.png) |
-| nvim-dap + GDB 16.3 stopped at `main.c:19` | `gameboy-hello.gb` (shown in mGBA: Emulicious was unreachable from the sandbox) |
+Real captures of the workstation's session (i3 + kitty + tmux + AstroVim, 1920×1080, the
+X1 Carbon's panel size), taken on the test VM. Test evidence is kept separately in
+[`tests/screenshots/`](tests/screenshots/).
+
+**Log in → the dashboard.** kitty opens fullscreen on workspace 1, attached to tmux `dev`
+(window list at the bottom, active project and clock at the right).
+
+![AstroVim dashboard](docs/screenshots/01-dashboard.png)
+
+**Edit C with clangd.** Neo-tree on the left, completion with full signatures, git branch,
+diagnostics, LSP and treesitter status in the status line.
+
+![Editing with completion](docs/screenshots/02-editing-completion.png)
+
+**Build without leaving the editor** (`Space m b`). CMake + Ninja run in a split that follows
+the output.
+
+![Build in the editor](docs/screenshots/03-build-in-editor.png)
+
+**Run** (`Space m r`). The game opens on workspace `3: game` and draws the sprite from
+LibreSprite.
+
+![raylib game running](docs/screenshots/04-raylib-game-running.png)
+
+**Debug** (`F9` breakpoint, `F5`). Stopped on `frameCount++;`: locals, call stack,
+breakpoints, and the game's log in the console. i3 switched back from the game to the editor
+on its own. *(This capture used Debian 13's GDB 16.3 from a container; tmux window `6 debug`
+is that test harness.)*
+
+![Debugger stopped at a breakpoint](docs/screenshots/05-debugger-breakpoint.png)
+
+**Game Boy C with GBDK-2020.** clangd completes the GBDK API (the project's `.clangd`
+teaches it SDCC's keywords)…
+
+![Game Boy editing](docs/screenshots/06-gameboy-editing.png)
+
+…and `Space m b` builds the ROM with `lcc -debug`, producing the `.cdb` for source-level debugging.
+
+![Game Boy build](docs/screenshots/07-gameboy-build.png)
+
+**The ROM running.** *Shown in mGBA: Emulicious, the emulator the workstation uses, could not
+be downloaded in the test environment.*
+
+![Game Boy ROM running](docs/screenshots/08-gameboy-rom-running.png)
+
+**Pixel art** (`Super+A` / `art`). LibreSprite 1.2 on workspace `2: art`, editing
+`assets/player.png`.
+
+![LibreSprite](docs/screenshots/09-libresprite-sprite.png)
+
+**Git** (`Ctrl+b 3`). LazyGit follows the active project: the new sprite and the code that
+uses it.
+
+![LazyGit](docs/screenshots/10-lazygit.png)
+
+**Help is one key away.** `Ctrl+b ?` (or `Space ?`, `Super+F1`, `keys`).
+
+![Cheat sheet popup](docs/screenshots/11-cheatsheet-popup.png)
 
 ## Build the ISO
 

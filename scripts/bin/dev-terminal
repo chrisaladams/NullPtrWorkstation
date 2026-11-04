@@ -7,8 +7,8 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 # shellcheck source=../lib/nullptr-actions.sh
 . "$_l/nullptr-actions.sh"
 # Focus the main dev terminal (kitty attached to tmux "dev") or start it.
-if i3-msg -t get_tree 2>/dev/null | grep -q '"class":"nullptr-dev"'; then
-  i3-msg -q '[class="^nullptr-dev$"] focus'
+if nw_i3 -t get_tree 2>/dev/null | grep -q '"class":"nullptr-dev"'; then
+  nw_i3 -q '[class="^nullptr-dev$"] focus'
 else
   nw_i3_workspace 1
   setsid -f kitty --class nullptr-dev --title "nullptr dev" dev >/dev/null 2>&1 </dev/null
