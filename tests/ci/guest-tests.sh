@@ -56,15 +56,15 @@ r "AstroNvim plugins pre-installed (offline)" test -d "$HOME/.local/share/nvim/l
 r "treesitter parsers pre-compiled" test -f "$HOME/.local/share/nvim/site/parser/c.so"
 
 echo "--- workflow suite"
-"$T/workflow-tests.sh" 2>&1 | sed 's/^PASS  /RESULT PASS workflow: /; s/^FAIL  /RESULT FAIL workflow: /'
+bash "$T/workflow-tests.sh" 2>&1 | sed 's/^PASS  /RESULT PASS workflow: /; s/^FAIL  /RESULT FAIL workflow: /'
 projects use raylib-hello >/dev/null 2>&1
 
 echo "--- raylib: GDB through nvim-dap"
-rv "raylib C breakpoint, variables, step, continue (GDB + nvim-dap)" "$T/dap/raylib-dap-test.sh"
+rv "raylib C breakpoint, variables, step, continue (GDB + nvim-dap)" bash "$T/dap/raylib-dap-test.sh"
 ws "1: code"
 
 echo "--- Game Boy: Emulicious debug adapter"
-rv "Game Boy C breakpoint, variables, step, continue (Emulicious DAP)" "$T/dap/gameboy-dap-test.sh"
+rv "Game Boy C breakpoint, variables, step, continue (Emulicious DAP)" bash "$T/dap/gameboy-dap-test.sh"
 sleep 2; pkill -f Emulicious.jar; ws "1: code"
 
 echo "--- screenshots of the installed system"
