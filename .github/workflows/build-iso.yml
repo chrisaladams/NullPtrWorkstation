@@ -1,0 +1,131 @@
+name: Build, install and verify the ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Publish a GitHub Release if verification passes"
+        type: boolean
+        default: true
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-iso
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ISO (live-build in debian:trixie)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Free disk space (the build needs ~25 GB)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache \
+                      /usr/local/share/boost /usr/local/.ghcup /usr/share/swift /usr/local/share/powershell
+          sudo docker image prune -af >/dev/null
+          df -h /
+      - uses: actions/checkout@v4
+      - name: Build
+        run: ./build-iso.sh --docker
+      - name: Size and checksum
+        run: |
+          ls -lh out/
+          cat out/nullptr-workstation-amd64.iso.sha256
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: iso
+          path: |
+            out/nullptr-workstation-amd64.iso
+            out/nullptr-workstation-amd64.iso.sha256
+            out/packages.manifest
+            out/versions.resolved
+          compression-level: 0
+          retention-days: 14
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: |
+            out/build.log
+            work/build.log
+          if-no-files-found: ignore
+
+  verify:
+    name: Install in a VM and run the tests
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Install QEMU + OVMF
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq qemu-system-x86 qemu-utils ovmf xorriso >/dev/null
+      - uses: actions/download-artifact@v4
+        with:
+          name: iso
+          path: out
+      - name: Install, boot, log in, test
+        run: tests/ci/vm-test.sh out/nullptr-workstation-amd64.iso ci-out
+      - name: Upload results and VM screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-test-results
+          path: ci-out
+
+  release:
+    name: Publish release
+    needs: [build, verify]
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.release) || startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: iso
+          path: out
+      - uses: actions/download-artifact@v4
+        with:
+          name: vm-test-results
+          path: ci-out
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          case "$tag" in v*) ;; *) tag="build-$(date -u +%Y%m%d)-${GITHUB_SHA::7}" ;; esac
+          cd out
+          files=(nullptr-workstation-amd64.iso.sha256 packages.manifest versions.resolved ../ci-out/SUMMARY.md)
+          size=$(stat -c %s nullptr-workstation-amd64.iso)
+          if [ "$size" -gt 2000000000 ]; then
+            # GitHub release assets are limited to 2 GiB each: ship the ISO in parts
+            split -b 1900M -d -a 1 nullptr-workstation-amd64.iso nullptr-workstation-amd64.iso.part
+            files+=(nullptr-workstation-amd64.iso.part*)
+            join='cat nullptr-workstation-amd64.iso.part* > nullptr-workstation-amd64.iso && sha256sum -c nullptr-workstation-amd64.iso.sha256'
+          else
+            files+=(nullptr-workstation-amd64.iso)
+            join='sha256sum -c nullptr-workstation-amd64.iso.sha256'
+          fi
+          {
+            echo "nullptr Workstation — Debian 13 (trixie) amd64 ISO for the ThinkPad X1 Carbon Gen 6."
+            echo
+            echo "Built from commit ${GITHUB_SHA}, installed into a UEFI VM and tested automatically."
+            echo
+            echo "Verify the download:"
+            echo '```'
+            echo "$join"
+            echo '```'
+            echo
+            cat ../ci-out/SUMMARY.md
+          } > notes.md
+          gh release create "$tag" "${files[@]}" --title "nullptr Workstation $tag" --notes-file notes.md
