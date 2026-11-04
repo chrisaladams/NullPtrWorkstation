@@ -10,11 +10,18 @@ Drives a DAP adapter (stdio or TCP) through: initialize -> launch -> setBreakpoi
 """
 import argparse, json, socket, subprocess, sys, time, shlex
 
+TRACE = False
+
+def trace(direction, msg):
+    if TRACE:
+        print("%s %s" % (direction, json.dumps(msg)[:600]), file=sys.stderr, flush=True)
+
 class Conn:
     def __init__(self, r, w): self.r, self.w, self.seq, self.events = r, w, 1, []
     def send(self, command, arguments=None):
         msg = {"seq": self.seq, "type": "request", "command": command}
         if arguments is not None: msg["arguments"] = arguments
+        trace(">>", msg)
         self.seq += 1
         data = json.dumps(msg).encode()
         self.w(b"Content-Length: %d\r\n\r\n" % len(data) + data)
@@ -28,7 +35,9 @@ class Conn:
         n = int([l for l in hdr.decode().split("\r\n") if l.lower().startswith("content-length")][0].split(":")[1])
         body = b""
         while len(body) < n: body += self.r(n - len(body), timeout)
-        return json.loads(body)
+        m = json.loads(body)
+        trace("<<", m)
+        return m
     def request(self, command, arguments=None, timeout=30):
         seq = self.send(command, arguments)
         end = time.time() + timeout
@@ -60,7 +69,10 @@ def main():
     ap.add_argument("--adapter-id", default="nullptr-test")
     ap.add_argument("--launch-extra", default="{}")
     ap.add_argument("--timeout", type=int, default=60)
+    ap.add_argument("--trace", action="store_true", help="print every DAP message to stderr")
     a = ap.parse_args()
+    global TRACE
+    TRACE = a.trace
     report = {"adapter": a.stdio or a.tcp, "program": a.program, "breakpoint": f"{a.source}:{a.line}"}
     if a.stdio:
         p = subprocess.Popen(shlex.split(a.stdio), stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0)

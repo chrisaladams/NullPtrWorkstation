@@ -82,6 +82,92 @@ jobs:
           path: ci-out
       - name: Publish results to the ci-results branch (logs + screenshots, never the ISO)
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          find ci-out -name '*.log' -size +5M -exec sh -c 'tail -c 2M "$1" > "$1.tail" && mv "$1.tail" "$1"' _ {} \;
+          echo "VM test results for ${GITHUB_SHA} (run ${GITHUB_RUN_ID})" > ci-out/README.md
+          tests/ci/publish-results.sh ci-out ci-results "VM test results for ${GITHUB_SHA::7} (run ${GITHUB_RUN_ID})"
+
+  release:
+        description: "Publish a GitHub Release if verification passes (off by default)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-iso
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ISO (live-build in debian:trixie)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    steps:
+      - name: Free disk space (the build needs ~25 GB)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache \
+                      /usr/local/share/boost /usr/local/.ghcup /usr/share/swift /usr/local/share/powershell
+          sudo docker image prune -af >/dev/null
+          df -h /
+      - uses: actions/checkout@v4
+      - name: Build
+        run: ./build-iso.sh --docker
+      - name: Size and checksum
+        run: |
+          ls -lh out/
+          cat out/nullptr-workstation-amd64.iso.sha256
+      - name: Upload ISO
+        uses: actions/upload-artifact@v4
+        with:
+          name: iso
+          path: |
+            out/nullptr-workstation-amd64.iso
+            out/nullptr-workstation-amd64.iso.sha256
+            out/packages.manifest
+            out/versions.resolved
+          compression-level: 0
+          retention-days: 14
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: |
+            out/build.log
+            work/build.log
+          if-no-files-found: ignore
+
+  verify:
+    name: Install in a VM and run the tests
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Install QEMU + OVMF
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq qemu-system-x86 qemu-utils ovmf xorriso >/dev/null
+      - uses: actions/download-artifact@v4
+        with:
+          name: iso
+          path: out
+      - name: Install, boot, log in, test
+        run: tests/ci/vm-test.sh out/nullptr-workstation-amd64.iso ci-out
+      - name: Upload results and VM screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-test-results
+          path: ci-out
+      - name: Publish results to the ci-results branch (logs + screenshots, never the ISO)
+        if: always()
         run: |
           rm -rf /tmp/res && cp -r ci-out /tmp/res
           find /tmp/res -name '*.log' -size +5M -exec sh -c 'tail -c 2M "$1" > "$1.tail" && mv "$1.tail" "$1"' _ {} \;

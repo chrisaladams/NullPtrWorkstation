@@ -1,0 +1,52 @@
+name: Game Boy debugger probe
+
+# Fast experiment loop for the Emulicious debug adapter (no ISO build): builds the
+# gameboy-hello template with GBDK, starts `emulicious -remotedebug`, and drives it with
+# tests/dap/dap_client.py, recording every DAP message. Results go to the ci-gbprobe branch.
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq openjdk-21-jre xvfb xdotool imagemagick i3-wm unzip >/dev/null
+      - name: GBDK + Emulicious
+        run: |
+          . ./versions.lock
+          curl -fsSL -o /tmp/gbdk.tgz "$GBDK_URL"
+          echo "$GBDK_SHA256  /tmp/gbdk.tgz" | sha256sum -c
+          sudo tar -xzf /tmp/gbdk.tgz -C /opt
+          sudo ./scripts/sbin/nullptr-install-emulicious
+      - name: Build the Debug ROM
+        run: |
+          cp -r templates/gameboy /tmp/gameboy-hello
+          cd /tmp/gameboy-hello
+          sed -i 's/__NAME__/gameboy-hello/g; s/__ROMTITLE__/GAMEBOY_HELLO/g' Makefile src/main.c .nullptr-project
+          make GBDK_HOME=/opt/gbdk
+          ls -la build/debug
+      - name: Drive Emulicious over DAP
+        run: |
+          mkdir -p probe-out
+          Xvfb :99 -screen 0 1280x800x24 >/dev/null 2>&1 &
+          sleep 2; export DISPLAY=:99
+          (i3 >/dev/null 2>&1 &); sleep 2
+          line=$(grep -n 'keys = joypad();' /tmp/gameboy-hello/src/main.c | cut -d: -f1)
+          emulicious -remotedebug 58870 > probe-out/emulicious.log 2>&1 &
+          timeout 300 python3 tests/dap/dap_client.py --trace --tcp 127.0.0.1:58870 --timeout 90 \
+            --program /tmp/gameboy-hello/build/debug/gameboy-hello.gb --source /tmp/gameboy-hello/src/main.c \
+            --line "$line" --var keys \
+            --launch-extra '{"additionalSrcFolders":"/tmp/gameboy-hello/src","port":58870}' \
+            > probe-out/report.json 2> probe-out/trace.txt || echo "client exit $?" >> probe-out/trace.txt
+          import -window root probe-out/screen.png || true
+          cat probe-out/trace.txt; cat probe-out/report.json; echo "--- emulicious log"; cat probe-out/emulicious.log
+      - name: Publish probe results to the ci-gbprobe branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: tests/ci/publish-results.sh probe-out ci-gbprobe "Game Boy DAP probe (run ${GITHUB_RUN_ID})"

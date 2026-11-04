@@ -76,7 +76,8 @@ log "Checking tty2"
 q key ctrl-alt-f2; sleep 8
 q shot "$OUT/screens/vm-06a-tty2-before-login.png"
 q type 'nullptr\n'; sleep 4; q type 'nullptr-ci-test\n'; sleep 15
-q type 'echo "TTY2 tty=$(tty) display=[${DISPLAY:-}] xorgs=$(pgrep -c Xorg)" > /dev/ttyS1\n'; sleep 6
+q type 'echo "TTY2 tty=$(tty) display=[${DISPLAY:-}] xorgs=$(pgrep -c Xorg)" > /dev/ttyS1\n'
+wait_for "$OUT/guest.log" '^TTY2 ' 90   # QEMU flushes the serial file lazily
 q shot "$OUT/screens/vm-06-tty2-text-console.png"
 if tr -d '\r' <"$OUT/guest.log" | grep -aq '^TTY2 tty=/dev/tty2 display=\[\] xorgs=1$'; then
   echo "RESULT PASS tty2 login stays a text console (no second X server)" >>"$OUT/results.log"
