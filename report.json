@@ -1,0 +1,34 @@
+{
+  "adapter": "127.0.0.1:58870",
+  "program": "/tmp/gameboy-hello/build/debug/gameboy-hello.gb",
+  "breakpoint": "/tmp/gameboy-hello/src/main.c:19",
+  "initialize": true,
+  "setBreakpoints": [
+    {
+      "line": 19,
+      "verified": true,
+      "source": {
+        "path": "/tmp/gameboy-hello/src/main.c"
+      }
+    }
+  ],
+  "stopped_reason": "breakpoint",
+  "stop_location": {
+    "name": "main()",
+    "line": 19,
+    "source": "/tmp/gameboy-hello/src/main.c"
+  },
+  "call_stack": [
+    "main()"
+  ],
+  "variable": {
+    "keys": {
+      "scope": "Locals",
+      "value": "0 (value in register)",
+      "type": "unsigned char"
+    }
+  },
+  "after_step_line": 20,
+  "after_continue_stopped_again_at_line": 19,
+  "PASS": true
+}
