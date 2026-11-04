@@ -47,7 +47,7 @@ Consequences:
 
 | Test | Result |
 |---|---|
-| Drawing tablet: stylus input, mapping, pen buttons, pressure | **NOT TESTED** (no tablet). `tablet-info` and `tablet-setup` run correctly with no tablet. |
+| Drawing tablet (**Huion Inspiroy H640P**): stylus input, mapping, pen buttons, express keys, pressure | **NOT TESTED** on hardware (no tablet; the VM kernel lacks `uinput`, so no virtual one either). Support confirmed in primary sources (Linux 6.12 `hid-uclogic`, libwacom `huion-h640p.tablet`, xf86-input-wacom). `tests/tablet/simulate-h640p.sh` checks every command `tablet-setup` issues against simulated wacom and libinput drivers: **15/15 PASS**. |
 | Battery display | **NOT TESTED** (no battery; i3status/tmux segments are hidden when there is none) |
 | Suspend/resume, lid | **NOT TESTED** |
 | Wi-Fi (NetworkManager, nmtui, iwlwifi firmware) | **NOT TESTED** |

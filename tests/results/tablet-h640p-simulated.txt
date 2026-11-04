@@ -1,0 +1,91 @@
+==> Tablet: huion-h640p — monitor eDP-1 (1920x1080)
+ ✔  [12] mapped to eDP-1
+ ✔  [12] tablet area matched to the screen's aspect ratio (0 1000 32000 19000)
+ ✔  [13] express keys: 6 configured
+ ✔  Saved /tmp/tmp.wj33dlmgoQ/home/.config/nullptr/tablet.conf (applied automatically at every graphical login)
+==> Test: Super+A opens LibreSprite. LibreSprite 1.2 ignores pen pressure (SDL2 limitation).
+---- commands issued
+xsetwacom --list devices
+xsetwacom set 12 MapToOutput eDP-1
+xsetwacom set 12 Rotate none
+xsetwacom set 12 ResetArea
+xsetwacom get 12 Area
+xsetwacom set 12 Area 0 1000 32000 19000
+xsetwacom get 12 Area
+xsetwacom set 12 PressureCurve 0 0 100 100
+xsetwacom set 12 Button 2 2
+xsetwacom set 12 Button 3 3
+xsetwacom set 13 Button 1 key +ctrl z -ctrl
+xsetwacom set 13 Button 2 key +ctrl y -ctrl
+xsetwacom set 13 Button 3 key b
+xsetwacom set 13 Button 8 key e
+xsetwacom set 13 Button 9 key +ctrl equal -ctrl
+xsetwacom set 13 Button 10 key +ctrl minus -ctrl
+---- saved settings
+# nullptr tablet settings — written by tablet-setup (model: huion-h640p). Edit, then: tablet-setup --apply
+OUTPUT=eDP-1
+KEEP_ASPECT=1
+LEFT_HANDED=0
+PRESSURE_CURVE=0\ 0\ 100\ 100
+PEN_BUTTON2=2
+PEN_BUTTON3=3
+PAD_BUTTON_1=key\ +ctrl\ z\ -ctrl
+PAD_BUTTON_2=key\ +ctrl\ y\ -ctrl
+PAD_BUTTON_3=key\ b
+PAD_BUTTON_4=key\ e
+PAD_BUTTON_5=key\ +ctrl\ equal\ -ctrl
+PAD_BUTTON_6=key\ +ctrl\ minus\ -ctrl
+---- checks (wacom driver)
+PASS  tablet-setup exits 0
+PASS  pen mapped to the laptop panel
+PASS  16:10 area trimmed to 16:9 (centred)
+PASS  express key A = undo
+PASS  express key B = redo
+PASS  express key C = pencil
+PASS  express key D = eraser
+PASS  express key E = zoom in
+PASS  express key F = zoom out
+PASS  right-handed by default
+PASS  settings saved with H640P profile
+PASS: 11  FAIL: 0
+==> Tablet: huion-h640p — monitor eDP-1 (1920x1080)
+ ✔  [12] HUION Huion Tablet_H640P Pen mapped to eDP-1 (libinput)
+ !   [13] HUION Huion Tablet_H640P Pad: express keys disabled (libinput driver cannot map them to keys)
+ ✔  Saved /tmp/tmp.scv3YxO6k1/home/.config/nullptr/tablet.conf (applied automatically at every graphical login)
+ !   The tablet uses the libinput driver; express-key mapping needs xf86-input-wacom (see: tablet-info).
+==> Test: Super+A opens LibreSprite. LibreSprite 1.2 ignores pen pressure (SDL2 limitation).
+---- commands issued
+xinput list --id-only
+xinput list --name-only 2
+xinput list --name-only 12
+xinput list --short 12
+xinput list --name-only 13
+xinput list --short 13
+xinput list --name-only 12
+xinput list --name-only 13
+xinput list --name-only 12
+xinput map-to-output 12 eDP-1
+xinput set-prop 12 libinput Left Handed Enabled 0
+xinput list --name-only 13
+xinput list 13
+xinput set-button-map 13 0 0 0 0 0 0 0 0 0 0
+---- saved settings
+# nullptr tablet settings — written by tablet-setup (model: huion-h640p). Edit, then: tablet-setup --apply
+OUTPUT=eDP-1
+KEEP_ASPECT=1
+LEFT_HANDED=0
+PRESSURE_CURVE=0\ 0\ 100\ 100
+PEN_BUTTON2=2
+PEN_BUTTON3=3
+PAD_BUTTON_1=key\ +ctrl\ z\ -ctrl
+PAD_BUTTON_2=key\ +ctrl\ y\ -ctrl
+PAD_BUTTON_3=key\ b
+PAD_BUTTON_4=key\ e
+PAD_BUTTON_5=key\ +ctrl\ equal\ -ctrl
+PAD_BUTTON_6=key\ +ctrl\ minus\ -ctrl
+---- checks (libinput driver)
+PASS  tablet-setup exits 0
+PASS  pen mapped to the laptop panel (libinput)
+PASS  express keys disabled (no stray clicks)
+PASS  warning explains the libinput limitation
+PASS: 4  FAIL: 0

@@ -13,6 +13,30 @@ if nw_have lsusb; then
   lsusb | grep -Ei 'ID (056a|256c|28bd|2feb|5543|172f|0b57):|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' || echo "  none found"
 else echo "  lsusb not installed"; fi
 
+section "Huion firmware reported by the kernel (hid-uclogic)"
+fw_found=0
+for u in /sys/bus/hid/devices/*/uevent; do
+  [ -r "$u" ] || continue
+  grep -qi '^HID_ID=.*0000256C:' "$u" || continue
+  fw_found=1
+  name="$(sed -n 's/^HID_NAME=//p' "$u")"; uniq="$(sed -n 's/^HID_UNIQ=//p' "$u")"; drv="$(basename "$(readlink -f "$(dirname "$u")/driver" 2>/dev/null)" 2>/dev/null)"
+  printf '  %-36s firmware: %-24s kernel driver: %s\n' "$name" "${uniq:-?}" "${drv:-none}"
+done
+[ "$fw_found" = 1 ] || echo "  no Huion (USB 256c) HID device"
+
+if lsusb 2>/dev/null | grep -qi 'ID 256c:006d' || grep -qs 'Tablet_H640P' /proc/bus/input/devices; then
+  section "Huion Inspiroy H640P"
+  if grep -qs 'Tablet_H640P' /proc/bus/input/devices; then
+    echo "  ✔ recognised by the kernel (hid-uclogic named it Tablet_H640P): pen, 8192 pressure levels, 6 express keys"
+    echo "  ✔ known to libwacom (data file huion-h640p.tablet)"
+    echo "  Next: tablet-setup   (maps it to the screen, keeps the aspect ratio, sets the express keys)"
+  else
+    echo "  ! USB ID 256c:006d is shared by many Huion models and the kernel did not report the"
+    echo "    H640P name. Unplug and re-plug the tablet; if it still is not named, the firmware"
+    echo "    string above is what Linux support needs (look it up in libwacom / DIGImend)."
+  fi
+fi
+
 section "Kernel input devices marked as tablets (udev ID_INPUT_TABLET)"
 found=0
 for ev in /dev/input/event*; do

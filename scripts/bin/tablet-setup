@@ -6,64 +6,148 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 . "$_l/nullptr-common.sh"
 # shellcheck source=../lib/nullptr-actions.sh
 . "$_l/nullptr-actions.sh"
-# tablet-setup [--output OUTPUT] [--apply] — map stylus devices to a monitor and save the choice.
+# tablet-setup — configure a drawing tablet for the graphical session and save the settings.
+# Works with both X drivers:
+#   xf86-input-wacom   (Wacom; Huion via /usr/share/X11/xorg.conf.d/71-nullptr-huion.conf)
+#     -> monitor mapping, keep-aspect area, pen buttons, express keys, pressure curve, left-handed
+#   xf86-input-libinput (everything else)
+#     -> monitor mapping, left-handed; express keys are disabled (they would send mouse clicks)
 conf="${XDG_CONFIG_HOME:-$HOME/.config}/nullptr/tablet.conf"
-apply_only=0; output=""
+apply_only=0; opt_output=""; opt_left=""
+usage() { cat <<'U'
+Usage: tablet-setup [--output NAME] [--left-handed|--right-handed]
+                     Configure the tablet now and save the settings
+       tablet-setup --apply        Re-apply saved settings (runs automatically when X starts)
+       tablet-setup --show         Print the saved settings
+Settings file: ~/.config/nullptr/tablet.conf (edit it, then run tablet-setup --apply)
+U
+}
 while [ $# -gt 0 ]; do
   case "$1" in
     --apply) apply_only=1 ;;
-    --output) output="${2:-}"; shift ;;
-    -h|--help) cat <<'U'; exit 0 ;;
-Usage: tablet-setup [--output NAME]   Map all stylus/pen devices to monitor NAME (default: primary) and save
-       tablet-setup --apply           Re-apply saved settings (runs automatically when X starts)
-Settings file: ~/.config/nullptr/tablet.conf
-  OUTPUT=eDP-1               monitor to map the tablet area to
-  WACOM_BUTTON2="2"          xsetwacom button actions (wacom driver only), e.g. "key ctrl z"
-  WACOM_BUTTON3="3"
-U
-    *) echo "Unknown option $1" >&2; exit 64 ;;
+    --output) opt_output="${2:-}"; shift ;;
+    --left-handed) opt_left=1 ;;
+    --right-handed) opt_left=0 ;;
+    --show) cat "$conf" 2>/dev/null || echo "(no saved settings yet)"; exit 0 ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 64 ;;
   esac; shift
 done
 nw_in_graphical || nw_die "tablet-setup must run inside the graphical session."
 nw_have xinput || nw_die "xinput is not installed."
-WACOM_BUTTON2=""; WACOM_BUTTON3=""; OUTPUT=""
+quiet_exit() { [ "$apply_only" = 1 ] && exit 0; nw_die "$*"; }
+
+# ---------------------------------------------------------------- devices
+# wacom-driven devices: "<name>\tid: N\ttype: STYLUS|ERASER|PAD|CURSOR|TOUCH"
+wacom_list="$(nw_have xsetwacom && xsetwacom --list devices 2>/dev/null || true)"
+wacom_ids() { printf '%s\n' "$wacom_list" | awk -F'\t' -v t="$1" '$3 ~ "type: *"t {sub(/.*id: */,"",$2); print $2+0}'; }
+mapfile -t W_STYLUS < <(wacom_ids STYLUS; wacom_ids ERASER)
+mapfile -t W_PAD < <(wacom_ids PAD)
+is_wacom_id() { printf '%s\n' "${W_STYLUS[@]}" "${W_PAD[@]}" | grep -qx "$1"; }
+# libinput-driven tablet devices (any pointer that looks like a tablet and is not wacom-driven)
+mapfile -t L_DEV < <(xinput list --id-only 2>/dev/null | while read -r id; do
+  is_wacom_id "$id" && continue
+  n="$(xinput list --name-only "$id" 2>/dev/null)"
+  printf '%s\n' "$n" | grep -Eiq 'stylus|pen|eraser|pad|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' || continue
+  xinput list --short "$id" 2>/dev/null | grep -q 'slave  pointer' && echo "$id"
+done)
+[ "${#W_STYLUS[@]}" -gt 0 ] || [ "${#W_PAD[@]}" -gt 0 ] || [ "${#L_DEV[@]}" -gt 0 ] ||
+  quiet_exit "No stylus/pen devices found. Plug in the tablet and run tablet-info."
+all_names="$( { printf '%s\n' "$wacom_list"; for id in "${L_DEV[@]}"; do xinput list --name-only "$id"; done; } 2>/dev/null)"
+MODEL=generic
+printf '%s\n' "$all_names" | grep -q 'Tablet_H640P' && MODEL=huion-h640p
+
+# ---------------------------------------------------------------- settings (defaults, profile, saved, options)
+OUTPUT=""; KEEP_ASPECT=1; LEFT_HANDED=0; PRESSURE_CURVE="0 0 100 100"
+PEN_BUTTON2="2"; PEN_BUTTON3="3"     # lower pen button = middle click (pan), upper = right click
+PAD_BUTTON_1=""; PAD_BUTTON_2=""; PAD_BUTTON_3=""; PAD_BUTTON_4=""; PAD_BUTTON_5=""; PAD_BUTTON_6=""
+# shellcheck disable=SC2034  # PAD_BUTTON_* are read via ${!var}
+if [ "$MODEL" = huion-h640p ]; then
+  # Huion Inspiroy H640P: six express keys A..F (top to bottom), LibreSprite 1.2 shortcuts
+  PAD_BUTTON_1="key +ctrl z -ctrl"          # A  undo
+  PAD_BUTTON_2="key +ctrl y -ctrl"          # B  redo
+  PAD_BUTTON_3="key b"                      # C  pencil
+  PAD_BUTTON_4="key e"                      # D  eraser
+  PAD_BUTTON_5="key +ctrl equal -ctrl"      # E  zoom in
+  PAD_BUTTON_6="key +ctrl minus -ctrl"      # F  zoom out
+fi
 # shellcheck disable=SC1090
 [ -f "$conf" ] && . "$conf"
-[ -n "$output" ] && OUTPUT="$output"
+[ -n "$opt_output" ] && OUTPUT="$opt_output"
+[ -n "$opt_left" ] && LEFT_HANDED="$opt_left"
 if [ -z "$OUTPUT" ]; then
   OUTPUT="$(xrandr --query | awk '/ connected primary/{print $1; exit}')"
   [ -n "$OUTPUT" ] || OUTPUT="$(xrandr --query | awk '/ connected/{print $1; exit}')"
 fi
-xrandr --query | grep -q "^$OUTPUT connected" || { [ "$apply_only" = 1 ] && exit 0; nw_die "Monitor '$OUTPUT' is not connected. Connected: $(xrandr --query | awk '/ connected/{printf "%s ", $1}')"; }
+geom="$(xrandr --query | awk -v o="$OUTPUT" '$1==o && / connected/ {for(i=3;i<=NF;i++) if ($i ~ /^[0-9]+x[0-9]+\+/) {print $i; exit}}')"
+[ -n "$geom" ] || quiet_exit "Monitor '$OUTPUT' is not connected/active. Connected: $(xrandr --query | awk '/ connected/{printf "%s ", $1}')"
+scr_w="${geom%%x*}"; scr_h="${geom#*x}"; scr_h="${scr_h%%+*}"
 
-mapfile -t ids < <(xinput list --id-only 2>/dev/null | while read -r id; do
-  n="$(xinput list --name-only "$id" 2>/dev/null)"
-  # only pointer-type stylus/pen/eraser/touch devices can be mapped
-  if printf '%s\n' "$n" | grep -Eiq 'stylus|pen|eraser|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' &&
-     xinput list --short "$id" 2>/dev/null | grep -q 'slave  pointer'; then echo "$id"; fi
-done)
-if [ "${#ids[@]}" -eq 0 ]; then
-  [ "$apply_only" = 1 ] && exit 0
-  nw_die "No stylus/pen devices found. Plug in the tablet and run tablet-info."
-fi
-for id in "${ids[@]}"; do
-  n="$(xinput list --name-only "$id")"
-  if xinput map-to-output "$id" "$OUTPUT" 2>/dev/null; then nw_ok "Mapped [$id] $n -> $OUTPUT"
-  else nw_warn "Could not map [$id] $n"; fi
+say() { [ "$apply_only" = 1 ] || nw_ok "$*"; }
+warn() { [ "$apply_only" = 1 ] || nw_warn "$*"; }
+[ "$apply_only" = 1 ] || nw_info "Tablet: ${MODEL/generic/generic tablet} — monitor $OUTPUT (${scr_w}x${scr_h})"
+
+# ---------------------------------------------------------------- xf86-input-wacom devices
+pad_x_buttons=(1 2 3 8 9 10 11 12 13 14)     # X button numbers of pad keys 1..n (4-7 are scroll)
+for id in "${W_STYLUS[@]}"; do
+  xsetwacom set "$id" MapToOutput "$OUTPUT" 2>/dev/null && say "[$id] mapped to $OUTPUT"
+  xsetwacom set "$id" Rotate "$([ "$LEFT_HANDED" = 1 ] && echo half || echo none)" 2>/dev/null
+  xsetwacom set "$id" ResetArea 2>/dev/null
+  if [ "$KEEP_ASPECT" = 1 ]; then
+    read -r ax1 ay1 ax2 ay2 < <(xsetwacom get "$id" Area 2>/dev/null) || true
+    if [ -n "${ax2:-}" ] && [ "${ay2:-0}" -gt 0 ]; then
+      tw=$((ax2 - ax1)); th=$((ay2 - ay1))
+      if [ $((tw * scr_h)) -gt $((th * scr_w)) ]; then        # tablet wider than screen: trim width
+        nw=$((th * scr_w / scr_h)); off=$(((tw - nw) / 2))
+        xsetwacom set "$id" Area "$((ax1 + off)) $ay1 $((ax1 + off + nw)) $ay2"
+      else                                                     # tablet taller: trim height
+        nh=$((tw * scr_h / scr_w)); off=$(((th - nh) / 2))
+        xsetwacom set "$id" Area "$ax1 $((ay1 + off)) $ax2 $((ay1 + off + nh))"
+      fi
+      say "[$id] tablet area matched to the screen's aspect ratio ($(xsetwacom get "$id" Area))"
+    fi
+  fi
+  xsetwacom set "$id" PressureCurve "$PRESSURE_CURVE" 2>/dev/null || true
+  xsetwacom set "$id" Button 2 "$PEN_BUTTON2" 2>/dev/null || true
+  xsetwacom set "$id" Button 3 "$PEN_BUTTON3" 2>/dev/null || true
 done
-if nw_have xsetwacom; then
-  while IFS= read -r line; do
-    wid="$(printf '%s\n' "$line" | sed -n 's/.*id: *\([0-9]*\).*/\1/p')"; [ -n "$wid" ] || continue
-    [ -n "$WACOM_BUTTON2" ] && xsetwacom set "$wid" Button 2 "$WACOM_BUTTON2" 2>/dev/null || true
-    [ -n "$WACOM_BUTTON3" ] && xsetwacom set "$wid" Button 3 "$WACOM_BUTTON3" 2>/dev/null || true
-  done < <(xsetwacom --list devices 2>/dev/null | grep -i 'STYLUS')
-fi
+for id in "${W_PAD[@]}"; do
+  n=0
+  for i in 1 2 3 4 5 6; do
+    var="PAD_BUTTON_$i"; action="${!var}"
+    [ -n "$action" ] || continue
+    xsetwacom set "$id" Button "${pad_x_buttons[$((i-1))]}" "$action" 2>/dev/null && n=$((n+1))
+  done
+  say "[$id] express keys: $n configured"
+done
+
+# ---------------------------------------------------------------- xf86-input-libinput devices
+for id in "${L_DEV[@]}"; do
+  name="$(xinput list --name-only "$id")"
+  if printf '%s\n' "$name" | grep -qi 'pad'; then
+    # libinput posts pad keys as mouse buttons: disable them instead of clicking by accident
+    nbtn="$(xinput list "$id" | awk '/Buttons supported:/ {print $3; exit}')"
+    if [ -n "$nbtn" ] && [ "$nbtn" -gt 0 ]; then
+      # shellcheck disable=SC2046  # one "0" argument per button
+      xinput set-button-map "$id" $(for _ in $(seq 1 "$nbtn"); do printf '0 '; done) 2>/dev/null &&
+        warn "[$id] $name: express keys disabled (libinput driver cannot map them to keys)"
+    fi
+    continue
+  fi
+  xinput map-to-output "$id" "$OUTPUT" 2>/dev/null && say "[$id] $name mapped to $OUTPUT (libinput)"
+  xinput set-prop "$id" "libinput Left Handed Enabled" "$LEFT_HANDED" 2>/dev/null || true
+done
+
+# ---------------------------------------------------------------- save
 if [ "$apply_only" = 0 ]; then
   mkdir -p "$(dirname "$conf")"
-  { echo "# nullptr tablet settings — written by tablet-setup"
-    printf 'OUTPUT=%q\n' "$OUTPUT"
-    printf 'WACOM_BUTTON2=%q\n' "$WACOM_BUTTON2"
-    printf 'WACOM_BUTTON3=%q\n' "$WACOM_BUTTON3"; } >"$conf"
+  { echo "# nullptr tablet settings — written by tablet-setup (model: $MODEL). Edit, then: tablet-setup --apply"
+    for v in OUTPUT KEEP_ASPECT LEFT_HANDED PRESSURE_CURVE PEN_BUTTON2 PEN_BUTTON3 \
+             PAD_BUTTON_1 PAD_BUTTON_2 PAD_BUTTON_3 PAD_BUTTON_4 PAD_BUTTON_5 PAD_BUTTON_6; do
+      printf '%s=%q\n' "$v" "${!v}"
+    done; } >"$conf"
   nw_ok "Saved $conf (applied automatically at every graphical login)"
-  nw_info "Test: open LibreSprite (Super+A), pick the pencil, draw. Pressure is not used by LibreSprite 1.2."
+  [ "${#L_DEV[@]}" -gt 0 ] && [ "${#W_STYLUS[@]}" -eq 0 ] &&
+    nw_warn "The tablet uses the libinput driver; express-key mapping needs xf86-input-wacom (see: tablet-info)."
+  nw_info "Test: Super+A opens LibreSprite. LibreSprite 1.2 ignores pen pressure (SDL2 limitation)."
 fi
