@@ -30,12 +30,29 @@ jobs:
           sed -i 's/__NAME__/gameboy-hello/g; s/__ROMTITLE__/GAMEBOY_HELLO/g' Makefile src/main.c .nullptr-project
           make GBDK_HOME=/opt/gbdk
           ls -la build/debug
-      - name: Drive Emulicious over DAP
+      - name: First start — answer the update dialog, capture the settings it writes
         run: |
           mkdir -p probe-out
           Xvfb :99 -screen 0 1280x800x24 >/dev/null 2>&1 &
           sleep 2; export DISPLAY=:99
           (i3 >/dev/null 2>&1 &); sleep 2
+          emulicious > probe-out/emulicious-first.log 2>&1 &
+          sleep 15; import -window root probe-out/first-1-dialog.png
+          find ~/.local/share/emulicious -maxdepth 1 -type f -printf '%f %s\n' | sort > probe-out/files-before.txt
+          xdotool mousemove 407 418 click 1; sleep 1          # "Never check for updates"
+          import -window root probe-out/first-2-never.png
+          xdotool mousemove 590 459 click 1; sleep 3          # OK
+          import -window root probe-out/first-3-after-ok.png
+          env -u I3SOCK i3-msg -q kill; sleep 5               # close Emulicious normally (saves settings)
+          pkill -f Emulicious.jar || true; sleep 1
+          find ~/.local/share/emulicious -maxdepth 1 -type f -printf '%f %s\n' | sort > probe-out/files-after.txt
+          for f in ~/.local/share/emulicious/*.ini ~/.local/share/emulicious/*.cfg ~/.local/share/emulicious/*.properties; do
+            [ -f "$f" ] && { echo "=== $f"; cat "$f"; } >> probe-out/settings.txt
+          done
+          cat probe-out/files-before.txt; echo ---; cat probe-out/files-after.txt; echo ---; cat probe-out/settings.txt || true
+      - name: Drive Emulicious over DAP (second start, dialog answered)
+        run: |
+          export DISPLAY=:99
           line=$(grep -n 'keys = joypad();' /tmp/gameboy-hello/src/main.c | cut -d: -f1)
           emulicious -remotedebug 58870 > probe-out/emulicious.log 2>&1 &
           timeout 300 python3 tests/dap/dap_client.py --trace --tcp 127.0.0.1:58870 --timeout 90 \
