@@ -25,6 +25,10 @@ rm -rf "$DEST.new"; mkdir -p "$DEST.new"
 cp -a "$(dirname "$jar")/." "$DEST.new/"
 # drop the bundled Windows Java runtime if present; Debian's OpenJDK is used
 rm -rf "$DEST.new/java"
+# Default settings: "Never check for updates". Emulicious otherwise opens a modal update
+# dialog on first start that blocks everything, including the debug adapter, until answered;
+# and the workstation keeps the version it was tested with (update: rerun this script).
+[ -f "$DEST.new/Emulicious.ini" ] || printf '#Emulicious settings file (nullptr Workstation defaults)\nUpdate=0\n' >"$DEST.new/Emulicious.ini"
 rm -rf "$DEST.old"; [ -d "$DEST" ] && mv "$DEST" "$DEST.old"; mv "$DEST.new" "$DEST"; rm -rf "$DEST.old"
 chmod -R a+rX "$DEST"
 mkdir -p "$SHARE"; echo "$sum  Emulicious.zip" >"$SHARE/emulicious.sha256"
@@ -38,7 +42,10 @@ dst="${XDG_DATA_HOME:-$HOME/.local/share}/emulicious"
 stamp="$(cat /usr/local/share/nullptr/emulicious.sha256 2>/dev/null || echo none)"
 if [ ! -f "$dst/Emulicious.jar" ] || [ "$(cat "$dst/.nullptr-stamp" 2>/dev/null)" != "$stamp" ]; then
   mkdir -p "$dst"
+  # refresh the program files but keep the user's own Emulicious.ini
+  [ -f "$dst/Emulicious.ini" ] && cp "$dst/Emulicious.ini" "$dst/.ini.keep"
   cp -a "$src/." "$dst/"
+  [ -f "$dst/.ini.keep" ] && mv -f "$dst/.ini.keep" "$dst/Emulicious.ini"
   printf '%s\n' "$stamp" >"$dst/.nullptr-stamp"
 fi
 exec java -jar "$dst/Emulicious.jar" "$@"

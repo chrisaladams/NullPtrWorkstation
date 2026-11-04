@@ -30,27 +30,13 @@ jobs:
           sed -i 's/__NAME__/gameboy-hello/g; s/__ROMTITLE__/GAMEBOY_HELLO/g' Makefile src/main.c .nullptr-project
           make GBDK_HOME=/opt/gbdk
           ls -la build/debug
-      - name: First start — answer the update dialog, capture the settings it writes
+      - name: Display
         run: |
           mkdir -p probe-out
           Xvfb :99 -screen 0 1280x800x24 >/dev/null 2>&1 &
-          sleep 2; export DISPLAY=:99
-          (i3 >/dev/null 2>&1 &); sleep 2
-          emulicious > probe-out/emulicious-first.log 2>&1 &
-          sleep 15; import -window root probe-out/first-1-dialog.png
-          find ~/.local/share/emulicious -maxdepth 1 -type f -printf '%f %s\n' | sort > probe-out/files-before.txt
-          xdotool mousemove 407 418 click 1; sleep 1          # "Never check for updates"
-          import -window root probe-out/first-2-never.png
-          xdotool mousemove 590 459 click 1; sleep 3          # OK
-          import -window root probe-out/first-3-after-ok.png
-          env -u I3SOCK i3-msg -q kill; sleep 5               # close Emulicious normally (saves settings)
-          pkill -f Emulicious.jar || true; sleep 1
-          find ~/.local/share/emulicious -maxdepth 1 -type f -printf '%f %s\n' | sort > probe-out/files-after.txt
-          for f in ~/.local/share/emulicious/*.ini ~/.local/share/emulicious/*.cfg ~/.local/share/emulicious/*.properties; do
-            [ -f "$f" ] && { echo "=== $f"; cat "$f"; } >> probe-out/settings.txt
-          done
-          cat probe-out/files-before.txt; echo ---; cat probe-out/files-after.txt; echo ---; cat probe-out/settings.txt || true
-      - name: Drive Emulicious over DAP (second start, dialog answered)
+          sleep 2; (DISPLAY=:99 i3 >/dev/null 2>&1 &); sleep 2
+          cat ~/.local/share/emulicious/Emulicious.ini 2>/dev/null || cat /opt/emulicious/Emulicious.ini
+      - name: "Drive Emulicious over DAP (first start: must not show the update dialog)"
         run: |
           export DISPLAY=:99
           line=$(grep -n 'keys = joypad();' /tmp/gameboy-hello/src/main.c | cut -d: -f1)

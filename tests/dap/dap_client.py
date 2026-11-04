@@ -103,7 +103,9 @@ def main():
     except TimeoutError: pass
     bp = c.request("setBreakpoints", {"source": {"path": a.source}, "breakpoints": [{"line": a.line}]})
     report["setBreakpoints"] = bp.get("body", {}).get("breakpoints")
-    c.request("configurationDone", {})
+    # only if the adapter supports it (Emulicious does not, and its adapter thread dies on it)
+    if init.get("body", {}).get("supportsConfigurationDoneRequest"):
+        c.request("configurationDone", {})
     stopped = c.wait_event("stopped", a.timeout)
     report["stopped_reason"] = stopped["body"].get("reason")
     tid = stopped["body"].get("threadId", 1)
