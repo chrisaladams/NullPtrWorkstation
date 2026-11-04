@@ -1,0 +1,8 @@
+#!/bin/sh
+# Pinned non-Debian components (Neovim, GBDK-2020, raylib, LibreSprite, lazygit, font,
+# tree-sitter CLI, Emulicious, VSCodium fallback). Hash/commit verified; see versions.lock.
+set -e
+cd /usr/local/src/nullptr-workstation
+# switches chosen on the build host (written by build-iso.sh)
+if [ -f build.env ]; then set -a; . ./build.env; set +a; fi
+NULLPTR_CACHE=/var/cache/nullptr-build ./scripts/install/install-upstream.sh

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+NW_CMD=gb-run   # shown by nw_resolve_project in its "refusing to guess" hint
+export NW_CMD
+cfg=debug; proj=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --release|-r) cfg=release ;; --debug|-d) cfg=debug ;;
+    -h|--help) echo "Usage: gb-run [--release] [PROJECT]   Build and launch the ROM in Emulicious"; exit 0 ;;
+    -*) exit 64 ;; *) proj="$1" ;;
+  esac; shift
+done
+root="$(nw_resolve_project "$proj")"
+[ "$(nw_type "$root")" = gameboy ] || nw_die "$(basename "$root") is not a Game Boy project. Use: run-game"
+nw_banner "Running ROM ($cfg)" "$root"
+nw_do_run "$root" "$cfg"

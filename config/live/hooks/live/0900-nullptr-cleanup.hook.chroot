@@ -1,0 +1,8 @@
+#!/bin/sh
+# Keep the image small and reproducible: drop build caches, keep the sources
+# (they document exactly how this image was made).
+set -e
+rm -rf /var/cache/nullptr-build /root/.cache /tmp/* 2>/dev/null || true
+systemctl enable tlp.service 2>/dev/null || true
+systemctl mask power-profiles-daemon.service 2>/dev/null || true
+apt-get clean

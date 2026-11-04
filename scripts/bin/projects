@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+usage() { cat <<'U'
+Usage: projects                 Pick a project interactively and open it in AstroVim
+       projects list            List projects (* = active)
+       projects use NAME|PATH   Make a project active without opening it
+       projects current         Print the active project path
+U
+}
+list_projects() {
+  local d
+  for d in "$NW_PROJECTS_DIR"/*/; do
+    [ -f "$d.nullptr-project" ] && printf '%s\n' "${d%/}"
+  done
+  # recently used projects that live outside ~/Projects
+  [ -f "$NW_RECENT_FILE" ] && while IFS= read -r d; do
+    case "$d" in "$NW_PROJECTS_DIR"/*) ;; *) [ -f "$d/.nullptr-project" ] && printf '%s\n' "$d" ;; esac
+  done <"$NW_RECENT_FILE"
+  return 0
+}
+open_root() {
+  local root="$1"
+  nw_active_set "$root"
+  nw_ok "Active project: $(basename "$root") ($(nw_type "$root"))"
+  if nw_editor_running; then
+    nw_editor_lua "require('nullptr.project').open($(nw_lua_str "$root"))"
+  else
+    cd "$root" && exec nvim --listen "$NW_NVIM_SOCKET" -c "lua require('nullptr.project').open($(nw_lua_str "$root"))"
+  fi
+}
+case "${1:-}" in
+  -h|--help) usage ;;
+  list)
+    active="$(nw_active_get 2>/dev/null || true)"
+    list_projects | while IFS= read -r p; do
+      mark=" "; [ "$p" = "$active" ] && mark="*"
+      printf ' %s %-24s %-8s %s\n' "$mark" "$(basename "$p")" "$(nw_type "$p")" "$p"
+    done ;;
+  current) nw_active_get || { nw_warn "No active project."; exit 1; } ;;
+  use)
+    [ -n "${2:-}" ] || { usage >&2; exit 64; }
+    if [ -d "$2" ]; then r="$(nw_find_root "$2")"; else r="$(nw_find_root "$NW_PROJECTS_DIR/$2")"; fi || nw_die "No such project: $2"
+    nw_active_set "$r"; nw_ok "Active project: $(basename "$r") ($(nw_type "$r"))" ;;
+  "")
+    mapfile -t all < <(list_projects)
+    [ "${#all[@]}" -gt 0 ] || nw_die "No projects in $NW_PROJECTS_DIR. Create one: new-raylib NAME  or  new-gameboy NAME"
+    if nw_have fzf && [ -t 0 ]; then
+      pick="$(for p in "${all[@]}"; do printf '%-24s %-8s %s\n' "$(basename "$p")" "$(nw_type "$p")" "$p"; done |
+        fzf --prompt='project> ' --height=40% --reverse --header='Enter: open   Esc: cancel' | awk '{print $NF}')" || exit 0
+    else
+      PS3="Choose a project number: "
+      select p in "${all[@]}"; do pick="$p"; break; done
+    fi
+    [ -n "${pick:-}" ] || exit 0
+    open_root "$pick" ;;
+  *) [ -d "$NW_PROJECTS_DIR/$1" ] && open_root "$NW_PROJECTS_DIR/$1" || { usage >&2; exit 64; } ;;
+esac

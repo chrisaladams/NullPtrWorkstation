@@ -1,0 +1,67 @@
+# nullptr Workstation — pinned non-Debian dependencies.
+# This file is sourced by scripts/install/install-upstream.sh (POSIX shell syntax).
+# Every download is verified against the SHA-256 below; every git checkout is
+# verified against the commit hash below. A mismatch aborts the build.
+#
+# Debian packages themselves are pinned by the Debian 13 (trixie) archive state
+# at build time; build-iso.sh records the exact package list in
+# out/packages.manifest next to the ISO.
+
+DEBIAN_SUITE="trixie"
+
+# Neovim (Debian 13 ships 0.10.4; AstroNvim v6 requires >= 0.11)
+NVIM_VERSION="v0.12.6"
+NVIM_URL="https://github.com/neovim/neovim/releases/download/v0.12.6/nvim-linux-x86_64.tar.gz"
+NVIM_SHA256="474430d53e6264f6d6dd18db42d6dc9df3a1b56ca9e88a325bbf860e1a811d87"
+
+# AstroNvim (loaded by lazy.nvim; plugin commits are pinned by config/dotfiles/nvim/lazy-lock.json)
+ASTRONVIM_VERSION="v6.1.1"
+ASTRONVIM_COMMIT="fc95d5d331b897b1c6b46cbfa4e0251d8d9be6b7"
+LAZY_NVIM_VERSION="v11.17.5"
+LAZY_NVIM_COMMIT="85c7ff3711b730b4030d03144f6db6375044ae82"
+
+# GBDK-2020 (bundles its own patched SDCC; used for all Game Boy ROM builds)
+GBDK_VERSION="4.5.0"
+GBDK_URL="https://github.com/gbdk-2020/gbdk-2020/releases/download/4.5.0/gbdk-linux64.tar.gz"
+GBDK_SHA256="d7857a5f6d135ee4c249043ca26aad9f2ec8ab5d4106d97720d404114f42605c"
+
+# raylib (built from source as a shared + static library into /usr/local)
+RAYLIB_VERSION="5.5"
+RAYLIB_GIT="https://github.com/raysan5/raylib"
+RAYLIB_COMMIT="c1ab645ca298a2801097931d1079b10ff7eb9df8"
+
+# LibreSprite (built from source; v1.3 needs CMake >= 4.1 which Debian 13 lacks, so v1.2 is used)
+LIBRESPRITE_VERSION="v1.2"
+LIBRESPRITE_GIT="https://github.com/LibreSprite/LibreSprite"
+LIBRESPRITE_COMMIT="5cb089be32f56b4ae559ae51f0c5666049f41bca"
+
+# lazygit
+LAZYGIT_VERSION="0.66.2"
+LAZYGIT_URL="https://github.com/jesseduffield/lazygit/releases/download/v0.66.2/lazygit_0.66.2_linux_x86_64.tar.gz"
+LAZYGIT_SHA256="158efc9ddfa1241fab5fb3526bb442c8dc6c4b1904d73213b9e4e93e03c52034"
+
+# Nerd Font (JetBrainsMono Nerd Font)
+NERDFONT_VERSION="v3.5.1"
+NERDFONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/JetBrainsMono.tar.xz"
+NERDFONT_SHA256="04d5e8f903693f9dd13e16f867e994834e681eb3c72c0d337a770dcda09010cf"
+
+# Emulicious (freeware, closed source, unversioned download URL).
+# The upstream zip changes in place, so no fixed hash can be pinned here.
+# install-upstream.sh records the hash it actually installed in
+# /usr/local/share/nullptr/emulicious.sha256 and in out/versions.resolved.
+# Set EMULICIOUS_SHA256 to enforce a specific build.
+EMULICIOUS_URL="https://emulicious.net/Emulicious.zip"
+EMULICIOUS_SHA256=""
+
+# Fallback Game Boy debugger front-end (only used if the nvim-dap path fails for you)
+VSCODIUM_VERSION="1.143.17232"
+VSCODIUM_URL="https://github.com/VSCodium/vscodium/releases/download/1.143.17232/codium_1.143.17232_amd64.deb"
+VSCODIUM_SHA256="988330df203f4d2dbfb9ee0052a0356a27af7c0a2a7ff606424c531ae4a7b538"
+EMULICIOUS_VSIX_VERSION="v1.3.0"
+EMULICIOUS_VSIX_URL="https://github.com/Calindro/emulicious-debugger/releases/download/v1.3.0/emulicious-debugger-1.3.0.vsix"
+EMULICIOUS_VSIX_SHA256="1aa554ad2d37efd7ac1f191732b81501e0f0c95b97e35a28e9fb3fbe94ccb48f"
+
+# tree-sitter CLI (required by nvim-treesitter `main`, which AstroNvim v6 uses, to build parsers)
+TREESITTER_CLI_VERSION="v0.27.1"
+TREESITTER_CLI_URL="https://github.com/tree-sitter/tree-sitter/releases/download/v0.27.1/tree-sitter-linux-x64.gz"
+TREESITTER_CLI_SHA256="d01042f94ba3d6827ddc9788e235f75d8366431be42bdf90ade534d960c98b7d"

@@ -1,0 +1,5 @@
+nullptr Workstation (Debian GNU/Linux 13) \n \l
+
+Log in as nullptr. On tty1 the graphical workspace starts automatically.
+Ctrl+Alt+F2..F6 give plain text consoles (no automatic start) for recovery.
+

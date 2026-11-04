@@ -1,0 +1,6 @@
+#!/bin/sh
+# Commands, templates, docs, system config, /etc/skel (dotfiles, ~/Projects, AstroNvim
+# plugins pinned by lazy-lock.json and pre-compiled treesitter parsers).
+set -e
+cd /usr/local/src/nullptr-workstation
+./scripts/install/install-workstation.sh

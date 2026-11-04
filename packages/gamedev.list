@@ -1,0 +1,15 @@
+# Game Boy (GBDK-2020 + Emulicious need Java) and LibreSprite build/runtime dependencies
+default-jre
+libcurl4-gnutls-dev
+libfreetype-dev
+libgif-dev
+libgtest-dev
+libjpeg-dev
+libpixman-1-dev
+libpng-dev
+libsdl2-dev
+libsdl2-image-dev
+libtinyxml2-dev
+libnode-dev
+zlib1g-dev
+libarchive-dev

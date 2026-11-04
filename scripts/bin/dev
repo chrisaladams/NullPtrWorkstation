@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# Attach to (or create) the persistent tmux session "dev".
+SESSION=dev
+case "${1:-}" in -h|--help) echo "Usage: dev   Attach to the 'dev' tmux session (creates it if needed). Detach with Ctrl+b d."; exit 0 ;; esac
+start_dir="$NW_PROJECTS_DIR"; [ -d "$start_dir" ] || start_dir="$HOME"
+if ! tmux has-session -t "=$SESSION" 2>/dev/null; then
+  active="$(nw_active_get 2>/dev/null || true)"
+  tmux new-session  -d -s "$SESSION" -n editor  -c "$start_dir" nullptr-editor
+  tmux new-window   -d -t "$SESSION:2" -n build   -c "${active:-$start_dir}"
+  tmux new-window   -d -t "$SESSION:3" -n lazygit -c "$start_dir" "nullptr-keep lazygit"
+  tmux new-window   -d -t "$SESSION:4" -n shell   -c "$HOME"
+  tmux new-window   -d -t "$SESSION:5" -n btop    -c "$HOME" "nullptr-keep btop"
+  [ -n "$active" ] && tmux set-environment -t "$SESSION" -g NULLPTR_PROJECT "$active"
+  tmux select-window -t "$SESSION:1"
+fi
+if [ -n "${TMUX:-}" ]; then
+  # already inside tmux: never nest, just switch
+  exec tmux switch-client -t "$SESSION"
+fi
+exec tmux attach-session -t "$SESSION"

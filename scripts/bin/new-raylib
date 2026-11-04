@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# new-raylib NAME — create ~/Projects/NAME from the raylib template (never overwrites)
+set -euo pipefail
+case "${1:-}" in ''|-h|--help) echo "Usage: new-raylib NAME   Create ~/Projects/NAME from the raylib template"; [ -n "${1:-}" ]; exit $? ;; esac
+exec nullptr-new raylib "$@"

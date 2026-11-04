@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+case "${1:-}" in -h|--help) echo "Usage: code [FILE|DIR]   Open a file or project in AstroVim (reuses the dev editor if it is running)"; exit 0 ;; esac
+target="${1:-.}"
+if [ ! -e "$target" ]; then
+  # new file: its directory must exist
+  [ -d "$(dirname -- "$target")" ] || nw_die "Directory does not exist: $(dirname -- "$target")"
+  abs="$(nw_abspath "$(dirname -- "$target")")/$(basename -- "$target")"
+elif [ -d "$target" ]; then abs="$(nw_abspath "$target")"
+else abs="$(nw_abspath "$(dirname -- "$target")")/$(basename -- "$target")"; fi
+if root="$(nw_find_root "$(dirname -- "$abs")" 2>/dev/null || nw_find_root "$abs" 2>/dev/null)"; then
+  nw_active_set "$root"
+  nw_info "Active project: $(basename "$root")"
+fi
+if nw_editor_running; then
+  nw_editor_lua "require('nullptr.project').open($(nw_lua_str "$abs"))"
+else
+  exec nvim --listen "$NW_NVIM_SOCKET" -c "lua require('nullptr.project').open($(nw_lua_str "$abs"))"
+fi

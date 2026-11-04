@@ -1,0 +1,39 @@
+# ~/.bash_profile — nullptr Workstation
+# Login shells read this instead of ~/.profile, so load ~/.profile first.
+[ -f "$HOME/.profile" ] && . "$HOME/.profile"
+
+# Start the graphical session (Xorg + i3 → kitty → tmux "dev" → AstroVim) only for
+# an interactive *local* login on tty1. Never for SSH, other TTYs, tmux or nested shells.
+nullptr_autostart_ok() {
+  case $- in *i*) ;; *) return 1 ;; esac                     # interactive only
+  [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] || return 1      # not already graphical
+  [ -z "${SSH_CONNECTION:-}${SSH_CLIENT:-}${SSH_TTY:-}" ] || return 1
+  [ -z "${TMUX:-}" ] || return 1
+  [ "$(tty 2>/dev/null)" = /dev/tty1 ] || return 1           # only the first console
+  [ "${XDG_VTNR:-1}" = 1 ] || return 1
+  [ "${SHLVL:-1}" -le 1 ] || return 1                        # not a nested shell
+  grep -qw 'nullptr.nox' /proc/cmdline 2>/dev/null && return 1   # boot option to skip X
+  [ -e "$HOME/.config/nullptr/no-autostart" ] && return 1    # touch this file to skip X
+  command -v startx >/dev/null 2>&1 || return 1
+  return 0
+}
+
+if nullptr_autostart_ok; then
+  _nw_log="${XDG_STATE_HOME:-$HOME/.local/state}/nullptr"
+  mkdir -p "$_nw_log"
+  _nw_t0=$(date +%s)
+  startx >"$_nw_log/xsession.log" 2>&1
+  _nw_rc=$?
+  if [ "$_nw_rc" -ne 0 ] || [ $(( $(date +%s) - _nw_t0 )) -lt 10 ]; then
+    printf '\n\033[1;33mThe graphical session failed or exited immediately (exit %s).\033[0m\n' "$_nw_rc"
+    printf 'You are in a normal text console. Everything still works here:\n'
+    printf '  dev                 open the tmux workspace (AstroVim, build, git, shell)\n'
+    printf '  helpme recovery     recovery guide\n'
+    printf '  less %s/xsession.log   see what went wrong\n' "$_nw_log"
+    printf '  startx              try the graphical session again\n\n'
+  else
+    printf '\nGraphical session ended. Type  startx  to restart it,  dev  for tmux, or  logout.\n'
+  fi
+  unset _nw_log _nw_t0 _nw_rc
+fi
+unset -f nullptr_autostart_ok

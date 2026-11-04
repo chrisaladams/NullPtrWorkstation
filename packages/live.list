@@ -1,0 +1,4 @@
+# Live session support (removed from the installed system by live-installer)
+live-boot
+live-config
+live-config-systemd

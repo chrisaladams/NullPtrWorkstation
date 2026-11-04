@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# nullptr-new TYPE NAME [DEST_DIR] — create a project from a template. Never overwrites.
+type="${1:-}"; name="${2:-}"; dest_parent="${3:-$NW_PROJECTS_DIR}"
+case "$type" in raylib|gameboy) ;; *) nw_die "Usage: nullptr-new raylib|gameboy NAME" ;; esac
+[ -n "$name" ] || nw_die "Usage: new-$type NAME"
+nw_validate_name "$name"
+tpl="$NW_TEMPLATES/$type"
+[ -d "$tpl" ] || nw_die "Template not found: $tpl"
+mkdir -p "$dest_parent"
+dest="$dest_parent/$name"
+if [ -e "$dest" ] || [ -L "$dest" ]; then nw_die "$dest already exists — nothing was changed. Pick another name."; fi
+# mkdir without -p is atomic: if something appears in between we still refuse.
+mkdir "$dest" || nw_die "Could not create $dest"
+cp -a "$tpl/." "$dest/"
+title="$(printf '%s' "$name" | tr '[:lower:]-' '[:upper:]_' | cut -c1-15)"
+grep -rlI --exclude-dir=.git -e '__NAME__' -e '__ROMTITLE__' "$dest" | while IFS= read -r f; do
+  sed -i -e "s/__NAME__/$name/g" -e "s/__ROMTITLE__/$title/g" "$f"
+done
+if nw_have git; then
+  git -C "$dest" init -q -b main 2>/dev/null || git -C "$dest" init -q
+fi
+nw_ok "Created $type project: $dest"
+nw_active_set "$dest"
+nw_info "It is now the active project. Next: code $dest   (or: build, run-game)"

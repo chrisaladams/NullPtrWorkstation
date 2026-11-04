@@ -1,0 +1,67 @@
+# Recovery
+
+Also available on the workstation: `helpme recovery`.
+
+The graphical session is a convenience layered on a normal Debian text system:
+
+- **tty1**: logging in starts Xorg + i3 automatically. If that fails you stay in a working shell on tty1 (this is tested).
+- **tty2–tty6** (Ctrl+Alt+F2…F6): plain consoles that never start X.
+- **Over SSH, inside tmux, or in nested shells**, X is never started.
+- All development tools (AstroVim, tmux, build, gdb, gb-build) work without X. Only running/debugging games, LibreSprite and Emulicious need it.
+
+```text
+nullptr Workstation — recovery                                 (q to close)
+==========================================================================
+
+ The graphical session does not start / crashes
+ --------------------------------------------------------------------------
+  • You land back at a text shell on tty1 with a message. Nothing is lost:
+      dev                       full tmux workspace (AstroVim, build, git)
+      less ~/.local/state/nullptr/xsession.log    what Xorg/i3 said
+      startx                    try again
+  • Use another console: Ctrl+Alt+F2 … F6. Log in there; it never starts
+    the graphical session, so it is always a safe place to fix things.
+  • Disable the automatic start:
+      touch ~/.config/nullptr/no-autostart       (rm it to re-enable)
+  • One-time boot without graphics: in the GRUB menu press  e , add
+      nullptr.nox
+    to the end of the line starting with  linux , then Ctrl+X.
+  • Emergency root shell (root has no password on this system, so GRUB's
+    "recovery mode" cannot open a shell): press  e  in GRUB, add
+      init=/bin/bash
+    to the  linux  line, Ctrl+X, then:  mount -o remount,rw /  … fix …  reboot -f
+
+ The screen is locked and you forgot the password
+ --------------------------------------------------------------------------
+  In GRUB press  e , add  init=/bin/bash  to the  linux  line, Ctrl+X, then:
+      mount -o remount,rw /
+      passwd nullptr
+      sync; reboot -f
+  (Anyone with physical access can do this — use disk encryption in the
+   installer if that matters to you.)
+
+ Wi-Fi does not connect
+ --------------------------------------------------------------------------
+      nmtui                     choose "Activate a connection"
+      nmcli device status       is the Wi-Fi device present/managed?
+      rfkill list               is it blocked? (rfkill unblock wifi)
+
+ AstroVim misbehaves
+ --------------------------------------------------------------------------
+      nvim --clean              plain Neovim without plugins
+      :checkhealth              inside AstroVim: diagnoses problems
+      mv ~/.config/nvim ~/.config/nvim.broken && cp -a /etc/skel/.config/nvim ~/.config/
+                                restore the original configuration
+      cp -a -n /etc/skel/.local/share/nvim ~/.local/share/
+                                restore pre-installed plugins (no overwrite)
+
+ tmux session is in a weird state
+ --------------------------------------------------------------------------
+      tmux kill-session -t dev && dev      start the workspace fresh
+                                            (unsaved editor changes are lost)
+
+ Sound / brightness keys
+ --------------------------------------------------------------------------
+      pulsemixer               sound levels and outputs
+      brightnessctl set 50%    screen brightness
+```

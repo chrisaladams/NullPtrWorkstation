@@ -1,0 +1,98 @@
+nullptr Workstation — keyboard cheat sheet                     (q to close)
+==========================================================================
+
+Super = the Windows key.   Space = the leader key inside AstroVim.
+
+ i3 (windows and workspaces)
+ --------------------------------------------------------------------------
+  Super+1            workspace 1: code   (kitty → tmux → AstroVim)
+  Super+2            workspace 2: art    (LibreSprite)
+  Super+3            workspace 3: game   (raylib games, Emulicious)
+  Super+4            workspace 4: tools  (anything else)
+  Super+Shift+1..4   move the focused window to that workspace
+  Super+Enter        new terminal (plain shell)
+  Super+Shift+Enter  go back to the main dev terminal (reopens it if closed)
+  Super+A            LibreSprite (focuses it if already open)
+  Super+D            app launcher (type a program name)
+  Super+F            fullscreen on/off
+  Super+Arrows       move focus      Super+Shift+Arrows  move window
+  Super+Shift+Q      close window
+  Super+L            lock screen (unlock with your password)
+  Super+F1           this cheat sheet
+  Super+R            resize mode (arrows, then Esc)
+  Super+Shift+E      leave the graphical session (tmux keeps running)
+
+ tmux (prefix: press Ctrl+b, release, then the key)
+ --------------------------------------------------------------------------
+  Ctrl+b 1           AstroVim          Ctrl+b 4   shell
+  Ctrl+b 2           build terminal    Ctrl+b 5   btop (system monitor)
+  Ctrl+b 3           LazyGit
+  Ctrl+b n / p       next / previous window
+  Ctrl+b |   Ctrl+b -    split side-by-side / top-bottom
+  Ctrl+b arrows      move between split panes     Ctrl+b x   close pane
+  Ctrl+b z           zoom the current pane in/out
+  Ctrl+b d           detach (everything keeps running) — type  dev  to return
+  Ctrl+b [           scroll mode (arrows/PgUp, q to leave)
+  Ctrl+b ?           this cheat sheet      Ctrl+b P   project picker
+
+ AstroVim — the basics
+ --------------------------------------------------------------------------
+  i                  Insert mode (type text)
+  Esc                back to Normal mode
+  :w  Enter          save                    :q  Enter    quit
+  :wq Enter          save and quit           :q! Enter    quit, discard changes
+  u                  undo                    Ctrl+r       redo
+  dd / yy / p        delete line / copy line / paste
+  /text Enter        search; n = next match
+  Space (wait)       menu of every Space shortcut
+  Space h            back to the dashboard
+
+ AstroVim — files and projects
+ --------------------------------------------------------------------------
+  Space e            file explorer (Neo-tree): a add, d delete, r rename,
+                     c copy, m move, Enter open, ? help
+  Space O            edit the folder as text (Oil): rename lines, :w applies
+  Space f f          find a file by name
+  Space f w          search text in the whole project
+  Space f o          recently opened files
+  Space f p          switch project (same as Space m p)
+  Space c            close the current file (buffer)
+  ]b / [b            next / previous open file
+
+ AstroVim — build, run, debug (works for raylib AND Game Boy projects)
+ --------------------------------------------------------------------------
+  Space m b          build (Debug)          Space m B   build (Release)
+  Space m r          run the game / ROM     Space m c   clean
+  Space m d  or F5   build Debug + start the debugger
+  Space m p          open project           Space m R   recent projects
+  Space m n          new project            Space m i   project info
+  Space m a          LibreSprite
+  F9  (Space d b)    toggle breakpoint on this line
+  F5                 continue               F10  step over
+  F11                step into              Shift+F11  step out
+  Shift+F5 (Space d q)  stop debugging      Space d u   debugger panels
+  Space d h          value of the variable under the cursor
+
+ AstroVim — code
+ --------------------------------------------------------------------------
+  K                  documentation for the symbol under the cursor
+  g d                go to definition        g r r      find references
+  Space l f          format file (clang-format)
+  Space l a          code actions / quick fixes
+  Space l r          rename symbol           Space l S  symbol outline
+  Space l w          switch .c <-> .h
+  Space x x          problems in this file   Space x X  problems in project
+  Space /            comment / uncomment line
+
+ Git
+ --------------------------------------------------------------------------
+  Space g g          LazyGit (or Ctrl+b 3)   Space g d  diff of this file
+  Space g D          Diffview: every changed file in the project (:DiffviewClose)
+  ]g / [g            next / previous change  Space g p  preview change
+
+ Terminal commands
+ --------------------------------------------------------------------------
+  dev   projects   code PATH   build   run-game   debug-game   art
+  new-raylib NAME   new-gameboy NAME   gb-build   gb-run   gb-debug
+  gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme
+  nmtui (Wi-Fi)   btop (monitor)   helpme tutorial   helpme recovery

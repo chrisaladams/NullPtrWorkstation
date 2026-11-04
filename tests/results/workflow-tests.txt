@@ -1,0 +1,47 @@
+PASS  new-raylib creates project
+PASS  new-raylib project builds
+PASS  raylib Debug binary exists
+PASS  compile_commands.json linked
+PASS  build --release works
+PASS  Release binary exists
+PASS  new-raylib refuses existing name
+PASS  existing project left untouched
+PASS  invalid project name rejected
+PASS  new-gameboy creates project
+PASS  gb-build builds the ROM
+PASS  Debug ROM + .cdb exist
+PASS  .cdb has C line records
+PASS  ROM header title set
+PASS  gb-build --release
+PASS  gb-clean removes build/
+PASS  gb-build rejects raylib project
+PASS  new projects are git repositories
+PASS  projects use raylib-hello
+PASS  build (from ~) uses active raylib project
+PASS  projects use gameboy-hello
+PASS  build (from ~) follows switch to Game Boy
+PASS  conflict (cwd A, active B) refuses instead of guessing
+PASS  explicit project name wins
+PASS  projects list shows active (*)
+PASS  AstroVim file switch updates active project
+PASS  shell build follows AstroVim's project
+PASS  autostart: local login on tty1 starts X
+PASS  autostart: tty2 stays text (recovery console)
+PASS  autostart: never for SSH
+PASS  autostart: never inside tmux
+PASS  autostart: never for nested shells
+PASS  autostart: not when X already running
+PASS  autostart: ~/.config/nullptr/no-autostart disables X
+PASS  X failure falls back to text console with recovery hints
+PASS  GBDK_HOME exported by /etc/profile.d
+PASS  lcc on PATH for login shells
+PASS  tablet-info runs without a tablet
+PASS  keys prints the cheat sheet
+PASS  helpme prints the guide
+PASS  art launches LibreSprite
+PASS  LibreSprite window appears
+PASS  LibreSprite lands on workspace 2
+PASS  art again focuses, no duplicate
+PASS  tablet-setup handles no tablet gracefully
+----
+PASS: 45  FAIL: 0

@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "emulicious-debugger",
+      "request": "launch",
+      "name": "Debug ROM in Emulicious",
+      "program": "${workspaceFolder}/build/debug/__NAME__.gb",
+      "port": 58870,
+      "stopOnEntry": false,
+      "additionalSrcFolders": "${workspaceFolder}/src",
+      "preLaunchTask": "gb-build"
+    }
+  ]
+}

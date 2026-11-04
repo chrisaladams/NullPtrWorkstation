@@ -1,0 +1,176 @@
+
+[1;34m[nullptr][0m Neovim v0.12.6
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 10.8M  100 10.8M    0     0  8517k      0  0:00:01  0:00:01 --:--:-- 14.8M
+
+[1;34m[nullptr][0m tree-sitter CLI v0.27.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  1 8498k    1 97502    0     0   187k      0  0:00:45 --:--:--  0:00:45  187k100 8498k  100 8498k    0     0  9103k      0 --:--:-- --:--:-- --:--:-- 19.2M
+
+[1;34m[nullptr][0m GBDK-2020 4.5.0
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 6709k  100 6709k    0     0  9733k      0 --:--:-- --:--:-- --:--:-- 9733k
+
+[1;34m[nullptr][0m lazygit 0.66.2
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 7160k  100 7160k    0     0  9995k      0 --:--:-- --:--:-- --:--:-- 9995k
+
+[1;34m[nullptr][0m JetBrainsMono Nerd Font v3.5.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 7113k  100 7113k    0     0  11.5M      0 --:--:-- --:--:-- --:--:-- 17.1M
+
+[1;34m[nullptr][0m raylib 5.5 (from source, X11, shared + pkg-config)
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test COMPILER_HAS_THOSE_TOGGLES
+-- Performing Test COMPILER_HAS_THOSE_TOGGLES - Success
+-- Testing if -Werror=pointer-arith can be used -- compiles
+-- Testing if -Werror=implicit-function-declaration can be used -- compiles
+-- Testing if -fno-strict-aliasing can be used -- compiles
+-- Using raylib's GLFW
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Including X11 support
+-- Found X11: /usr/include   
+-- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so
+-- Looking for XOpenDisplay in /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so - found
+-- Looking for gethostbyname
+-- Looking for gethostbyname - found
+-- Looking for connect
+-- Looking for connect - found
+-- Looking for remove
+-- Looking for remove - found
+-- Looking for shmat
+-- Looking for shmat - found
+-- Looking for IceConnectionNumber in ICE
+-- Looking for IceConnectionNumber in ICE - found
+-- Audio Backend: miniaudio
+-- Building raylib shared library
+-- Generated build type: Release
+-- Compiling with the flags:
+--   PLATFORM=PLATFORM_DESKTOP
+--   GRAPHICS=GRAPHICS_API_OPENGL_33
+-- Configuring done (1.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/build
+[1/32] Building C object raylib/CMakeFiles/raylib.dir/rshapes.c.o
+[2/32] Building C object raylib/CMakeFiles/raylib.dir/rtext.c.o
+[3/32] Building C object raylib/CMakeFiles/raylib.dir/rcore.c.o
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/rcore.c: In function 'LoadAutomationEventList':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/rcore.c:2909:13: warning: ignoring return value of 'fgets' declared with attribute 'warn_unused_result' [-Wunused-result]
+ 2909 |             fgets(buffer, 256, raeFile);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/rcore.c:2926:17: warning: ignoring return value of 'fgets' declared with attribute 'warn_unused_result' [-Wunused-result]
+ 2926 |                 fgets(buffer, 256, raeFile);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+[4/32] Building C object raylib/CMakeFiles/raylib.dir/utils.c.o
+[5/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/context.c.o
+[6/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/init.c.o
+[7/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/input.c.o
+[8/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/monitor.c.o
+[9/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/platform.c.o
+[10/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/vulkan.c.o
+[11/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/window.c.o
+[12/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/egl_context.c.o
+[13/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/osmesa_context.c.o
+[14/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/null_init.c.o
+[15/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/null_monitor.c.o
+[16/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/null_window.c.o
+[17/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/null_joystick.c.o
+[18/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/posix_module.c.o
+[19/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/posix_time.c.o
+[20/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/posix_thread.c.o
+[21/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/x11_init.c.o
+[22/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/x11_monitor.c.o
+[23/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/x11_window.c.o
+[24/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/xkb_unicode.c.o
+[25/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/glx_context.c.o
+[26/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/linux_joystick.c.o
+[27/32] Building C object raylib/external/glfw/src/CMakeFiles/glfw.dir/posix_poll.c.o
+[28/32] Building C object raylib/CMakeFiles/raylib.dir/rmodels.c.o
+[29/32] Building C object raylib/CMakeFiles/raylib.dir/rtextures.c.o
+[30/32] Building C object raylib/CMakeFiles/raylib.dir/raudio.c.o
+In file included from /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/raudio.c:180:
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/miniaudio.h: In function 'ma_device_stop__alsa':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/miniaudio.h:28086:9: warning: ignoring return value of 'read' declared with attribute 'warn_unused_result' [-Wunused-result]
+28086 |         read(((struct pollfd*)pDevice->alsa.pPollDescriptorsCapture)[0].fd, &t, sizeof(t));
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/miniaudio.h:28107:9: warning: ignoring return value of 'read' declared with attribute 'warn_unused_result' [-Wunused-result]
+28107 |         read(((struct pollfd*)pDevice->alsa.pPollDescriptorsPlayback)[0].fd, &t, sizeof(t));
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/raudio.c:282:
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h: In function 'jar_mod_load_file':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:1541:13: warning: ignoring return value of 'fread' declared with attribute 'warn_unused_result' [-Wunused-result]
+ 1541 |             fread(modctx->modfile, fsize, 1, f);
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In function 'memcopy',
+    inlined from 'jar_mod_load' at /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:1133:13:
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:370:13: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  370 |         d[i]=s[i];
+      |         ~~~~^~~~~
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h: In function 'jar_mod_load':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:125:13: note: at offset 1080 into destination object 'title' of size 20
+  125 |     muchar  title[20];
+      |             ^~~~~
+In function 'memcopy',
+    inlined from 'jar_mod_load' at /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:1133:13:
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:370:13: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  370 |         d[i]=s[i];
+      |         ~~~~^~~~~
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h: In function 'jar_mod_load':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:125:13: note: at offset 1081 into destination object 'title' of size 20
+  125 |     muchar  title[20];
+      |             ^~~~~
+In function 'memcopy',
+    inlined from 'jar_mod_load' at /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:1133:13:
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:370:13: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  370 |         d[i]=s[i];
+      |         ~~~~^~~~~
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h: In function 'jar_mod_load':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:125:13: note: at offset 1082 into destination object 'title' of size 20
+  125 |     muchar  title[20];
+      |             ^~~~~
+In function 'memcopy',
+    inlined from 'jar_mod_load' at /tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:1133:13:
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:370:13: warning: writing 1 byte into a region of size 0 [-Wstringop-overflow=]
+  370 |         d[i]=s[i];
+      |         ~~~~^~~~~
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h: In function 'jar_mod_load':
+/tmp/claude-0/-home-user/75239a6c-3544-5481-854b-ed2ddaf021ac/scratchpad/cache/raylib/src/external/jar_mod.h:125:13: note: at offset 1083 into destination object 'title' of size 20
+  125 |     muchar  title[20];
+      |             ^~~~~
+[31/32] Linking C shared library raylib/libraylib.so.5.5.0
+[32/32] Creating library symlink raylib/libraylib.so.550 raylib/libraylib.so
+-- Install configuration: "Release"
+-- Installing: /usr/local/lib/libraylib.so.5.5.0
+-- Installing: /usr/local/lib/libraylib.so.550
+-- Installing: /usr/local/lib/libraylib.so
+-- Installing: /usr/local/include/raylib.h
+-- Installing: /usr/local/include/rlgl.h
+-- Installing: /usr/local/include/raymath.h
+-- Installing: /usr/local/lib/pkgconfig/raylib.pc
+-- Installing: /usr/local/lib/cmake/raylib/raylib-config-version.cmake
+-- Installing: /usr/local/lib/cmake/raylib/raylib-config.cmake
+
+[1;34m[nullptr][0m Upstream components installed. Resolved versions: /usr/local/share/nullptr/versions.resolved

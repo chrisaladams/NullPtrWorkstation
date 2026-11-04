@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "gb-build", "type": "shell", "command": "gb-build", "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": [] }
+  ]
+}

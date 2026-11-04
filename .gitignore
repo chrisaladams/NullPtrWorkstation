@@ -1,0 +1,5 @@
+/work/
+/out/
+*.qcow2
+*.iso
+__pycache__/

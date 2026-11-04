@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+NW_CMD=gb-debug   # shown by nw_resolve_project in its "refusing to guess" hint
+export NW_CMD
+backend=nvim; proj=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --emulicious) backend=emulicious ;; --vscodium) backend=vscodium ;; --nvim) backend=nvim ;;
+    -h|--help) cat <<'U'; exit 0 ;;
+Usage: gb-debug [--emulicious|--vscodium] [PROJECT]
+C source-level Game Boy debugging.
+  (default)     AstroVim + nvim-dap talking to Emulicious's Debug Adapter (port 58870)
+  --emulicious  Emulicious's built-in debugger window
+  --vscodium    VSCodium + Emulicious Debugger extension (fallback)
+U
+    -*) exit 64 ;; *) proj="$1" ;;
+  esac; shift
+done
+root="$(nw_resolve_project "$proj")"
+[ "$(nw_type "$root")" = gameboy ] || nw_die "$(basename "$root") is not a Game Boy project. Use: debug-game"
+nw_banner "Debugging ROM" "$root"
+nw_do_debug "$root" "$backend"

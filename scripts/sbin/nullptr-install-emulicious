@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# nullptr-install-emulicious — download Emulicious (freeware) into /opt/emulicious.
+# Used by the ISO build and available afterwards for updates/offline installs:
+#   sudo nullptr-install-emulicious                 # download from emulicious.net
+#   sudo nullptr-install-emulicious /path/Emulicious.zip   # install a zip you downloaded
+set -euo pipefail
+URL="${EMULICIOUS_URL:-https://emulicious.net/Emulicious.zip}"
+DEST="${EMULICIOUS_HOME:-/opt/emulicious}"
+SHARE="${NW_SHARE:-/usr/local/share/nullptr}"
+[ "$(id -u)" = 0 ] || { echo "Run with sudo: sudo $0 $*" >&2; exit 1; }
+work="$(mktemp -d)"; trap 'rm -rf "$work"' EXIT
+if [ -n "${1:-}" ]; then cp -- "$1" "$work/Emulicious.zip"
+else
+  echo "Downloading $URL"
+  curl -fL --retry 3 -o "$work/Emulicious.zip" "$URL"
+fi
+sum="$(sha256sum "$work/Emulicious.zip" | cut -d' ' -f1)"
+if [ -n "${EMULICIOUS_SHA256:-}" ] && [ "$sum" != "$EMULICIOUS_SHA256" ]; then
+  echo "SHA-256 mismatch: got $sum, expected $EMULICIOUS_SHA256" >&2; exit 1
+fi
+mkdir -p "$work/x"; (cd "$work/x" && unzip -q ../Emulicious.zip)
+jar="$(find "$work/x" -maxdepth 3 -name Emulicious.jar | head -n1)"
+[ -n "$jar" ] || { echo "Emulicious.jar not found in the archive" >&2; exit 1; }
+rm -rf "$DEST.new"; mkdir -p "$DEST.new"
+cp -a "$(dirname "$jar")/." "$DEST.new/"
+# drop the bundled Windows Java runtime if present; Debian's OpenJDK is used
+rm -rf "$DEST.new/java"
+rm -rf "$DEST.old"; [ -d "$DEST" ] && mv "$DEST" "$DEST.old"; mv "$DEST.new" "$DEST"; rm -rf "$DEST.old"
+chmod -R a+rX "$DEST"
+mkdir -p "$SHARE"; echo "$sum  Emulicious.zip" >"$SHARE/emulicious.sha256"
+cat >/usr/local/bin/emulicious <<'W'
+#!/bin/sh
+# Emulicious launcher (uses Debian's OpenJDK). Emulicious keeps its settings next to
+# Emulicious.jar, so each user runs a private copy that is refreshed when /opt changes.
+set -e
+src=/opt/emulicious
+dst="${XDG_DATA_HOME:-$HOME/.local/share}/emulicious"
+stamp="$(cat /usr/local/share/nullptr/emulicious.sha256 2>/dev/null || echo none)"
+if [ ! -f "$dst/Emulicious.jar" ] || [ "$(cat "$dst/.nullptr-stamp" 2>/dev/null)" != "$stamp" ]; then
+  mkdir -p "$dst"
+  cp -a "$src/." "$dst/"
+  printf '%s\n' "$stamp" >"$dst/.nullptr-stamp"
+fi
+exec java -jar "$dst/Emulicious.jar" "$@"
+W
+chmod 755 /usr/local/bin/emulicious
+echo "Emulicious installed in $DEST (sha256 $sum)"

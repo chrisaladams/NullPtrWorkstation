@@ -1,0 +1,27 @@
+#!/bin/sh
+# Runs once inside the installed system (debian-installer preseed/late_command).
+# Never touches disks; only finishes configuration of the freshly installed system.
+set -u
+log=/var/log/nullptr-postinstall.log
+exec >>"$log" 2>&1
+echo "== nullptr-postinstall $(date -Is)"
+# Let NetworkManager manage every interface (d-i may have written ifupdown config).
+if [ -f /etc/network/interfaces ]; then
+  cp -a /etc/network/interfaces /etc/network/interfaces.d-i-backup
+  printf 'source /etc/network/interfaces.d/*\n\nauto lo\niface lo inet loopback\n' >/etc/network/interfaces
+fi
+# The user created by the installer: make sure the workspace exists and is theirs.
+if id nullptr >/dev/null 2>&1; then
+  h="$(getent passwd nullptr | cut -d: -f6)"
+  if [ ! -d "$h/Projects" ] && [ -d /etc/skel/Projects ]; then cp -a /etc/skel/Projects "$h/"; fi
+  # dotfiles missing (e.g. home created before skel was populated): copy without overwriting
+  cp -a -n /etc/skel/. "$h/" 2>/dev/null || true
+  chown -R nullptr:nullptr "$h"
+  for g in sudo audio video input render plugdev netdev dialout; do getent group "$g" >/dev/null && adduser nullptr "$g" >/dev/null 2>&1; done
+fi
+# One power manager only.
+systemctl enable tlp.service 2>/dev/null || true
+systemctl mask power-profiles-daemon.service 2>/dev/null || true
+command -v update-grub >/dev/null && update-grub
+echo "== done"
+exit 0

@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# tablet-setup [--output OUTPUT] [--apply] — map stylus devices to a monitor and save the choice.
+conf="${XDG_CONFIG_HOME:-$HOME/.config}/nullptr/tablet.conf"
+apply_only=0; output=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --apply) apply_only=1 ;;
+    --output) output="${2:-}"; shift ;;
+    -h|--help) cat <<'U'; exit 0 ;;
+Usage: tablet-setup [--output NAME]   Map all stylus/pen devices to monitor NAME (default: primary) and save
+       tablet-setup --apply           Re-apply saved settings (runs automatically when X starts)
+Settings file: ~/.config/nullptr/tablet.conf
+  OUTPUT=eDP-1               monitor to map the tablet area to
+  WACOM_BUTTON2="2"          xsetwacom button actions (wacom driver only), e.g. "key ctrl z"
+  WACOM_BUTTON3="3"
+U
+    *) echo "Unknown option $1" >&2; exit 64 ;;
+  esac; shift
+done
+nw_in_graphical || nw_die "tablet-setup must run inside the graphical session."
+nw_have xinput || nw_die "xinput is not installed."
+WACOM_BUTTON2=""; WACOM_BUTTON3=""; OUTPUT=""
+# shellcheck disable=SC1090
+[ -f "$conf" ] && . "$conf"
+[ -n "$output" ] && OUTPUT="$output"
+if [ -z "$OUTPUT" ]; then
+  OUTPUT="$(xrandr --query | awk '/ connected primary/{print $1; exit}')"
+  [ -n "$OUTPUT" ] || OUTPUT="$(xrandr --query | awk '/ connected/{print $1; exit}')"
+fi
+xrandr --query | grep -q "^$OUTPUT connected" || { [ "$apply_only" = 1 ] && exit 0; nw_die "Monitor '$OUTPUT' is not connected. Connected: $(xrandr --query | awk '/ connected/{printf "%s ", $1}')"; }
+
+mapfile -t ids < <(xinput list --id-only 2>/dev/null | while read -r id; do
+  n="$(xinput list --name-only "$id" 2>/dev/null)"
+  # only pointer-type stylus/pen/eraser/touch devices can be mapped
+  if printf '%s\n' "$n" | grep -Eiq 'stylus|pen|eraser|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' &&
+     xinput list --short "$id" 2>/dev/null | grep -q 'slave  pointer'; then echo "$id"; fi
+done)
+if [ "${#ids[@]}" -eq 0 ]; then
+  [ "$apply_only" = 1 ] && exit 0
+  nw_die "No stylus/pen devices found. Plug in the tablet and run tablet-info."
+fi
+for id in "${ids[@]}"; do
+  n="$(xinput list --name-only "$id")"
+  if xinput map-to-output "$id" "$OUTPUT" 2>/dev/null; then nw_ok "Mapped [$id] $n -> $OUTPUT"
+  else nw_warn "Could not map [$id] $n"; fi
+done
+if nw_have xsetwacom; then
+  while IFS= read -r line; do
+    wid="$(printf '%s\n' "$line" | sed -n 's/.*id: *\([0-9]*\).*/\1/p')"; [ -n "$wid" ] || continue
+    [ -n "$WACOM_BUTTON2" ] && xsetwacom set "$wid" Button 2 "$WACOM_BUTTON2" 2>/dev/null || true
+    [ -n "$WACOM_BUTTON3" ] && xsetwacom set "$wid" Button 3 "$WACOM_BUTTON3" 2>/dev/null || true
+  done < <(xsetwacom --list devices 2>/dev/null | grep -i 'STYLUS')
+fi
+if [ "$apply_only" = 0 ]; then
+  mkdir -p "$(dirname "$conf")"
+  { echo "# nullptr tablet settings — written by tablet-setup"
+    printf 'OUTPUT=%q\n' "$OUTPUT"
+    printf 'WACOM_BUTTON2=%q\n' "$WACOM_BUTTON2"
+    printf 'WACOM_BUTTON3=%q\n' "$WACOM_BUTTON3"; } >"$conf"
+  nw_ok "Saved $conf (applied automatically at every graphical login)"
+  nw_info "Test: open LibreSprite (Super+A), pick the pencil, draw. Pressure is not used by LibreSprite 1.2."
+fi

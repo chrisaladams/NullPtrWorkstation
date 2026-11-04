@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Right side of the tmux status bar: active project · battery · network.
+# Prints tmux format strings; must be fast and must never fail.
+out=""
+state="${XDG_STATE_HOME:-$HOME/.local/state}/nullptr/active-project"
+if [ -f "$state" ]; then p="$(head -n1 "$state")"; [ -n "$p" ] && out+="#[fg=#bb9af7] ${p##*/} "; fi
+for b in /sys/class/power_supply/BAT*; do
+  [ -r "$b/capacity" ] || continue
+  cap="$(cat "$b/capacity")"; st="$(cat "$b/status" 2>/dev/null)"
+  icon="󰁹"; [ "$st" = Charging ] && icon="󰂄"
+  col="#9ece6a"; [ "$cap" -le 30 ] && col="#e0af68"; [ "$cap" -le 15 ] && col="#f7768e"
+  out+="#[fg=$col]$icon $cap% "
+  break
+done
+if command -v nmcli >/dev/null 2>&1; then
+  net="$(timeout 1 nmcli -t -f TYPE,NAME connection show --active 2>/dev/null | awk -F: '$1 ~ /wireless|ethernet/ {print $2; exit}')"
+  if [ -n "$net" ]; then out+="#[fg=#7aa2f7]󰖩 ${net:0:16} "; else out+="#[fg=#565f89]󰖪 offline "; fi
+fi
+printf '%s' "$out"

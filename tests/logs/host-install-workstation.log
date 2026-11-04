@@ -1,0 +1,9 @@
+[nullptr] Commands -> /usr/local/bin, helpers -> /usr/local/lib/nullptr
+[nullptr] Project templates -> /usr/local/share/nullptr/templates
+[nullptr] Docs -> /usr/local/share/nullptr/docs
+[nullptr] System configuration
+[nullptr] Default home directory (/srv/skel-verify2)
+[nullptr] Starter projects (/srv/skel-verify2/Projects)
+[nullptr] AstroNvim plugins and treesitter parsers (pinned by lazy-lock.json) -> /srv/skel-verify2/.local/share/nvim
+[nvim-treesitter]: Installed 24/24 languagestreesitter: 24 requested, 23 installed, missing: none
+[nullptr] Workstation files installed.

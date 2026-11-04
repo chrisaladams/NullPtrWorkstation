@@ -1,0 +1,7 @@
+#!/bin/sh
+# live-config hook (live session only): do not leave the well-known live password set.
+# The live user is auto-logged-in on the console and gets passwordless sudo from
+# live-config, as on every Debian live image; with the password locked nobody can
+# log in remotely or on another console with a guessable password.
+. /lib/live/config.sh 2>/dev/null || true
+passwd -l "${LIVE_USERNAME:-nullptr}" >/dev/null 2>&1 || true

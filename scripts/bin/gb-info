@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+row() { printf '  %-22s %s\n' "$1" "$2"; }
+echo "Game Boy toolchain status"
+if [ -x "$GBDK_HOME/bin/lcc" ]; then
+  row "GBDK_HOME" "$GBDK_HOME"
+  row "GBDK version" "$(cat "$GBDK_HOME/share/nullptr-gbdk-version" 2>/dev/null || echo unknown)"
+  row "lcc" "$("$GBDK_HOME/bin/lcc" -v 2>&1 | head -n1)"
+  row "sdcc" "$("$GBDK_HOME/bin/sdcc" --version 2>&1 | head -n1)"
+else
+  row "GBDK" "NOT FOUND at $GBDK_HOME"
+fi
+if nw_have java; then row "Java" "$(java -version 2>&1 | grep -m1 -v '^Picked up')"; else row "Java" "NOT FOUND"; fi
+if [ -f "$EMULICIOUS_HOME/Emulicious.jar" ]; then
+  row "Emulicious" "$EMULICIOUS_HOME/Emulicious.jar"
+  row "Emulicious sha256" "$(cut -c1-16 "$NW_SHARE/emulicious.sha256" 2>/dev/null || echo unrecorded)…"
+else
+  row "Emulicious" "NOT INSTALLED  ->  sudo nullptr-install-emulicious"
+fi
+row "nvim-dap adapter" "emulicious (TCP DAP server, port 58870)"
+if nw_have codium; then row "VSCodium fallback" "$(codium --version 2>/dev/null | head -n1)"; else row "VSCodium fallback" "not installed (optional)"; fi
+active="$(nw_active_get 2>/dev/null || true)"
+row "Active project" "${active:-none}${active:+ ($(nw_type "$active"))}"

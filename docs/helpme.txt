@@ -1,0 +1,67 @@
+nullptr Workstation — beginner guide                           (q to close)
+==========================================================================
+
+  helpme tutorial   10-step first-use tutorial      keys   all shortcuts
+  helpme recovery   what to do if graphics fail
+
+ How the screen is organised
+ --------------------------------------------------------------------------
+  After you log in on the first console, i3 starts and opens ONE fullscreen
+  terminal (kitty) on workspace 1. Inside it runs tmux, a "terminal window
+  manager" with a persistent session called  dev :
+
+     Ctrl+b 1  editor   AstroVim (Neovim) — where you write code
+     Ctrl+b 2  build    a shell for build / run commands
+     Ctrl+b 3  lazygit  Git with a friendly UI
+     Ctrl+b 4  shell    a spare shell
+     Ctrl+b 5  btop     CPU / memory / processes
+
+  tmux keeps running if you close kitty or leave the graphical session.
+  Type  dev  in any terminal to get back to it.  Ctrl+b d  detaches.
+
+  Super+2 shows LibreSprite (art), Super+3 shows the running game,
+  Super+4 is for anything else. Super+1 brings you back to the editor.
+
+ Projects
+ --------------------------------------------------------------------------
+  Your code lives in ~/Projects. Two starters are ready:
+     raylib-hello    a C + raylib desktop game (CMake + Ninja)
+     gameboy-hello   a C Game Boy ROM (GBDK-2020)
+
+  The ACTIVE project is the one build/run/debug use. It changes when you
+     • open a project from the AstroVim dashboard ([P] or 1/2), or Space m p
+     • open/enter a file of another project in AstroVim
+     • run  projects  (picker),  projects use NAME,  code PATH,  new-raylib/new-gameboy
+  The tmux status bar shows the active project (purple, bottom right).
+  If your shell is inside project A while B is active, build refuses and
+  tells you how to choose — it never silently builds the wrong project.
+
+ Commands
+ --------------------------------------------------------------------------
+  dev                 attach the tmux workspace (creates it if needed)
+  projects            choose a project and open it in AstroVim
+  code PATH           open a file or folder in AstroVim
+  build [--release]   compile the active project
+  run-game            build + run (raylib window or ROM in Emulicious)
+  debug-game          build Debug + start the debugger in AstroVim
+  art [FILE]          LibreSprite on workspace 2 (saves into assets/)
+  new-raylib NAME     new raylib project in ~/Projects/NAME
+  new-gameboy NAME    new Game Boy project in ~/Projects/NAME
+  gb-build gb-run gb-debug gb-clean gb-info    Game Boy specific
+  tablet-info  tablet-setup                     drawing tablets
+  nmtui               Wi-Fi and network settings (text UI)
+  keys                shortcut cheat sheet
+
+ Getting unstuck in AstroVim
+ --------------------------------------------------------------------------
+  Press Esc a couple of times, then type :q and Enter to close a window.
+  Lost? Space h goes to the dashboard. Space ? opens the cheat sheet.
+  Typed something wrong? u undoes it.
+
+ System
+ --------------------------------------------------------------------------
+  Updates:   sudo apt update && sudo apt upgrade
+             AstroVim plugins: Space p a  (needs internet)
+  Wi-Fi:     nmtui → "Activate a connection"
+  Volume:    the laptop's volume keys, or  pulsemixer  in a terminal
+  Lock:      Super+L      Suspend: close the lid

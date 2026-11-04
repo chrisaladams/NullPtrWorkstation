@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# Lock the screen (Super+L). Unlock needs your login password (PAM).
+if grep -qw 'boot=live' /proc/cmdline 2>/dev/null; then
+  notify() { command -v notify-send >/dev/null && notify-send "$@" || i3-nagbar -t warning -m "$*" >/dev/null 2>&1 & }
+  notify "Live session: no password is set, so the screen is not locked. Install the system to use Super+L."
+  exit 0
+fi
+exec i3lock --nofork --ignore-empty-password --show-failed-attempts --color=1a1b26

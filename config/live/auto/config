@@ -1,0 +1,40 @@
+#!/bin/sh
+# live-build configuration for nullptr Workstation (Debian 13 "trixie", amd64).
+# Called by `lb config` (see build-iso.sh). Mirrors can be overridden with
+# NULLPTR_MIRROR / NULLPTR_SECURITY_MIRROR.
+set -e
+MIRROR="${NULLPTR_MIRROR:-http://deb.debian.org/debian/}"
+SECURITY="${NULLPTR_SECURITY_MIRROR:-http://security.debian.org/debian-security/}"
+
+lb config noauto \
+  --mode debian \
+  --distribution trixie \
+  --architectures amd64 \
+  --archive-areas "main contrib non-free non-free-firmware" \
+  --parent-archive-areas "main contrib non-free non-free-firmware" \
+  --mirror-bootstrap "$MIRROR" \
+  --mirror-chroot "$MIRROR" \
+  --mirror-binary "$MIRROR" \
+  --parent-mirror-bootstrap "$MIRROR" \
+  --parent-mirror-chroot "$MIRROR" \
+  --parent-mirror-binary "$MIRROR" \
+  --mirror-chroot-security "$SECURITY" \
+  --mirror-binary-security "$SECURITY" \
+  --security true \
+  --updates true \
+  --linux-flavours amd64 \
+  --apt-recommends false \
+  --binary-images iso-hybrid \
+  --debian-installer live \
+  --debian-installer-gui true \
+  --debian-installer-distribution trixie \
+  --firmware-binary true \
+  --firmware-chroot false \
+  --iso-application "nullptr Workstation" \
+  --iso-publisher "nullptr Workstation build" \
+  --iso-volume "NULLPTR_WS" \
+  --image-name nullptr-workstation \
+  --bootappend-live "boot=live components quiet username=nullptr hostname=nullptr locales=en_US.UTF-8 keyboard-layouts=us" \
+  --cache true \
+  --cache-packages true \
+  "${@}"

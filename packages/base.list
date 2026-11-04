@@ -1,0 +1,56 @@
+# Base system (Debian 13 "trixie" package names). One package per line; '#' comments.
+systemd-sysv
+libpam-systemd
+dbus-user-session
+polkitd
+sudo
+locales
+console-setup
+keyboard-configuration
+bash-completion
+man-db
+manpages
+less
+nano
+curl
+wget
+ca-certificates
+gnupg
+unzip
+zip
+xz-utils
+file
+tree
+usbutils
+pciutils
+lsof
+psmisc
+openssh-client
+rsync
+ripgrep
+fd-find
+fzf
+jq
+btop
+pulsemixer
+# networking: NetworkManager + nmtui (in network-manager)
+network-manager
+wpasupplicant
+iw
+rfkill
+# laptop: ONE power manager (TLP); no power-profiles-daemon
+tlp
+brightnessctl
+acpi
+# audio: PipeWire
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+alsa-utils
+# firmware for ThinkPad X1 Carbon Gen 6 (Intel 8265 Wi-Fi, Kaby Lake GPU/audio)
+firmware-linux-free
+firmware-misc-nonfree
+firmware-iwlwifi
+firmware-sof-signed
+intel-microcode

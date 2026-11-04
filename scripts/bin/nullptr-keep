@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# nullptr-keep CMD... — run CMD; when it exits, offer to restart instead of closing the tmux window.
+[ $# -gt 0 ] || { echo "Usage: nullptr-keep CMD [ARGS...]"; exit 64; }
+while true; do
+  if [ "$1" = lazygit ]; then
+    # follow the active project; lazygit needs a git repository
+    p="$(nw_active_get 2>/dev/null || true)"
+    if [ -n "$p" ] && git -C "$p" rev-parse --git-dir >/dev/null 2>&1; then cd "$p"
+    else
+      echo "lazygit: the active project (${p:-none}) is not a git repository."
+      echo "Select a project with 'projects', or run 'git init' in it."
+    fi
+  fi
+  "$@" || true
+  printf '\n%s%s exited.%s [Enter] restart   [s] shell\n' "$NW_C_BOLD" "$1" "$NW_C_OFF"
+  IFS= read -r -n1 ans || exit 0
+  case "$ans" in s|S) echo; "${SHELL:-/bin/bash}" -l || true ;; esac
+done

@@ -1,0 +1,32 @@
+# clangd only *reads* this project (completion, go-to-definition, diagnostics).
+# The ROM itself is always compiled by GBDK's lcc/SDCC — see Makefile.
+# GBDK headers use SDCC-only keywords; they are defined away here so clang can parse them.
+CompileFlags:
+  Add:
+    - --target=i386-unknown-none
+    - -std=c11
+    - -ffreestanding
+    - -nostdinc
+    - -isystem/opt/gbdk/include
+    - -D__PORT_sm83
+    - -D__TARGET_gb
+    - -DGAMEBOY
+    - -D__SDCC=1
+    - -D__SDCC_sm83=1
+    - -D__nonbanked=
+    - -D__banked=
+    - -D__critical=
+    - -D__interrupt=
+    - -D__naked=
+    - -D__reentrant=
+    - -D__sfr=volatile unsigned char
+    - -D__at(x)=
+    - -D__sdcccall(x)=
+    - -D__preserves_regs(...)=
+    - -D__z88dk_fastcall=
+    - -D__z88dk_callee=
+    - -Wno-unknown-attributes
+  Compiler: clang
+Diagnostics:
+  ClangTidy:
+    Remove: ["*"]

@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# Identify drawing tablets: USB IDs, kernel input devices, X11 devices, driver in use.
+section() { printf '\n%s%s%s\n' "$NW_C_BOLD" "$1" "$NW_C_OFF"; }
+section "USB devices from common tablet vendors (Wacom 056a, Huion/Gaomon 256c, XP-Pen/UGEE 28bd, Veikk 2feb)"
+if nw_have lsusb; then
+  lsusb | grep -Ei 'ID (056a|256c|28bd|2feb|5543|172f|0b57):|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' || echo "  none found"
+else echo "  lsusb not installed"; fi
+
+section "Kernel input devices marked as tablets (udev ID_INPUT_TABLET)"
+found=0
+for ev in /dev/input/event*; do
+  [ -e "$ev" ] || continue
+  props="$(udevadm info --query=property --name="$ev" 2>/dev/null || true)"
+  if printf '%s\n' "$props" | grep -q '^ID_INPUT_TABLET=1'; then
+    found=1
+    name="$(cat "/sys/class/input/$(basename "$ev")/device/name" 2>/dev/null || echo '?')"
+    pad=""; printf '%s\n' "$props" | grep -q '^ID_INPUT_TABLET_PAD=1' && pad=" (pad/buttons)"
+    printf '  %-20s %s%s\n' "$ev" "$name" "$pad"
+  fi
+done
+[ "$found" = 1 ] || echo "  none found (is the tablet plugged in? some cheap tablets need a vendor kernel driver)"
+
+if nw_in_graphical && nw_have xinput; then
+  section "X11 input devices that look like a stylus / pen / pad"
+  xinput list --short 2>/dev/null | grep -Ei 'stylus|pen|eraser|pad|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' || echo "  none"
+  section "Driver per device"
+  xinput list --id-only 2>/dev/null | while read -r id; do
+    n="$(xinput list --name-only "$id" 2>/dev/null)"
+    printf '%s\n' "$n" | grep -Eiq 'stylus|pen|eraser|pad|tablet|wacom|huion|xp-pen|ugee|gaomon|veikk' || continue
+    if xinput list-props "$id" 2>/dev/null | grep -q 'Wacom'; then drv="xf86-input-wacom (pressure, buttons via xsetwacom)"
+    elif xinput list-props "$id" 2>/dev/null | grep -q 'libinput'; then drv="libinput"
+    else drv="other"; fi
+    printf '  [%s] %-40s %s\n' "$id" "$n" "$drv"
+  done
+  if nw_have xsetwacom; then
+    section "xsetwacom devices"; xsetwacom --list devices 2>/dev/null || true
+  fi
+  section "Monitors (for mapping the tablet area)"
+  xrandr --listactivemonitors 2>/dev/null | tail -n +2 || true
+else
+  section "X11"; echo "  Not in a graphical session — X11 device details skipped."
+fi
+
+if nw_have libwacom-list-local-devices; then
+  section "libwacom database match"
+  libwacom-list-local-devices 2>/dev/null | grep -E '^(name|model-name|deviceid|styli|integrated-in)' || echo "  no libwacom entry (device may still work generically)"
+fi
+
+cat <<'N'
+
+Notes
+  • Pressure: reported by the kernel/X driver if the hardware supports it. LibreSprite 1.2
+    uses SDL2, which does not pass stylus pressure to applications on X11 — expect
+    pressure to be ignored in LibreSprite even if `xinput test-xi2` shows it.
+  • Configure: tablet-setup   (maps the tablet to one monitor; saves settings)
+N

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# tmux window 1: AstroVim. When you quit AstroVim the window stays open.
+cd "$(nw_active_get 2>/dev/null || echo "$NW_PROJECTS_DIR")" 2>/dev/null || cd "$HOME"
+while true; do
+  rm -f "$NW_NVIM_SOCKET" 2>/dev/null || true
+  nvim --listen "$NW_NVIM_SOCKET" || true
+  printf '\n%sAstroVim closed.%s  [Enter] reopen AstroVim   [s] shell here   (Ctrl+b 2..5 = other windows)\n' "$NW_C_BOLD" "$NW_C_OFF"
+  IFS= read -r -n1 ans || exit 0
+  case "$ans" in
+    s|S) echo; echo "Type 'exit' to return to AstroVim."; "${SHELL:-/bin/bash}" -l || true ;;
+  esac
+done

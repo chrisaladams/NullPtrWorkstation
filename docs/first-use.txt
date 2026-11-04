@@ -1,0 +1,52 @@
+nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
+==========================================================================
+
+ 1. Open a project
+    In AstroVim's dashboard press  1  (raylib-hello).
+    The file explorer opens on the left and src/main.c on the right.
+
+ 2. Browse and edit files
+    Space e        toggles the explorer. Move with the arrow keys, Enter opens.
+    Space f f      type "main" and press Enter to jump to a file by name.
+    In main.c, move the cursor to the text "Hello, raylib!".
+    Press  i  (Insert mode), change the text, press  Esc .
+
+ 3. Save
+    Type  :w  and press Enter.  (Or Space w.)
+
+ 4. Build
+    Space m b   — a terminal opens at the bottom and CMake/Ninja compile.
+    Errors? Space x x lists them; Enter jumps to the line.
+    Close the build output with  q  (in that window) or Ctrl+w o.
+
+ 5. Run
+    Space m r   — the game opens on workspace 3. Esc closes it and you are
+    back in AstroVim (Super+1 also takes you back).
+
+ 6. Debug
+    Put the cursor on the line  frameCount++;  and press F9 (red dot).
+    Press F5 (or Space m d). The game starts; when it reaches the line,
+    AstroVim comes back with the debugger panels:
+      Locals shows frameCount, the stack shows where you are.
+    F10 = next line, F11 = step into, F5 = continue, Shift+F5 = stop.
+
+ 7. Switch to a terminal
+    Ctrl+b 2   → the build terminal. Try:  build   then   run-game
+    Ctrl+b 1   → back to AstroVim.
+
+ 8. Open LibreSprite
+    Super+A (or type  art ). LibreSprite opens on workspace 2, started in the
+    active project's assets/ folder. Draw a sprite, File ▸ Save As…, and save
+    it as ~/Projects/raylib-hello/assets/player.png.
+
+ 9. Return to AstroVim
+    Super+1.  The new file appears in the explorer under assets/.
+
+10. Switch between raylib and Game Boy
+    Space m p  → choose gameboy-hello.  (Or Space h, then 2.)
+    The tmux status bar now shows "gameboy-hello".
+    Space m b builds the ROM, Space m r runs it in Emulicious,
+    F9 on  keys = joypad();  then F5 debugs the C code in Emulicious.
+    Space m p → raylib-hello switches back.
+
+ Next steps: keys (all shortcuts) · helpme · docs in /usr/local/share/nullptr/docs

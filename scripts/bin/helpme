@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+f="$NW_SHARE/docs/helpme.txt"
+[ -f "$f" ] || f="$_d/../../docs/helpme.txt"
+case "${1:-}" in
+  tutorial) f="${f%/*}/first-use.txt"; [ -f "$f" ] || f="$_d/../../docs/first-use.txt" ;;
+  recovery) f="${f%/*}/recovery.txt"; [ -f "$f" ] || f="$_d/../../docs/recovery.txt" ;;
+esac
+if [ -t 1 ]; then exec less -R -- "$f"; else cat -- "$f"; fi
