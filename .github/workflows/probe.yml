@@ -1,0 +1,19 @@
+name: probe-runner
+on:
+  workflow_dispatch:
+  push:
+    branches: [ci-probe]
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Runner capabilities
+        run: |
+          nproc; free -g; df -h / /mnt
+          ls -la /dev/kvm || echo "NO /dev/kvm"
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm || true
+          ls -la /dev/kvm || true
+          docker run --rm --privileged debian:trixie sh -c 'apt-get update -qq && echo DEBIAN_MIRROR_OK'
+          curl -sSI -L --max-time 30 https://emulicious.net/Emulicious.zip | head -5
