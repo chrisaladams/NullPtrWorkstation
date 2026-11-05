@@ -21,12 +21,14 @@ return {
       for i, root in ipairs(list) do
         if i > 9 then break end
         local m = require("nullptr.project").meta(root)
-        table.insert(items, item(tostring(i), m.type == "gameboy" and "󰊴 " or "󰺵 ",
-          ("%-18s %s"):format(m.name, m.type == "gameboy" and "Game Boy" or "raylib"),
+        local icon = ({ gameboy = "󰊴 ", raylib = "󰺵 " })[m.type] or "󰙱 "
+        local label = ({ gameboy = "Game Boy", raylib = "raylib", generic = "C" })[m.type] or (m.type or "?")
+        table.insert(items, item(tostring(i), icon,
+          ("%-18s %s"):format(m.name, label),
           function() require("nullptr.project").open(root) end))
       end
       if #items == 0 then
-        items = { { text = { { "  (none yet — press n for a new file or run new-raylib NAME)", hl = "Comment" } } } }
+        items = { { text = { { "  (none yet — Space m n, or new-c / new-raylib / new-gameboy NAME)", hl = "Comment" } } } }
       end
       return items
     end

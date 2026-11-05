@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# new-gameboy NAME — create ~/Projects/NAME from the gameboy template (never overwrites)
+# new-gameboy NAME [--no-git] — create ~/Projects/NAME from the gameboy template (never overwrites)
 set -euo pipefail
-case "${1:-}" in ''|-h|--help) echo "Usage: new-gameboy NAME   Create ~/Projects/NAME from the gameboy template"; [ -n "${1:-}" ]; exit $? ;; esac
+case "${1:-}" in ''|-h|--help) echo "Usage: new-gameboy NAME [--no-git]   Create ~/Projects/NAME from the gameboy template"; [ -n "${1:-}" ]; exit $? ;; esac
 exec nullptr-new gameboy "$@"

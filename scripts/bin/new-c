@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# new-c NAME [--no-git] — create ~/Projects/NAME: a plain C project (CMake + Ninja, no libraries)
+set -euo pipefail
+case "${1:-}" in ''|-h|--help)
+  echo "Usage: new-c NAME [--no-git]   Plain C project in ~/Projects/NAME (your own CMakeLists.txt, no libraries)"
+  [ -n "${1:-}" ]; exit $? ;; esac
+exec nullptr-new generic "$@"

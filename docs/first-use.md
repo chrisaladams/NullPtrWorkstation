@@ -107,9 +107,13 @@ nullptr Workstation — beginner guide                           (q to close)
   run-game            build + run (raylib window or ROM in Emulicious)
   debug-game          build Debug + start the debugger in AstroVim
   art [FILE]          LibreSprite on workspace 2 (saves into assets/)
+  new-c NAME          new plain C project (CMake, no libraries) in ~/Projects/NAME
   new-raylib NAME     new raylib project in ~/Projects/NAME
   new-gameboy NAME    new Game Boy project in ~/Projects/NAME
+  projects adopt      make the current folder a project (writes .nullptr-project)
+  build --clean       remove build output
   gb-build gb-run gb-debug gb-clean gb-info    Game Boy specific
+  (all new-* commands accept --no-git; details: docs/c-projects.md)
   tablet-info  tablet-setup                     drawing tablets
   nmtui               Wi-Fi and network settings (text UI)
   keys                shortcut cheat sheet

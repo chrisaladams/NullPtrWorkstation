@@ -1,0 +1,9 @@
+type=generic
+target=__NAME__
+# Optional — what `build`, `run-game`, `debug-game` and Space m … do for this project.
+# Without these lines: CMakeLists.txt -> cmake + ninja, Makefile -> make.
+#build=make CONFIG=$CONFIG         (CONFIG is debug or release)
+#run=./build/debug/__NAME__ --some-flag
+#artifact=build/debug/__NAME__     (the program the debugger starts)
+#clean=rm -rf build
+#window=yes                        (opens a window: run it on workspace 3)

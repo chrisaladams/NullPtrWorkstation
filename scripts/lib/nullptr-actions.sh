@@ -4,35 +4,60 @@
 
 nw_cmake_build_type() { case "$1" in release) echo Release ;; *) echo Debug ;; esac; }
 
+# generic projects: how they are built, from .nullptr-project (build=) or the files present
+nw_generic_kind() {
+  local root="$1"
+  if [ -n "$(nw_meta "$root" build)" ]; then echo custom
+  elif [ -f "$root/CMakeLists.txt" ]; then echo cmake
+  elif [ -f "$root/Makefile" ] || [ -f "$root/makefile" ]; then echo make
+  else echo none; fi
+}
+
 nw_artifact() {
   # nw_artifact ROOT CONFIG
-  local root="$1" cfg="$2" t
+  local root="$1" cfg="$2" t a
   t="$(nw_target "$root")"
   case "$(nw_type "$root")" in
     raylib)  printf '%s\n' "$root/build/$cfg/$t" ;;
     gameboy) printf '%s\n' "$root/build/$cfg/$t.gb" ;;
+    generic)
+      a="$(nw_meta "$root" artifact)"
+      if [ -n "$a" ]; then case "$a" in /*) printf '%s\n' "$a" ;; *) printf '%s\n' "$root/$a" ;; esac
+      elif [ "$(nw_generic_kind "$root")" = cmake ]; then printf '%s\n' "$root/build/$cfg/$t"
+      else printf '%s\n' "$root/$t"; fi ;;
     *) nw_die "Unknown project type in $root/.nullptr-project" ;;
   esac
 }
 
+nw_cmake_build() {
+  # nw_cmake_build ROOT CONFIG — configure once (Ninja), then build build/CONFIG
+  local root="$1" cfg="$2" bdir="$1/build/$2"
+  nw_have cmake || nw_die "cmake is not installed."
+  if [ ! -f "$bdir/build.ninja" ]; then
+    cmake -S "$root" -B "$bdir" -G Ninja \
+      -DCMAKE_BUILD_TYPE="$(nw_cmake_build_type "$cfg")" \
+      -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+  fi
+  cmake --build "$bdir"
+  # clangd reads compile_commands.json from the project root
+  if [ "$cfg" = debug ] && [ -f "$bdir/compile_commands.json" ]; then
+    ln -sfn "build/debug/compile_commands.json" "$root/compile_commands.json"
+  fi
+}
+
 nw_do_build() {
   # nw_do_build ROOT CONFIG
-  local root="$1" cfg="$2" bdir
+  local root="$1" cfg="$2"
   case "$(nw_type "$root")" in
-    raylib)
-      nw_have cmake || nw_die "cmake is not installed."
-      bdir="$root/build/$cfg"
-      if [ ! -f "$bdir/build.ninja" ]; then
-        cmake -S "$root" -B "$bdir" -G Ninja \
-          -DCMAKE_BUILD_TYPE="$(nw_cmake_build_type "$cfg")" \
-          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-      fi
-      cmake --build "$bdir"
-      # clangd reads compile_commands.json from the project root
-      if [ "$cfg" = debug ] && [ -f "$bdir/compile_commands.json" ]; then
-        ln -sfn "build/debug/compile_commands.json" "$root/compile_commands.json"
-      fi
-      ;;
+    raylib) nw_cmake_build "$root" "$cfg" ;;
+    generic)
+      case "$(nw_generic_kind "$root")" in
+        custom) nw_info "build= from .nullptr-project: $(nw_meta "$root" build)"
+                (cd "$root" && CONFIG="$cfg" sh -c "$(nw_meta "$root" build)") ;;
+        cmake)  nw_cmake_build "$root" "$cfg" ;;
+        make)   make -C "$root" CONFIG="$cfg" ;;
+        none)   nw_die "Nothing to build in $root: add a CMakeLists.txt or Makefile, or a build= line to .nullptr-project." ;;
+      esac ;;
     gameboy)
       [ -x "$GBDK_HOME/bin/lcc" ] || nw_die "GBDK not found at $GBDK_HOME (see: gb-info)."
       make -C "$root" CONFIG="$cfg" GBDK_HOME="$GBDK_HOME"
@@ -47,6 +72,13 @@ nw_do_clean() {
   case "$(nw_type "$root")" in
     raylib)  rm -rf -- "$root/build"; rm -f -- "$root/compile_commands.json" ;;
     gameboy) make -C "$root" clean GBDK_HOME="$GBDK_HOME" ;;
+    generic)
+      if [ -n "$(nw_meta "$root" clean)" ]; then (cd "$root" && sh -c "$(nw_meta "$root" clean)")
+      else case "$(nw_generic_kind "$root")" in
+        cmake) rm -rf -- "$root/build"; rm -f -- "$root/compile_commands.json" ;;
+        make)  make -C "$root" clean ;;
+        *)     nw_warn "No clean= line and no CMake/Make build: nothing removed." ;;
+      esac; fi ;;
   esac
   nw_ok "Cleaned $(basename "$root")"
 }
@@ -65,6 +97,22 @@ nw_do_run() {
   local root="$1" cfg="$2" art
   nw_do_build "$root" "$cfg"
   art="$(nw_artifact "$root" "$cfg")"
+  case "$(nw_type "$root")" in
+    generic)
+      # a normal program: runs in this terminal. window=yes in .nullptr-project shows
+      # workspace 3 first (windowed programs must be visible to start, e.g. GLFW/SDL)
+      [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace 3
+      if [ -n "$(nw_meta "$root" run)" ]; then
+        nw_info "run= from .nullptr-project: $(nw_meta "$root" run)"
+        (cd "$root" && CONFIG="$cfg" sh -c "$(nw_meta "$root" run)")
+      else
+        [ -x "$art" ] || nw_die "No program at $art (set artifact= or run= in .nullptr-project)."
+        nw_info "Running $art"
+        (cd "$root" && "$art")
+      fi
+      [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace 1
+      return 0 ;;
+  esac
   nw_in_graphical || nw_die "Running a game needs the graphical session (DISPLAY is not set)."
   case "$(nw_type "$root")" in
     raylib)
@@ -98,7 +146,7 @@ nw_do_debug() {
       exec nvim -c "lua require('nullptr.project').debug($(nw_lua_str "$root"))" "$root/src/main.c"
       ;;
     gdb)
-      [ "$(nw_type "$root")" = raylib ] || nw_die "--gdb only applies to raylib/native projects."
+      case "$(nw_type "$root")" in raylib|generic) ;; *) nw_die "--gdb only applies to native (raylib/generic) projects." ;; esac
       nw_do_build "$root" debug
       art="$(nw_artifact "$root" debug)"
       cd "$root" && exec gdb -q -tui -ex "break main" -ex run "$art"

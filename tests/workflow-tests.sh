@@ -36,6 +36,25 @@ check "gb-clean removes build/"           sh -c "gb-clean nwtest-kingdom-gb && t
 if gb-build nwtest-pirates >/dev/null 2>&1; then bad "gb-build rejects raylib project"; else ok "gb-build rejects raylib project"; fi
 check "new projects are git repositories" git -C "$P/nwtest-kingdom-gb" rev-parse --git-dir
 
+# ---------------------------------------------------------------- generic (plain C) projects
+check "new-c creates a plain C project"          new-c nwtest-tool --no-git
+check "--no-git skips git init"                  sh -c "! test -e '$P/nwtest-tool/.git'"
+check "new-c project has its own CMakeLists"     grep -q 'add_executable' "$P/nwtest-tool/CMakeLists.txt"
+check "generic project builds (CMake)"           build nwtest-tool
+check "run-game runs a generic program in the terminal" sh -c "run-game nwtest-tool 2>&1 | grep -q 'Hello from nwtest-tool!'"
+check "build --clean removes build output"       sh -c "build --clean nwtest-tool && test ! -d '$P/nwtest-tool/build'"
+mkdir -p "$P/nwtest-mk"
+printf 'all:\n\tcc -g -o hello hello.c\nclean:\n\trm -f hello\n' >"$P/nwtest-mk/Makefile"
+printf '#include <stdio.h>\nint main(void){puts("make ok");return 0;}\n' >"$P/nwtest-mk/hello.c"
+check "projects adopt marks an existing folder"  projects adopt "$P/nwtest-mk"
+check "adopted plain folder is generic"          grep -qx 'type=generic' "$P/nwtest-mk/.nullptr-project"
+if projects adopt "$P/nwtest-mk" >/dev/null 2>&1; then bad "adopt refuses an existing project"; else ok "adopt refuses an existing project"; fi
+echo 'artifact=hello' >>"$P/nwtest-mk/.nullptr-project"
+check "generic Makefile project builds and runs" sh -c "run-game nwtest-mk 2>&1 | grep -q 'make ok'"
+echo 'run=echo custom-run-$CONFIG' >>"$P/nwtest-mk/.nullptr-project"
+check "run= line in .nullptr-project is used"     sh -c "run-game nwtest-mk 2>&1 | grep -q custom-run-debug"
+check "generic project listed by projects"       sh -c "projects list | grep -q 'nwtest-mk  *generic'"
+
 # ---------------------------------------------------------------- project selection
 cd "$HOME" || exit 1
 check "projects use raylib-hello"         projects use raylib-hello

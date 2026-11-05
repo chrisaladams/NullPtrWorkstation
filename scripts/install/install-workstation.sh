@@ -31,8 +31,9 @@ install -m755 "$REPO"/scripts/sbin/* "$PREFIX/sbin/"
 install -m644 "$REPO/versions.lock" "$SHARE/versions.lock"
 
 log "Project templates -> $SHARE/templates"
-rm -rf "$SHARE/templates/raylib" "$SHARE/templates/gameboy"
-cp -a "$REPO/templates/raylib" "$REPO/templates/gameboy" "$SHARE/templates/"
+for t in "$REPO"/templates/*/; do
+  t="$(basename "$t")"; rm -rf "${SHARE:?}/templates/$t"; cp -a "$REPO/templates/$t" "$SHARE/templates/"
+done
 chmod -R a+rX "$SHARE/templates"
 
 log "Docs -> $SHARE/docs"

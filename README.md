@@ -130,7 +130,7 @@ scripts/bin/              user commands: dev projects code build run-game debug-
 scripts/lib/              shared shell library (project detection, build/run/debug)
 scripts/sbin/             nullptr-install-emulicious
 scripts/install/          install-upstream.sh, install-workstation.sh, nvim-ts-install.lua
-templates/raylib|gameboy  project templates (new-raylib / new-gameboy)
+templates/generic|raylib|gameboy  project templates (new-c / new-raylib / new-gameboy)
 installer/preseed.cfg     debian-installer preseed (username only)
 docs/                     guides (below)
 tests/                    test report, workflow suite, DAP tests, QEMU scripts, screenshots
@@ -144,6 +144,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 | [first-use.md](docs/first-use.md) | 10-step tutorial and the beginner guide (`helpme`) |
 | [keyboard-cheatsheet.md](docs/keyboard-cheatsheet.md) | AstroVim / tmux / i3 shortcuts (`keys`) |
 | [tmux.md](docs/tmux.md) | windows, panes, detach/attach for beginners |
+| [c-projects.md](docs/c-projects.md) | plain C projects, `projects adopt`, custom build/run commands, doing it by hand |
 | [raylib-guide.md](docs/raylib-guide.md) | C/raylib build and GDB debugging |
 | [gameboy-debugging.md](docs/gameboy-debugging.md) | GBDK build, Emulicious, C source debugging and its test status |
 | [drawing-tablet.md](docs/drawing-tablet.md) | tablets, `tablet-info`, `tablet-setup`, limitations |
@@ -154,7 +155,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 ## Commands
 
 `dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `art` ·
-`new-raylib NAME` · `new-gameboy NAME` · `gb-build` · `gb-run` · `gb-debug` · `gb-clean` ·
+`new-c NAME` · `new-raylib NAME` · `new-gameboy NAME` · `projects adopt` · `gb-build` · `gb-run` · `gb-debug` · `gb-clean` ·
 `gb-info` · `tablet-info` · `tablet-setup` · `keys` · `helpme`
 
 They are real scripts in `/usr/local/bin`, not aliases. Every command that acts on a project

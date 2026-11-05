@@ -11,6 +11,8 @@ Usage: projects                 Pick a project interactively and open it in Astr
        projects list            List projects (* = active)
        projects use NAME|PATH   Make a project active without opening it
        projects current         Print the active project path
+       projects adopt [DIR] [--type raylib|gameboy|generic]
+                                Make an existing folder a project (writes only .nullptr-project)
 U
 }
 list_projects() {
@@ -43,6 +45,24 @@ case "${1:-}" in
       printf ' %s %-24s %-8s %s\n' "$mark" "$(basename "$p")" "$(nw_type "$p")" "$p"
     done ;;
   current) nw_active_get || { nw_warn "No active project."; exit 1; } ;;
+  adopt)
+    shift; dir="."; type=""
+    while [ $# -gt 0 ]; do
+      case "$1" in --type) type="${2:-}"; shift ;; --type=*) type="${1#--type=}" ;; *) dir="$1" ;; esac; shift
+    done
+    [ -d "$dir" ] || { [ -d "$NW_PROJECTS_DIR/$dir" ] && dir="$NW_PROJECTS_DIR/$dir"; } || true
+    [ -d "$dir" ] || nw_die "No such folder: $dir"
+    dir="$(nw_abspath "$dir")"
+    [ -e "$dir/.nullptr-project" ] && nw_die "$dir is already a project (.nullptr-project exists) — nothing changed."
+    if [ -z "$type" ]; then
+      if grep -qsi raylib "$dir/CMakeLists.txt"; then type=raylib
+      elif grep -qsE 'lcc|GBDK' "$dir/Makefile" "$dir/makefile"; then type=gameboy
+      else type=generic; fi
+    fi
+    case "$type" in raylib|gameboy|generic) ;; *) nw_die "--type must be raylib, gameboy or generic" ;; esac
+    printf 'type=%s\ntarget=%s\n' "$type" "$(basename "$dir")" >"$dir/.nullptr-project"
+    nw_ok "$(basename "$dir") is now a $type project (wrote $dir/.nullptr-project — edit it any time)"
+    nw_active_set "$dir" ;;
   use)
     [ -n "${2:-}" ] || { usage >&2; exit 64; }
     if [ -d "$2" ]; then r="$(nw_find_root "$2")"; else r="$(nw_find_root "$NW_PROJECTS_DIR/$2")"; fi || nw_die "No such project: $2"

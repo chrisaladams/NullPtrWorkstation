@@ -9,19 +9,21 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 NW_CMD=build   # shown by nw_resolve_project in its "refusing to guess" hint
 export NW_CMD
 usage() { cat <<'U'
-Usage: build [--release] [PROJECT]
+Usage: build [--release|--clean] [PROJECT]
 Compile the active project (or PROJECT: a name in ~/Projects or a path).
   --debug     Debug build (default): symbols, no optimisation
   --release   Optimised build
+  --clean     Remove build output instead
 U
 }
-cfg=debug; proj=""
+cfg=debug; proj=""; clean=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --release|-r) cfg=release ;; --debug|-d) cfg=debug ;;
+    --release|-r) cfg=release ;; --debug|-d) cfg=debug ;; --clean) clean=1 ;;
     -h|--help) usage; exit 0 ;; -*) usage >&2; exit 64 ;; *) proj="$1" ;;
   esac; shift
 done
 root="$(nw_resolve_project "$proj")"
+if [ "$clean" = 1 ]; then nw_banner "Cleaning" "$root"; nw_do_clean "$root"; exit 0; fi
 nw_banner "Building ($cfg)" "$root"
 nw_do_build "$root" "$cfg"

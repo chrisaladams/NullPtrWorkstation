@@ -99,7 +99,8 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
  Terminal commands
  --------------------------------------------------------------------------
   dev   projects   code PATH   build   run-game   debug-game   art
-  new-raylib NAME   new-gameboy NAME   gb-build   gb-run   gb-debug
+  new-c NAME   new-raylib NAME   new-gameboy NAME   projects adopt   build --clean
+  gb-build   gb-run   gb-debug
   gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme
   nmtui (Wi-Fi)   btop (monitor)   helpme tutorial   helpme recovery
 ```

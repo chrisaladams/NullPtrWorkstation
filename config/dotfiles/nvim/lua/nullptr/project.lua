@@ -168,7 +168,7 @@ end
 
 local function pick_from(list, prompt)
   if #list == 0 then
-    notify("No projects yet. Create one: Space m n, or in a terminal: new-raylib NAME", vim.log.levels.WARN)
+    notify("No projects yet. Create one: Space m n, or in a terminal: new-c / new-raylib / new-gameboy NAME", vim.log.levels.WARN)
     return
   end
   local active = M.active()
@@ -249,11 +249,7 @@ end
 function M.clean()
   local root = require_project()
   if not root then return end
-  if M.meta(root).type == "gameboy" then
-    M.term { "gb-clean", root }
-  else
-    M.term { "sh", "-c", 'rm -rf -- "$1/build" "$1/compile_commands.json" && echo "Cleaned $1"', "clean", root }
-  end
+  M.term { "build", "--clean", root }
 end
 
 -- ---------------------------------------------------------------- i3 workspaces
@@ -306,6 +302,25 @@ function M.dap_config(root)
       stopAtBeginningOfMainSubprogram = false,
       nullptr_game = true,
     }
+  elseif m.type == "generic" then
+    -- same program the shell's `run-game`/`debug-game` use (see artifact= in .nullptr-project)
+    local program
+    if m.artifact and m.artifact ~= "" then
+      program = m.artifact:sub(1, 1) == "/" and m.artifact or (root .. "/" .. m.artifact)
+    elseif vim.uv.fs_stat(root .. "/CMakeLists.txt") then
+      program = root .. "/build/debug/" .. m.target
+    else
+      program = root .. "/" .. m.target
+    end
+    return {
+      name = "Debug " .. m.name .. " (GDB)",
+      type = "gdb",
+      request = "launch",
+      program = program,
+      cwd = root,
+      stopAtBeginningOfMainSubprogram = false,
+      nullptr_game = m.window == "yes", -- only windowed programs get the game workspace
+    }
   elseif m.type == "gameboy" then
     return {
       name = "Debug " .. m.name .. " ROM (Emulicious)",
@@ -341,8 +356,10 @@ end
 
 -- ---------------------------------------------------------------- new project
 function M.new()
-  vim.ui.select({ "raylib", "gameboy" }, { prompt = "New project type" }, function(kind)
-    if not kind then return end
+  local kinds = { "generic (plain C, CMake)", "raylib", "gameboy" }
+  vim.ui.select(kinds, { prompt = "New project type" }, function(choice)
+    if not choice then return end
+    local kind = choice:match "^(%S+)"
     vim.ui.input({ prompt = "Project name (letters, digits, - _): " }, function(name)
       if not name or name == "" then return end
       local res = vim.system({ "nullptr-new", kind, name }, { text = true }):wait()
