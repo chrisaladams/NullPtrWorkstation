@@ -61,25 +61,29 @@ Breakpoints must be on executable C lines, not on declarations, comments or blan
 | `gb-debug --emulicious` | Emulicious's own debugger window (*Tools ▸ Debugger*). It shows C source when the `.cdb` is next to the ROM |
 | `gb-debug --vscodium` | VSCodium with the Emulicious Debugger extension. The project's `.vscode/launch.json` holds *Debug ROM in Emulicious*, so press F5 |
 
-## Test status: read this
+## Test status
 
-**The Emulicious path could not be executed in the environment this image was developed
-in.** `emulicious.net` was blocked by the build sandbox's network policy (HTTP 403), so no
-Emulicious binary was available. What *was* verified:
+**Verified on a fresh installation of the ISO** (UEFI virtual machine, automated, see
+[tests/REPORT.md](../tests/REPORT.md)):
 
-- GBDK 4.5.0 builds both Debug and Release ROMs, and the `.cdb` contains C line records (automated test).
-- The ROM boots and runs (*Hello, Game Boy!*, A-button counter) in a different emulator (mGBA).
-- The adapter design was checked against the Emulicious Debugger extension's source
-  (v1.3.0, `src/extension.ts`): it spawns `java -jar Emulicious.jar -remotedebug <port>` and
-  returns `DebugAdapterServer(port)`. That is a plain DAP-over-TCP server, which nvim-dap
-  supports natively as `type = "server"`.
+- `gb-build` makes Debug and Release ROMs, and the `.cdb` holds C line records.
+- `gb-run` opens the ROM in Emulicious.
+- **C source debugging through AstroVim's nvim-dap** with the Emulicious adapter: a breakpoint
+  on `keys = joypad();` is verified and hit, `keys` is shown (`unsigned char`, Locals), step
+  goes to the next C line, and continue stops at the breakpoint again on the next frame. The
+  same passes with a raw DAP client.
 
-On the installed machine, run the automated check (it builds, starts Emulicious's DAP server,
-sets a breakpoint on `keys = joypad();`, verifies the stop line, reads `keys`, steps and
-continues):
+Two things learned while testing:
+
+- On first start Emulicious shows a modal **"Update Behaviour"** dialog that blocks everything,
+  including the debug adapter. The workstation ships `Emulicious.ini` with `Update=0` ("never
+  check"), so the dialog does not appear and Emulicious stays on the tested version. Update
+  deliberately with `sudo nullptr-install-emulicious`.
+- Emulicious's adapter does not support the DAP `configurationDone` request (it says so in its
+  capabilities). nvim-dap respects that. A client that sends it anyway crashes the adapter.
+
+Re-run the check on your machine:
 
 ```bash
 /usr/local/src/nullptr-workstation/tests/dap/gameboy-dap-test.sh
 ```
-
-If it fails, use `gb-debug --vscodium` or `gb-debug --emulicious` and please note the output.

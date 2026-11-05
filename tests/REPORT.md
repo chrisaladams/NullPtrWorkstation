@@ -1,47 +1,58 @@
 # nullptr Workstation — test report
 
-Date: 2026-11-04. Commit: see `git log`.
+Last full verification: 2026-11-05, commit `b559437`,
+[GitHub Actions run 41937137844](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/41937137844).
+**94 checks passed, 0 failed** on a fresh installation of the ISO.
 
-## Test environment
-
-Read this first. It determines what could and could not be tested.
+## ISO
 
 | | |
 |---|---|
-| Machine | cloud VM, 4 vCPU, 15 GB RAM, **no KVM**, **no GPU**, no sound card, no USB devices |
-| Host OS | Ubuntu 24.04 (the sandbox's OS, not the target) |
-| Display | Xvfb 1920×1080 + Mesa llvmpipe (software OpenGL 4.5) |
-| Debian 13 userland | `mcr.microsoft.com/devcontainers/cpp:trixie` container: Debian **13.7**, Debian's own **GDB 16.3-1** and CMake 3.31.6 |
-| Network policy | **blocked:** `deb.debian.org`, `security.debian.org`, `salsa/sources/packages.debian.org`, all other Debian mirrors, **`emulicious.net`**, `open-vsx.org`, GitHub source-archive downloads. **Allowed:** git clones of public GitHub repos, GitHub release assets, Ubuntu archive, Docker Hub/MCR, PyPI, npm |
+| File | `nullptr-workstation-amd64.iso`, 2.0 GB, hybrid (USB/DVD, UEFI + BIOS) |
+| SHA-256 | `b836d837492d8e155977845e510a500e3fbca33aab846944860306fe9e1dadcb` |
+| Built by | `./build-iso.sh --docker` (live-build in `debian:trixie`) in GitHub Actions |
+| Where | the `iso` artifact of the run above (not stored in the repository) |
 
-Consequences:
+## How it was verified
 
-1. **The ISO could not be built here.** live-build needs a Debian archive and every Debian
-   mirror was blocked. **No `nullptr-workstation-amd64.iso` and no checksum exist yet.**
-   `build-iso.sh` must be run on a machine with normal internet access.
-2. **Emulicious could not be downloaded (HTTP 403)**, so nothing involving Emulicious ran.
-3. Everything else was tested by installing the workstation layer (the same scripts the ISO
-   hooks run) onto the sandbox, creating a real `nullptr` user from the generated `/etc/skel`,
-   and running the real session chain under Xvfb. Debian-13-specific behaviour (GDB 16.3) was
-   tested in a Debian 13.7 container.
+`.github/workflows/build-iso.yml` runs three stages; the evidence is in
+[`tests/vm-results/`](vm-results/):
+
+1. **Build** the ISO from this repository. The preflight checks every package name against
+   the Debian 13 archive and every pinned download. All components install with
+   hash/commit checks.
+2. **Install** it in a QEMU/KVM virtual machine with **UEFI** (OVMF), 8 GB RAM and a blank
+   40 GB virtio disk, using Debian's installer from the ISO. To run unattended, the test
+   serves a **test-only** preseed (`tests/ci/ci-preseed.cfg`: test password, automatic
+   partitioning) over QEMU's virtual network. It is never part of the ISO; the ISO itself
+   asks for the password and for partitioning confirmation.
+3. **Use** the installed system like a person (`tests/ci/vm-test.sh`): wait for the login
+   prompt, type `nullptr` and the password on **tty1** with the virtual keyboard, wait for the
+   graphical session, switch to tmux window 2 with `Ctrl+b 2`, and run
+   `tests/ci/guest-tests.sh` there. That runs system checks, the 45-test workflow suite, the
+   raylib and Game Boy debugger tests, and screenshots of the VM screen. Then `Ctrl+Alt+F2`,
+   log in on tty2, and check that it stays a text console.
 
 ## Non-negotiable tests
 
-| # | Test | Result | Evidence / notes |
+| # | Test | Result | Evidence |
 |---|---|---|---|
-| 1 | ISO boots and installer works | **NOT TESTED** | ISO could not be built (Debian mirrors blocked). `tests/qemu/smoke-test.sh` and `tests/qemu/install-test.sh` are ready for the first build. |
-| 2 | User `nullptr` is created and can set a password | **NOT TESTED** (installer) | `installer/preseed.cfg` fixes the username and leaves both password questions unpreseeded. Not executed in d-i. The `nullptr` account itself, created from the generated `/etc/skel`, was used for all tests below. |
-| 3 | Graphical session opens after authenticated login | **PARTIAL** | PASS: i3 → `dev-terminal` → kitty (fullscreen, ws 1) → `dev` → tmux `dev` with 5 windows → AstroVim dashboard (`screenshots/01-session-dashboard.png`). PASS: the `.bash_profile` autostart decision with simulated ttys (7 cases, `results/workflow-tests.txt`). NOT TESTED: a real getty login on a VT. |
-| 4 | AstroVim starts successfully inside tmux | **PASS** | Dashboard renders as specified, no startup errors. All 7 dashboard actions (P F N E R H Q, upper and lower case) and the project shortcuts 1/2 were exercised. |
-| 5 | File explorer and project selector work | **PASS** | Neo-tree opens with the project, Oil and pickers are mapped, `[P]`/`Space m p`/`projects` pick a project and update the active project and tmux status. |
-| 6 | Both Hello World projects compile | **PASS** | raylib-hello: CMake + Ninja, Debug and Release, `compile_commands.json`. gameboy-hello: GBDK 4.5.0 `lcc -debug`, Debug and Release ROM, `.cdb` with C line records. |
-| 7 | raylib window opens | **PASS** | `Space m r` from AstroVim, "Hello, raylib!" at 60 FPS on workspace 3 (`screenshots/02-raylib-hello-running.png`). |
-| 8 | Game Boy ROM runs in Emulicious | **NOT TESTED** | Emulicious blocked (403). The ROM **does** boot and run (text, A-button counter) in **mGBA**, a different emulator (`screenshots/04-gameboy-hello-rom-mgba.png`). `gb-run` correctly reports that Emulicious is missing. |
-| 9 | GDB C breakpoint works for raylib | **PASS** | Debian 13.7 / GDB 16.3 / nvim-dap / the workstation's own AstroNvim config: stopped at `main.c:19` (reason `breakpoint`), `frameCount = 0 (int, Locals)`, step → line 22, continue → line 19 again (`results/raylib-nvim-dap-gdb16-debian13.json`, `screenshots/03-raylib-gdb-breakpoint-astrovim.png`). |
-| 10 | C source-level debugging for GBDK | **NOT TESTED** | Needs Emulicious. Configured: nvim-dap `emulicious` server adapter (design taken from the Emulicious Debugger extension's source), VSCodium + extension fallback, Emulicious's built-in debugger. Run `tests/dap/gameboy-dap-test.sh` on the machine. |
-| 11 | LibreSprite launches | **PASS** | LibreSprite 1.2 built from source, opens on workspace `2: art`, and a second `art` focuses it instead of starting a duplicate (`screenshots/05-libresprite-workspace2.png`). |
-| 12 | Build/run commands select the correct project | **PASS** | 9 tests: active project from `projects use`, from AstroVim buffer switches, explicit names. A cwd/active conflict **refuses** (exit 2) instead of guessing. |
-| 13 | TTY recovery if X11 fails | **PASS (simulated)** | With a failing `startx`, the tty1 login ends in a working shell with recovery instructions. tty2–6, SSH, tmux and nested shells never start X. `no-autostart` file and `nullptr.nox` boot flag exist. Real VT: NOT TESTED. |
+| 1 | ISO boots and installer works | **PASS** | debian-installer from the ISO installed the system on a UEFI VM (unattended test preseed) and it booted to a login prompt (`vm-results/screens/vm-00-tty1-login-prompt.png`). The *interactive* installer screens (password prompts, partitioning confirmation) were not clicked through by a person. |
+| 2 | User `nullptr` is created and can set a password | **PASS** | Installer-created user `nullptr`, home `/home/nullptr`, in group `sudo`; `sudo` asks for the password (no NOPASSWD); the password set at install time works at the tty1 and tty2 logins. |
+| 3 | Graphical session opens after authenticated login | **PASS** | Typed login on tty1 → Xorg on tty1 → i3 → kitty (`nullptr-dev`, fullscreen on workspace 1) → tmux `dev` with windows 1–5 → AstroVim dashboard (`vm-01-after-login.png`). |
+| 4 | AstroVim starts successfully inside tmux | **PASS** | AstroVim listening in tmux window 1 and showing the dashboard; plugins and parsers pre-installed (works offline). |
+| 5 | File explorer and project selector work | **PASS** | Workflow suite (project selection, AstroVim buffer switches update the active project) plus the dashboard/picker checks from the development tests. |
+| 6 | Both Hello World projects compile | **PASS** | Starter and newly created projects build (raylib Debug/Release with `compile_commands.json`; GBDK Debug/Release ROMs with `.cdb` C line records). |
+| 7 | raylib window opens | **PASS** | `run-game` on the installed system (`vm-02-raylib-running.png`). |
+| 8 | Game Boy ROM runs in Emulicious | **PASS** | `gb-run` opens Emulicious with the ROM (`vm-03-gameboy-emulicious.png`). |
+| 9 | GDB C breakpoint works for raylib | **PASS** | GDB 16.3 through AstroVim's nvim-dap config: breakpoint on `frameCount++;`, `frameCount` read, step, continue (`tests/dap/raylib-dap-test.sh`). |
+| 10 | C source-level debugging for GBDK | **PASS** | Emulicious debug adapter, both through a raw DAP client and **through AstroVim's nvim-dap config**: breakpoint on `keys = joypad();` verified and hit, `keys` read (`unsigned char`, Locals), step → next line, continue → stops again. Backend: **Emulicious DAP via nvim-dap** (primary path). |
+| 11 | LibreSprite launches | **PASS** | Workspace `2: art`, no duplicates (`vm-04-libresprite.png`). |
+| 12 | Build/run commands select the correct project | **PASS** | Workflow suite on the installed system, including the refuse-on-conflict case. |
+| 13 | TTY recovery if X11 fails | **PASS** | tty2 login is a plain text console with no second X server (`vm-06-tty2-text-console.png`). A failing `startx` on tty1 leaves a working shell with recovery hints (simulated failure, workflow suite). |
+
+All 94 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
+guest output is in [`vm-results/guest.log`](vm-results/guest.log).
 
 ## Hardware-dependent (no matching hardware)
 
@@ -52,7 +63,7 @@ Consequences:
 | Suspend/resume, lid | **NOT TESTED** |
 | Wi-Fi (NetworkManager, nmtui, iwlwifi firmware) | **NOT TESTED** |
 | Intel GPU (i915/iris), brightness keys, audio keys | **NOT TESTED** |
-| Screen lock (`Super+L`, i3lock, PAM) | **NOT TESTED** (needs a password and a real session; xss-lock needs logind, which the sandbox lacks) |
+| Screen lock (`Super+L`, i3lock, PAM) | **NOT TESTED** (not exercised in the VM test) |
 
 ## Other verified items
 
@@ -69,8 +80,8 @@ Consequences:
 | `new-raylib` / `new-gameboy`: create, build, refuse existing names (files untouched), reject unsafe names | PASS |
 | Workflow suite `tests/workflow-tests.sh` | **45/45 PASS**, twice in a row |
 | shellcheck (all shell scripts), Lua syntax, Python compile | PASS |
-| Package names in `packages/*.list` exist in trixie | **NOT VERIFIED** (no archive access). `build-iso.sh` checks them all before building. |
-| `lb config` accepts the options in `config/live/auto/config` | **NOT VERIFIED** (no trixie live-build available) |
+| Package names in `packages/*.list` exist in trixie | PASS (build preflight against the Debian 13 archive) |
+| `lb config` / `lb build` with `config/live/auto/config` | PASS (Debian 13 live-build in CI) |
 
 ## Defects found and fixed during testing
 
@@ -92,25 +103,30 @@ Consequences:
 7. The in-editor build split stopped following output once focus returned to the code (so
    `✔ Built` was off-screen), and could fail to reopen after a plugin reload (stale buffer
    name). Both fixed.
-8. LuaJIT syntax error (`//`) in the help module; `.xinitrc` sourced a file twice; Emulicious
+8. **Found by installing the ISO in a VM** (first run: 83/93):
+   - `projects use`/`new-raylib` exited non-zero on a brand-new system (no project history yet + `pipefail`).
+   - The installer kept `live-boot`/`live-config`, and **removed VSCodium** (debian-installer drops packages added after live-build's main pass). Live packages are now a live-only list; VSCodium ships via `packages.chroot`.
+   - `tests/workflow-tests.sh` was not executable in git.
+9. **Emulicious blocked the debugger on first start** with a modal "Update Behaviour" dialog.
+   The workstation now ships `Emulicious.ini` with `Update=0` (never check: no dialog, and it
+   stays on the tested version; update with `sudo nullptr-install-emulicious`).
+10. LuaJIT syntax error (`//`) in the help module; `.xinitrc` sourced a file twice; Emulicious
    settings would have been written into `/opt`. All fixed.
 
 ## Known test-environment artifacts (not workstation defects)
 
-- kitty stopped repainting after its window was unmapped/remapped under Xvfb + llvmpipe,
-  so screenshot 03 was rendered from the live tmux pane (`tmux capture-pane -e` →
-  `tests/tools/ansi2html.py` → Chromium). The text and colours are exactly what was on the
-  pane.
-- ALSA errors in logs: the VM has no sound card.
+- During development (before the VM test existed), kitty stopped repainting after being
+  unmapped under Xvfb + llvmpipe, so `screenshots/03-…` was rendered from the live tmux pane.
+- ALSA warnings in logs: the VMs have no sound card.
 
-## How to finish verification on real hardware
+## Still to verify on the X1 Carbon
 
 ```bash
-sudo ./build-iso.sh                       # on a networked Debian 13 machine
-tests/qemu/smoke-test.sh out/nullptr-workstation-amd64.iso
-tests/qemu/install-test.sh out/nullptr-workstation-amd64.iso   # interactive install
-# on the installed laptop, in the graphical session:
 /usr/local/src/nullptr-workstation/tests/workflow-tests.sh
 /usr/local/src/nullptr-workstation/tests/dap/raylib-dap-test.sh
 /usr/local/src/nullptr-workstation/tests/dap/gameboy-dap-test.sh
+tablet-info && tablet-setup        # with the Huion H640P plugged in
 ```
+
+Plus by hand: Wi-Fi (`nmtui`), battery in the bar, lid suspend/resume, `Super+L`, and the
+brightness and volume keys.

@@ -14,10 +14,11 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | `Super+3` | running raylib games and Emulicious |
 | `Super+4` | anything else |
 
-> **Status:** the workstation layer is built and tested. The ISO itself has **not** been
-> built yet, because the development sandbox could not reach Debian's mirrors. See
-> [tests/REPORT.md](tests/REPORT.md) for every result (PASS / FAIL / NOT TESTED) and
-> [Build the ISO](#build-the-iso) to produce it.
+> **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
+> passed **94/94** automated checks, run as the user would: tty1 login → graphical
+> workspace → builds, raylib and Game Boy C debugging, LibreSprite, tty2 recovery console.
+> Only laptop hardware (tablet, Wi-Fi, battery, suspend, GPU, keys) remains to be checked on
+> the X1 Carbon. Details: [tests/REPORT.md](tests/REPORT.md).
 
 ## Screenshots
 
@@ -61,10 +62,10 @@ teaches it SDCC's keywords)…
 
 ![Game Boy build](docs/screenshots/07-gameboy-build.png)
 
-**The ROM running.** *Shown in mGBA: Emulicious, the emulator the workstation uses, could not
-be downloaded in the test environment.*
+**The ROM running in Emulicious**, on the installed system from the ISO (screenshot from the
+automated VM test).
 
-![Game Boy ROM running](docs/screenshots/08-gameboy-rom-running.png)
+![Game Boy ROM in Emulicious](tests/vm-results/screens/vm-03-gameboy-emulicious.png)
 
 **Pixel art** (`Super+A` / `art`). LibreSprite 1.2 on workspace `2: art`, editing
 `assets/player.png`.
@@ -79,6 +80,15 @@ uses it.
 **Help is one key away.** `Ctrl+b ?` (or `Space ?`, `Super+F1`, `keys`).
 
 ![Cheat sheet popup](docs/screenshots/11-cheatsheet-popup.png)
+
+### Straight from the installed ISO
+
+Taken by the automated test in a VM with a fresh installation: the tty1 login, then what
+appears right after logging in. Nothing was typed except the user name and password.
+
+| | |
+|---|---|
+| ![login](tests/vm-results/screens/vm-00-tty1-login-prompt.png) | ![after login](tests/vm-results/screens/vm-01-after-login.png) |
 
 ## Build the ISO
 
