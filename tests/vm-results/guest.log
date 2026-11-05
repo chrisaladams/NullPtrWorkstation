@@ -1,5 +1,5 @@
-[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,8E39E188-B7CF-4DE4-8934-7F6C35EE799D,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
-BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,8E39E188-B7CF-4DE4-8934-7F6C35EE799D,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,F2C83E8F-CD7A-4ACE-94FA-FFE34C7A9435,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,F2C83E8F-CD7A-4ACE-94FA-FFE34C7A9435,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
 === BEGIN nullptr guest tests
 --- system
 debian 13.7  kernel 6.12.115+deb13.1-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
@@ -77,6 +77,18 @@ RESULT PASS workflow: gb-build --release
 RESULT PASS workflow: gb-clean removes build/
 RESULT PASS workflow: gb-build rejects raylib project
 RESULT PASS workflow: new projects are git repositories
+RESULT PASS workflow: new-c creates a plain C project
+RESULT PASS workflow: --no-git skips git init
+RESULT PASS workflow: new-c project has its own CMakeLists
+RESULT PASS workflow: generic project builds (CMake)
+RESULT PASS workflow: run-game runs a generic program in the terminal
+RESULT PASS workflow: build --clean removes build output
+RESULT PASS workflow: projects adopt marks an existing folder
+RESULT PASS workflow: adopted plain folder is generic
+RESULT PASS workflow: adopt refuses an existing project
+RESULT PASS workflow: generic Makefile project builds and runs
+RESULT PASS workflow: run= line in .nullptr-project is used
+RESULT PASS workflow: generic project listed by projects
 RESULT PASS workflow: projects use raylib-hello
 RESULT PASS workflow: build (from ~) uses active raylib project
 RESULT PASS workflow: projects use gameboy-hello
@@ -105,7 +117,7 @@ RESULT PASS workflow: LibreSprite lands on workspace 2
 RESULT PASS workflow: art again focuses, no duplicate
 RESULT PASS workflow: tablet-setup handles no tablet gracefully
 ----
-PASS: 45  FAIL: 0
+PASS: 57  FAIL: 0
 --- raylib: GDB through nvim-dap
 [1m[38;5;111m▶ Building (debug)[0m [1mraylib-hello[0m  [2m(raylib · /home/nullptr/Projects/raylib-hello)[0m
 ninja: no work to do.
@@ -145,21 +157,24 @@ ninja: no work to do.
 }
 == nvim-dap
  blink.cmp  Downloading pre-built binary blink.cmp  Downloaded pre-built binary successfully{
+ "root": "/home/nullptr/Projects/raylib-hello",
+ "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
+ "after_step_line": 22,
  "variable": {
-  "type": "int",
   "scope": "Locals",
-  "value": "0",
-  "name": "frameCount"
+  "type": "int",
+  "name": "frameCount",
+  "value": "0"
  },
- "after_continue_line": 19,
+ "PASS": true,
  "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
  "stopped_line": 19,
- "stopped_frame": "main",
- "PASS": true,
- "after_step_line": 22,
+ "nvim": "0.12.6+v0.12.6",
+ "after_continue_line": 19,
  "call_stack": [
   "main"
  ],
+ "stopped_frame": "main",
  "adapter": "gdb",
  "stops": [
   {
@@ -171,10 +186,7 @@ ninja: no work to do.
   {
    "reason": "breakpoint"
   }
- ],
- "nvim": "0.12.6+v0.12.6",
- "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
- "root": "/home/nullptr/Projects/raylib-hello"
+ ]
 }
 RESULT PASS raylib C breakpoint, variables, step, continue (GDB + nvim-dap)
 --- Game Boy: Emulicious debug adapter
@@ -218,7 +230,7 @@ make: Leaving directory '/home/nullptr/Projects/gameboy-hello'
   "PASS": true
 }
 RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
-{"call_stack":["main()"],"stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"variable":{"value":"0 (value in register)","name":"keys","type":"unsigned char","scope":"Locals"},"PASS":true,"after_step_line":20,"adapter":"emulicious","nvim":"0.12.6+v0.12.6","breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","root":"/home/nullptr/Projects/gameboy-hello"}
+{"stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"root":"/home/nullptr/Projects/gameboy-hello","PASS":true,"adapter":"emulicious","after_step_line":20,"breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","variable":{"value":"0 (value in register)","name":"keys","type":"unsigned char","scope":"Locals"},"nvim":"0.12.6+v0.12.6","call_stack":["main()"]}
 RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
 --- screenshots of the installed system
 SCREENSHOT vm-01-editor-after-login

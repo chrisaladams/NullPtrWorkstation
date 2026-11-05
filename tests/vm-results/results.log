@@ -60,6 +60,18 @@ RESULT PASS workflow: gb-build --release
 RESULT PASS workflow: gb-clean removes build/
 RESULT PASS workflow: gb-build rejects raylib project
 RESULT PASS workflow: new projects are git repositories
+RESULT PASS workflow: new-c creates a plain C project
+RESULT PASS workflow: --no-git skips git init
+RESULT PASS workflow: new-c project has its own CMakeLists
+RESULT PASS workflow: generic project builds (CMake)
+RESULT PASS workflow: run-game runs a generic program in the terminal
+RESULT PASS workflow: build --clean removes build output
+RESULT PASS workflow: projects adopt marks an existing folder
+RESULT PASS workflow: adopted plain folder is generic
+RESULT PASS workflow: adopt refuses an existing project
+RESULT PASS workflow: generic Makefile project builds and runs
+RESULT PASS workflow: run= line in .nullptr-project is used
+RESULT PASS workflow: generic project listed by projects
 RESULT PASS workflow: projects use raylib-hello
 RESULT PASS workflow: build (from ~) uses active raylib project
 RESULT PASS workflow: projects use gameboy-hello

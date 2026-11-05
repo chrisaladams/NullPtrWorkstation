@@ -1,15 +1,16 @@
 # nullptr Workstation — test report
 
-Last full verification: 2026-11-05, commit `b559437`,
-[GitHub Actions run 41937137844](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/41937137844).
-**94 checks passed, 0 failed** on a fresh installation of the ISO.
+Last full verification: 2026-11-05, commit `1f76f16`,
+[GitHub Actions run 41957878175](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/41957878175).
+**106 checks passed, 0 failed** on a fresh installation of the ISO (the first verified build,
+`b559437`, passed 94/94; this one adds the generic C project type and its 12 tests).
 
 ## ISO
 
 | | |
 |---|---|
 | File | `nullptr-workstation-amd64.iso`, 2.0 GB, hybrid (USB/DVD, UEFI + BIOS) |
-| SHA-256 | `b836d837492d8e155977845e510a500e3fbca33aab846944860306fe9e1dadcb` |
+| SHA-256 | `e83937253d369d107f1625f35f978e32e8de443ef7e2265dabd08ec2666bc878` |
 | Built by | `./build-iso.sh --docker` (live-build in `debian:trixie`) in GitHub Actions |
 | Where | the `iso` artifact of the run above (not stored in the repository) |
 
@@ -29,7 +30,7 @@ Last full verification: 2026-11-05, commit `b559437`,
 3. **Use** the installed system like a person (`tests/ci/vm-test.sh`): wait for the login
    prompt, type `nullptr` and the password on **tty1** with the virtual keyboard, wait for the
    graphical session, switch to tmux window 2 with `Ctrl+b 2`, and run
-   `tests/ci/guest-tests.sh` there. That runs system checks, the 45-test workflow suite, the
+   `tests/ci/guest-tests.sh` there. That runs system checks, the workflow suite, the
    raylib and Game Boy debugger tests, and screenshots of the VM screen. Then `Ctrl+Alt+F2`,
    log in on tty2, and check that it stays a text console.
 
@@ -51,7 +52,7 @@ Last full verification: 2026-11-05, commit `b559437`,
 | 12 | Build/run commands select the correct project | **PASS** | Workflow suite on the installed system, including the refuse-on-conflict case. |
 | 13 | TTY recovery if X11 fails | **PASS** | tty2 login is a plain text console with no second X server (`vm-06-tty2-text-console.png`). A failing `startx` on tty1 leaves a working shell with recovery hints (simulated failure, workflow suite). |
 
-All 94 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
+All 106 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
 guest output is in [`vm-results/guest.log`](vm-results/guest.log).
 
 ## Hardware-dependent (no matching hardware)
