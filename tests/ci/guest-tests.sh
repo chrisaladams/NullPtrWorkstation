@@ -44,7 +44,7 @@ sys.exit(0 if f(t) else 1)"'
 
 echo "--- toolchains"
 gb-info
-for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter libresprite emulicious codium java; do
+for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter libresprite emulicious codium java blender gh nullptr-update nullptr-iso; do
   r "command $c" command -v "$c"
 done
 r "GDB version >= 16" sh -c 'v=$(gdb --version | head -1 | grep -o "[0-9][0-9]*\.[0-9]*" | head -1); [ "${v%%.*}" -ge 16 ]'

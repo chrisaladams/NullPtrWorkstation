@@ -26,6 +26,8 @@ pciutils
 lsof
 psmisc
 openssh-client
+# GitHub CLI: nullptr-iso downloads the GitHub-built ISO (sign in once: gh auth login)
+gh
 rsync
 ripgrep
 fd-find

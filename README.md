@@ -156,6 +156,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 | [gameboy-debugging.md](docs/gameboy-debugging.md) | GBDK build, Emulicious, C source debugging and its test status |
 | [blender.md](docs/blender.md) | Blender workspace, laptop settings, glTF into raylib, 2.5D approaches |
 | [drawing-tablet.md](docs/drawing-tablet.md) | tablets, `tablet-info`, `tablet-setup`, limitations |
+| [updating.md](docs/updating.md) | `nullptr-update` (update in place from GitHub) and `nullptr-iso` (GitHub-built ISO → USB → reinstall) |
 | [recovery.md](docs/recovery.md) | when the graphical session or anything else breaks |
 | [licenses.md](docs/licenses.md) | redistribution of bundled software (Emulicious!) |
 | [tests/REPORT.md](tests/REPORT.md) | test results |
@@ -164,7 +165,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 
 `dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `art` · `3d` ·
 `new-c NAME` · `new-raylib NAME` · `new-gameboy NAME` · `projects adopt` · `gb-build` · `gb-run` · `gb-debug` · `gb-clean` ·
-`gb-info` · `tablet-info` · `tablet-setup` · `keys` · `helpme`
+`gb-info` · `tablet-info` · `tablet-setup` · `keys` · `helpme` · `nullptr-update` · `nullptr-iso`
 
 They are real scripts in `/usr/local/bin`, not aliases. Every command that acts on a project
 prints which project it uses, and refuses rather than guesses when your shell's directory and

@@ -19,16 +19,18 @@ Usage: nullptr-update [options]
   --branch NAME    branch to follow (default: main)
   --dir DIR        local clone (default: the clone this script runs from, else
                    ~/src/NullPtrWorkstation)
+  --at COMMIT      install that exact version (roll back); a later plain run returns to the latest
   --no-dotfiles    leave your ~/.config etc. alone (system files only)
   --all-upstream   reinstall every pinned component, changed or not
 After updating: log out (Super+Shift+E) and back in for i3/X changes.
 U
 }
 repo_url="${NULLPTR_REPO:-git@github.com:chrisaladams/NullPtrWorkstation.git}"
-branch=main; dir=""; dry=0; dotfiles=1; all_up=0
+branch=main; dir=""; dry=0; dotfiles=1; all_up=0; at=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) dry=1 ;; --no-dotfiles) dotfiles=0 ;; --all-upstream) all_up=1 ;;
+    --at) at="${2:?}"; shift ;;
     --repo) repo_url="${2:?}"; shift ;; --branch) branch="${2:?}"; shift ;; --dir) dir="${2:?}"; shift ;;
     -h|--help) usage; exit 0 ;; *) usage >&2; exit 64 ;;
   esac; shift
@@ -47,11 +49,28 @@ if [ -d "$dir/.git" ]; then
   [ -z "$(git -C "$dir" status --porcelain)" ] || nw_die "$dir has local changes. Commit or stash them first (git -C $dir status)."
   old="$(git -C "$dir" rev-parse --short HEAD)"
   git -C "$dir" fetch -q origin "$branch" || nw_die "git fetch failed (is your GitHub SSH key set up? ssh -T git@github.com)"
-  new="$(git -C "$dir" rev-parse --short "origin/$branch")"
+  target="origin/$branch"
+  if [ -n "$at" ]; then
+    git -C "$dir" rev-parse -q --verify "$at^{commit}" >/dev/null || nw_die "Unknown commit: $at"
+    target="$at"; nw_warn "Installing the older/specific version $at (run nullptr-update without --at to return to the latest)"
+  elif ! git -C "$dir" symbolic-ref -q HEAD >/dev/null; then
+    git -C "$dir" checkout -q "$branch"     # back from an earlier --at
+    old="$(git -C "$dir" rev-parse --short HEAD)"
+  fi
+  new="$(git -C "$dir" rev-parse --short "$target")"
   if [ "$old" = "$new" ]; then nw_ok "Already at the latest commit ($new)"
   else
-    git -C "$dir" log --oneline "$old..origin/$branch" | sed 's/^/   /' >&2
-    [ "$dry" = 1 ] || git -C "$dir" merge -q --ff-only "origin/$branch" || nw_die "Cannot fast-forward $dir; resolve it with git."
+    git -C "$dir" log --oneline "$old..$target" | sed 's/^/   /' >&2
+    if [ "$dry" = 1 ]; then
+      # inspect the incoming commit in a temporary read-only checkout; the clone stays as it is
+      preview="$(mktemp -d)"; clone="$dir"
+      git -C "$clone" worktree add -q --detach "$preview" "$target"
+      trap 'git -C "$clone" worktree remove --force "$preview" 2>/dev/null; rm -rf "$preview"' EXIT
+      dir="$preview"
+    else
+      if [ -n "$at" ]; then git -C "$dir" checkout -q --detach "$at"
+      else git -C "$dir" merge -q --ff-only "origin/$branch" || nw_die "Cannot fast-forward $dir; resolve it with git."; fi
+    fi
   fi
 else
   [ "$dry" = 1 ] && nw_die "No clone at $dir yet; run without --dry-run to clone $repo_url"
@@ -101,7 +120,8 @@ else
 fi
 if [ "${#changed[@]}" -eq 0 ]; then nw_ok "No pinned component changed"
 else
-  nw_info "Reinstalling: ${changed[*]}  (LibreSprite builds from source: ~10 minutes)"
+  note=""; case " ${changed[*]} " in *" libresprite "*) note="  (LibreSprite builds from source: ~10 minutes)" ;; esac
+  nw_info "Reinstalling: ${changed[*]}$note"
   run sudo "$dir/scripts/install/install-upstream.sh" "${changed[@]}"
 fi
 

@@ -66,8 +66,9 @@ nullptr Workstation — beginner guide                           (q to close)
 
  System
  --------------------------------------------------------------------------
-  Updates:   sudo apt update && sudo apt upgrade
-             AstroVim plugins: Space p a  (needs internet)
+  Updates:   nullptr-update   (workstation from GitHub; --dry-run first)
+  Reinstall: nullptr-iso      (GitHub-built ISO; --write /dev/sdX for a USB stick)
+             sudo apt update && sudo apt upgrade   (Debian security updates)
   Wi-Fi:     nmtui → "Activate a connection"
   Volume:    the laptop's volume keys, or  pulsemixer  in a terminal
   Lock:      Super+L      Suspend: close the lid

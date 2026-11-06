@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# nullptr-iso — get the ISO that GitHub Actions built and verified, optionally write it to USB.
+usage() { cat <<'U'
+Usage: nullptr-iso [--build] [--write /dev/sdX] [--dir DIR]
+  (no options)     download the ISO of the newest GitHub build that passed the VM tests
+  --build          start a new build on GitHub first, wait for it (~40 min), then download
+  --write DEVICE   after downloading and verifying, write it to a USB stick (ERASES it)
+  --dir DIR        where to put it (default ~/Downloads/nullptr-iso)
+Needs the GitHub CLI, signed in once:  gh auth login
+Repository: chrisaladams/NullPtrWorkstation (override with NULLPTR_GH_REPO)
+U
+}
+repo="${NULLPTR_GH_REPO:-chrisaladams/NullPtrWorkstation}"
+wf="build-iso.yml"; build=0; dev=""; out="$HOME/Downloads/nullptr-iso"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --build) build=1 ;; --write) dev="${2:?}"; shift ;; --dir) out="${2:?}"; shift ;;
+    -h|--help) usage; exit 0 ;; *) usage >&2; exit 64 ;;
+  esac; shift
+done
+nw_have gh || nw_die "The GitHub CLI is not installed: sudo apt install gh"
+gh auth status >/dev/null 2>&1 || nw_die "Sign in to GitHub first: gh auth login  (choose 'Login with a web browser' and approve the code on your phone)"
+
+if [ "$build" = 1 ]; then
+  nw_info "Starting a new build on GitHub (build ISO → install in a VM → run all tests)"
+  before="$(gh run list -R "$repo" -w "$wf" -L 1 --json databaseId -q '.[0].databaseId' 2>/dev/null || true)"
+  gh workflow run "$wf" -R "$repo" --ref main -f release=false
+  run=""
+  for _ in $(seq 1 30); do
+    sleep 4
+    run="$(gh run list -R "$repo" -w "$wf" -L 1 --json databaseId -q '.[0].databaseId')"
+    [ -n "$run" ] && [ "$run" != "$before" ] && break
+  done
+  [ -n "$run" ] && [ "$run" != "$before" ] || nw_die "The new build did not appear; check https://github.com/$repo/actions"
+  nw_info "Build $run: https://github.com/$repo/actions/runs/$run  (you can close this and rerun nullptr-iso later)"
+  gh run watch "$run" -R "$repo" --exit-status --interval 60 >/dev/null || nw_die "The build or its tests failed: https://github.com/$repo/actions/runs/$run"
+else
+  # newest successful run (success = the ISO built AND passed the VM tests) whose ISO is still downloadable
+  run=""
+  while IFS= read -r id; do
+    if gh api "repos/$repo/actions/runs/$id/artifacts" -q '.artifacts[] | select(.name=="iso" and .expired==false) | .id' | grep -q .; then run="$id"; break; fi
+  done < <(gh run list -R "$repo" -w "$wf" -b main -s success -L 20 --json databaseId -q '.[].databaseId')
+  [ -n "$run" ] || nw_die "No passing build with a downloadable ISO (they expire after 14 days). Run: nullptr-iso --build"
+fi
+sha="$(gh run view "$run" -R "$repo" --json headSha -q .headSha | cut -c1-7)"
+dest="$out/$run"
+iso="$dest/nullptr-workstation-amd64.iso"
+if [ -f "$iso" ] && (cd "$dest" && sha256sum -c --quiet nullptr-workstation-amd64.iso.sha256 2>/dev/null); then
+  nw_ok "Already downloaded: $iso"
+else
+  nw_info "Downloading the ISO from build $run (commit $sha), ~2 GB"
+  rm -rf "$dest"; mkdir -p "$dest"
+  gh run download "$run" -R "$repo" -n iso -D "$dest"
+  nw_info "Checking SHA-256"
+  (cd "$dest" && sha256sum -c nullptr-workstation-amd64.iso.sha256) || nw_die "Checksum mismatch: the download is damaged. Delete $dest and try again."
+fi
+nw_ok "Verified ISO: $iso  (commit $sha, build https://github.com/$repo/actions/runs/$run)"
+
+[ -n "$dev" ] || { echo "Write it to a USB stick:  nullptr-iso --write /dev/sdX   (find the stick with: lsblk)" >&2; exit 0; }
+
+# ------------------------------------------------------------------ write to USB, with every guard
+[ -b "$dev" ] || nw_die "$dev is not a block device. Find the stick with: lsblk"
+dtype="$(lsblk -dno TYPE "$dev" 2>/dev/null)"
+case "$dtype" in disk|loop) ;; *) nw_die "$dev is a $dtype, not a whole disk. Use e.g. /dev/sdb, not /dev/sdb1." ;; esac
+# every physical disk under / (through encryption, LVM and partitions)
+rootdisks="$(lsblk -s -nro NAME,TYPE "$(findmnt -no SOURCE /)" 2>/dev/null | awk '$2=="disk"{print $1}')"
+if printf '%s\n' "$rootdisks" | grep -qx "$(basename "$(readlink -f "$dev")")"; then
+  nw_die "$dev is the disk this system runs from. Refusing."
+fi
+if lsblk -no MOUNTPOINT "$dev" | grep -q .; then nw_die "$dev (or a partition on it) is mounted. Unmount it first: lsblk $dev"; fi
+echo >&2
+lsblk -o NAME,SIZE,MODEL,TRAN,MOUNTPOINT "$dev" >&2
+printf '\n%sEverything on %s will be erased.%s Type the device name (%s) to continue: ' "$NW_C_RED" "$dev" "$NW_C_OFF" "$dev" >&2
+read -r answer
+[ "$answer" = "$dev" ] || nw_die "Cancelled, nothing was written."
+nw_info "Writing (this takes a few minutes)"
+sudo dd if="$iso" of="$dev" bs=4M conv=fsync status=progress
+sync
+nw_ok "Done. Boot the laptop from the stick with F12 and choose Graphical install (see docs/installation.md)."

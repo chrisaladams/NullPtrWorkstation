@@ -105,4 +105,6 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   gb-build   gb-run   gb-debug
   gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme
   nmtui (Wi-Fi)   btop (monitor)   helpme tutorial   helpme recovery
+  nullptr-update   (update the workstation from GitHub; --dry-run first)
+  nullptr-iso      (download the GitHub-built ISO; --write /dev/sdX, --build)
 ```
