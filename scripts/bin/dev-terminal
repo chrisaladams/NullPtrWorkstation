@@ -10,6 +10,6 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 if nw_i3 -t get_tree 2>/dev/null | grep -q '"class":"nullptr-dev"'; then
   nw_i3 -q '[class="^nullptr-dev$"] focus'
 else
-  nw_i3_workspace 1
+  nw_i3_workspace astro
   setsid -f kitty --class nullptr-dev --title "nullptr dev" dev >/dev/null 2>&1 </dev/null
 fi

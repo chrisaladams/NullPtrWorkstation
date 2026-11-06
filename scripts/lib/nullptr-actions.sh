@@ -100,8 +100,8 @@ nw_do_run() {
   case "$(nw_type "$root")" in
     generic)
       # a normal program: runs in this terminal. window=yes in .nullptr-project shows
-      # workspace 3 first (windowed programs must be visible to start, e.g. GLFW/SDL)
-      [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace 3
+      # the game workspace first (windowed programs must be visible to start, e.g. GLFW/SDL)
+      [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace game
       if [ -n "$(nw_meta "$root" run)" ]; then
         nw_info "run= from .nullptr-project: $(nw_meta "$root" run)"
         (cd "$root" && CONFIG="$cfg" sh -c "$(nw_meta "$root" run)")
@@ -110,23 +110,23 @@ nw_do_run() {
         nw_info "Running $art"
         (cd "$root" && "$art")
       fi
-      [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace 1
+      [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace astro
       return 0 ;;
   esac
   nw_in_graphical || nw_die "Running a game needs the graphical session (DISPLAY is not set)."
   case "$(nw_type "$root")" in
     raylib)
-      nw_i3_workspace 3
+      nw_i3_workspace game
       nw_info "Running $art  (close the game window or press Esc to return)"
       cd "$root" && "$art"
-      nw_i3_workspace 1
+      nw_i3_workspace astro
       ;;
     gameboy)
       local -a emu
       mapfile -t emu < <(nw_emulicious_cmd) || true
       [ "${#emu[@]}" -gt 0 ] || nw_die "Emulicious is not installed. Run: sudo nullptr-install-emulicious"
-      nw_i3_workspace 3
-      nw_info "Opening $art in Emulicious (workspace 3)"
+      nw_i3_workspace game
+      nw_info "Opening $art in Emulicious (workspace 4: game)"
       cd "$root" && setsid -f "${emu[@]}" "$art" >/dev/null 2>&1 </dev/null
       ;;
   esac
@@ -160,16 +160,16 @@ nw_do_debug() {
       [ "${#emu[@]}" -gt 0 ] || nw_die "Emulicious is not installed. Run: sudo nullptr-install-emulicious"
       nw_info "Emulicious opens with the ROM. Open Tools ▸ Debugger; C source appears because"
       nw_info "build/debug/*.cdb sits next to the ROM and src/ is on the search path."
-      nw_i3_workspace 3
+      nw_i3_workspace game
       cd "$root" && setsid -f "${emu[@]}" "$art" >/dev/null 2>&1 </dev/null
       ;;
     vscodium)
       [ "$(nw_type "$root")" = gameboy ] || nw_die "--vscodium only applies to Game Boy projects."
       nw_have codium || nw_die "VSCodium is not installed (it is an optional fallback; see docs/gameboy-debugging.md)."
       nw_do_build "$root" debug
-      nw_i3_workspace 4
+      nw_i3_workspace tools
       setsid -f codium "$root" "$root/src/main.c" >/dev/null 2>&1 </dev/null
-      nw_info "VSCodium opened on workspace 4. Press F5 to launch 'Debug ROM in Emulicious'."
+      nw_info "VSCodium opened on workspace 5 (tools). Press F5 to launch 'Debug ROM in Emulicious'."
       ;;
     *) nw_die "Unknown debugger backend: $backend" ;;
   esac

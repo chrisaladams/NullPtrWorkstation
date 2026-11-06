@@ -6,18 +6,18 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 . "$_l/nullptr-common.sh"
 # shellcheck source=../lib/nullptr-actions.sh
 . "$_l/nullptr-actions.sh"
-# 3d [FILE.blend] — focus Blender on workspace 5, or start it (never starts a duplicate)
-case "${1:-}" in -h|--help) echo "Usage: 3d [FILE.blend]   Open Blender (workspace 5: 3d). Starts in the active project's assets/"; exit 0 ;; esac
+# 3d [FILE.blend] — focus Blender on workspace 3 (blender), or start it (never starts a duplicate)
+case "${1:-}" in -h|--help) echo "Usage: 3d [FILE.blend]   Open Blender (workspace 3: blender). Starts in the active project's assets/"; exit 0 ;; esac
 nw_in_graphical || nw_die "Blender needs the graphical session."
 nw_have blender || nw_die "Blender is not installed (sudo apt install blender python3-numpy)."
 if [ $# -eq 0 ] && pgrep -u "$(id -u)" -x blender >/dev/null 2>&1; then
-  nw_i3 -q '[class="^Blender$"] focus' 2>/dev/null || nw_i3_workspace 5
+  nw_i3 -q '[class="^Blender$"] focus' 2>/dev/null || nw_i3_workspace blender
   exit 0
 fi
 dir="$HOME"
 if p="$(nw_active_get 2>/dev/null)"; then mkdir -p "$p/assets"; dir="$p/assets"; fi
-nw_i3_workspace 5
+nw_i3_workspace blender
 cd "$dir"
 if [ $# -gt 0 ]; then f="$(readlink -f -- "$1")"; setsid -f blender "$f" >/dev/null 2>&1 </dev/null
 else setsid -f blender >/dev/null 2>&1 </dev/null; fi
-nw_info "Blender is starting on workspace 5. Export glTF (.glb) into: $dir"
+nw_info "Blender is starting on workspace 3. Export glTF (.glb) into: $dir"

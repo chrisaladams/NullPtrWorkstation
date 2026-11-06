@@ -4,7 +4,7 @@ Blender has its own workspace, like LibreSprite:
 
 | | |
 |---|---|
-| `Super+5` | workspace **5: 3d** (Blender always opens here) |
+| `Super+3` | workspace **3: blender** (Blender always opens here) |
 | `Super+B` or `3d` | focus Blender, or start it if it isn't running (never a second copy) |
 | `3d file.blend` | open a specific file |
 
@@ -80,5 +80,5 @@ sudo apt install blender python3-numpy
 
 Verified automatically (`tests/blender/`): Blender exports a small diorama (floor, walls,
 crate) headless as `.glb`, and a raylib program loads it with all 4 meshes and their materials
-at the right size and orientation. Also verified: `3d` opens Blender on workspace 5 and never
+at the right size and orientation. Also verified: `3d` opens Blender on workspace 3 and never
 starts a duplicate.

@@ -11,8 +11,8 @@ export NW_CMD
 usage() { cat <<'U'
 Usage: run-game [--release] [PROJECT]
 Build (incrementally) and run the active project:
-  raylib  -> runs the game on i3 workspace 3
-  gameboy -> opens the ROM in Emulicious on workspace 3
+  raylib  -> runs the game on i3 workspace 4 (game)
+  gameboy -> opens the ROM in Emulicious on workspace 4
 U
 }
 cfg=debug; proj=""

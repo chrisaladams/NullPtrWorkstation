@@ -11,11 +11,11 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
 
  i3 (windows and workspaces)
  --------------------------------------------------------------------------
-  Super+1            workspace 1: code   (kitty → tmux → AstroVim)
-  Super+2            workspace 2: art    (LibreSprite)
-  Super+3            workspace 3: game   (raylib games, Emulicious)
-  Super+4            workspace 4: tools  (anything else)
-  Super+5            workspace 5: 3d     (Blender)
+  Super+1            workspace 1: astro        (kitty → tmux → AstroVim)
+  Super+2            workspace 2: libresprite  (LibreSprite)
+  Super+3            workspace 3: blender      (Blender)
+  Super+4            workspace 4: game         (raylib games, Emulicious)
+  Super+5            workspace 5: tools        (anything else)
   Super+Shift+1..5   move the focused window to that workspace
   Super+Enter        new terminal (plain shell)
   Super+Shift+Enter  go back to the main dev terminal (reopens it if closed)

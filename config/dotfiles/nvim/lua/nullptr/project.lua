@@ -253,8 +253,11 @@ function M.clean()
 end
 
 -- ---------------------------------------------------------------- i3 workspaces
-local ws_names = { "1: code", "2: art", "3: game", "4: tools", "5: 3d" }
---- Show i3 workspace n (no-op outside the graphical session)
+-- keep in sync with config/dotfiles/i3/config and scripts/lib/nullptr-common.sh
+local ws_names = {
+  astro = "1: astro", libresprite = "2: libresprite", blender = "3: blender", game = "4: game", tools = "5: tools",
+}
+--- Show an i3 workspace by role: astro, libresprite, blender, game, tools (no-op outside X)
 function M.workspace(n)
   if vim.env.DISPLAY and vim.fn.executable "i3-msg" == 1 then
     -- ignore I3SOCK: tmux (and this editor) may outlive an i3 restart and hold a dead path
@@ -270,20 +273,20 @@ function M.setup_dap_listeners(dap)
   M._ws_listeners = true
   local function ours(session) return session and session.config and session.config.nullptr_game end
   dap.listeners.before.launch.nullptr_ws = function(session)
-    if ours(session) then M.workspace(3) end -- the game window must be visible while it starts
+    if ours(session) then M.workspace "game" end -- the game window must be visible while it starts
   end
   dap.listeners.after.event_stopped.nullptr_ws = function(session)
-    if ours(session) then M.workspace(1) end
+    if ours(session) then M.workspace "astro" end
   end
   dap.listeners.after.event_continued.nullptr_ws = function(session)
     if not ours(session) then return end
     vim.defer_fn(function() -- debounce: stepping stops again within milliseconds
-      if dap.session() == session and not session.stopped_thread_id then M.workspace(3) end
+      if dap.session() == session and not session.stopped_thread_id then M.workspace "game" end
     end, 400)
   end
   for _, ev in ipairs { "event_terminated", "event_exited" } do
     dap.listeners.after[ev].nullptr_ws = function(session)
-      if ours(session) then M.workspace(1) end
+      if ours(session) then M.workspace "astro" end
     end
   end
 end

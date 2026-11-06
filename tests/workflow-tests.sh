@@ -118,10 +118,10 @@ def w(n,ws=None):
     if (n.get("window_properties") or {}).get("class","").lower()=="libresprite": print(ws); return True
     return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
 w(t)')"
-  [ "$ws" = "2: art" ] && ok "LibreSprite lands on workspace 2" || bad "LibreSprite lands on workspace 2" "ws=$ws"
+  [ "$ws" = "2: libresprite" ] && ok "LibreSprite lands on workspace 2 (libresprite)" || bad "LibreSprite lands on workspace 2 (libresprite)" "ws=$ws"
   art >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x libresprite)" = 1 ] && ok "art again focuses, no duplicate" || bad "art again focuses, no duplicate" "count=$(pgrep -c -x libresprite)"
-  # Blender: its own workspace (5: 3d), focus-or-launch like art
+  # Blender: its own workspace (3: blender), focus-or-launch like art
   pkill -x blender 2>/dev/null; for _ in $(seq 1 20); do pgrep -x blender >/dev/null || break; sleep 0.5; done
   check "3d launches Blender"             3d
   for _ in $(seq 1 60); do xdotool search --class '^Blender$' >/dev/null 2>&1 && break; sleep 1; done
@@ -133,7 +133,7 @@ def w(n,ws=None):
     if (n.get("window_properties") or {}).get("class","")=="Blender": print(ws); return True
     return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
 w(t)')"
-  [ "$bws" = "5: 3d" ] && ok "Blender lands on workspace 5 (3d)" || bad "Blender lands on workspace 5 (3d)" "ws=$bws"
+  [ "$bws" = "3: blender" ] && ok "Blender lands on workspace 3 (blender)" || bad "Blender lands on workspace 3 (blender)" "ws=$bws"
   3d >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x blender)" = 1 ] && ok "3d again focuses Blender, no duplicate" || bad "3d again focuses Blender, no duplicate" "count=$(pgrep -c -x blender)"
   pkill -x blender 2>/dev/null; sleep 1

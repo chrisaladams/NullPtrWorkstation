@@ -34,7 +34,7 @@ variables and `L:C$main.c$<line>` records), `NAME.noi`, `NAME.map`, `*.lst`, `*.
 
 ## Run
 
-`gb-run` (or `Space m r`) builds and opens the ROM in Emulicious on workspace 3.
+`gb-run` (or `Space m r`) builds and opens the ROM in Emulicious on workspace 4 (game).
 
 ## Debug C source in AstroVim (primary path)
 

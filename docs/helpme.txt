@@ -19,8 +19,8 @@ nullptr Workstation — beginner guide                           (q to close)
   tmux keeps running if you close kitty or leave the graphical session.
   Type  dev  in any terminal to get back to it.  Ctrl+b d  detaches.
 
-  Super+2 shows LibreSprite (art), Super+3 shows the running game,
-  Super+4 is for anything else, Super+5 is Blender (3d).
+  Super+2 shows LibreSprite (art), Super+3 Blender (3d), Super+4 the
+  running game, Super+5 is for anything else.
   Super+1 brings you back to the editor.
 
  Projects
@@ -46,7 +46,7 @@ nullptr Workstation — beginner guide                           (q to close)
   run-game            build + run (raylib window or ROM in Emulicious)
   debug-game          build Debug + start the debugger in AstroVim
   art [FILE]          LibreSprite on workspace 2 (saves into assets/)
-  3d [FILE.blend]     Blender on workspace 5 (export .glb into assets/)
+  3d [FILE.blend]     Blender on workspace 3 (export .glb into assets/)
   new-c NAME          new plain C project (CMake, no libraries) in ~/Projects/NAME
   new-raylib NAME     new raylib project in ~/Projects/NAME
   new-gameboy NAME    new Game Boy project in ~/Projects/NAME

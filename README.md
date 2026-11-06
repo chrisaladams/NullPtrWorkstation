@@ -11,9 +11,9 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 |---|---|
 | `Super+1` | kitty → tmux (`1` AstroVim · `2` build · `3` LazyGit · `4` shell · `5` btop) |
 | `Super+2` | LibreSprite (`Super+A` / `art`) |
-| `Super+3` | running raylib games and Emulicious |
-| `Super+4` | anything else |
-| `Super+5` | Blender (`Super+B` / `3d`) for 3D and 2.5D scenes |
+| `Super+3` | Blender (`Super+B` / `3d`) for 3D and 2.5D scenes |
+| `Super+4` | running raylib games and Emulicious |
+| `Super+5` | anything else |
 
 > **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
 > passed **106/106** automated checks, run as the user would: tty1 login → graphical
@@ -42,7 +42,7 @@ the output.
 
 ![Build in the editor](docs/screenshots/03-build-in-editor.png)
 
-**Run** (`Space m r`). The game opens on workspace `3: game` and draws the sprite from
+**Run** (`Space m r`). The game opens on workspace `4: game` and draws the sprite from
 LibreSprite.
 
 ![raylib game running](docs/screenshots/04-raylib-game-running.png)
@@ -68,12 +68,12 @@ automated VM test).
 
 ![Game Boy ROM in Emulicious](tests/vm-results/screens/vm-03-gameboy-emulicious.png)
 
-**Pixel art** (`Super+A` / `art`). LibreSprite 1.2 on workspace `2: art`, editing
+**Pixel art** (`Super+A` / `art`). LibreSprite 1.2 on workspace `2: libresprite`, editing
 `assets/player.png`.
 
 ![LibreSprite](docs/screenshots/09-libresprite-sprite.png)
 
-**3D** (`Super+B` / `3d`). Blender on its own workspace `5: 3d`, here with a test diorama
+**3D** (`Super+B` / `3d`). Blender on its own workspace `3: blender`, here with a test diorama
 that the automated test exports as `.glb` and loads in raylib.
 
 ![Blender workspace](docs/screenshots/12-blender-workspace.png)

@@ -38,7 +38,7 @@ import json,sys
 t=json.load(sys.stdin)
 def f(n,ws=None):
     if n.get(\"type\")==\"workspace\": ws=n[\"name\"]
-    if (n.get(\"window_properties\") or {}).get(\"class\")==\"nullptr-dev\": return ws==\"1: code\" and n.get(\"fullscreen_mode\")==1
+    if (n.get(\"window_properties\") or {}).get(\"class\")==\"nullptr-dev\": return ws==\"1: astro\" and n.get(\"fullscreen_mode\")==1
     return any(f(c,ws) for c in n.get(\"nodes\",[])+n.get(\"floating_nodes\",[]))
 sys.exit(0 if f(t) else 1)"'
 
@@ -61,7 +61,7 @@ projects use raylib-hello >/dev/null 2>&1
 
 echo "--- raylib: GDB through nvim-dap"
 rv "raylib C breakpoint, variables, step, continue (GDB + nvim-dap)" bash "$T/dap/raylib-dap-test.sh"
-ws "1: code"
+ws "1: astro"
 
 echo "--- Game Boy: Emulicious debug adapter"
 rv "Game Boy C breakpoint, variables, step, continue (Emulicious DAP)" bash "$T/dap/gameboy-dap-test.sh"
@@ -69,7 +69,7 @@ sleep 2; pkill -f Emulicious.jar; sleep 2
 gbroot="$HOME/Projects/gameboy-hello"
 gbline="$(grep -n 'keys = joypad();' "$gbroot/src/main.c" | cut -d: -f1)"
 rv "Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)" sh -c "cd '$gbroot' && NW_TEST_ROOT='$gbroot' NW_TEST_LINE=$gbline NW_TEST_VAR=keys NW_TEST_OUT=/tmp/nvim-dap-gb.json timeout 300 nvim --headless -c 'luafile $T/dap/nvim_dap_test.lua' >/dev/null 2>&1; cat /tmp/nvim-dap-gb.json; python3 -c 'import json,sys; sys.exit(0 if json.load(open(\"/tmp/nvim-dap-gb.json\")).get(\"PASS\") else 1)'"
-sleep 2; pkill -f Emulicious.jar; ws "1: code"
+sleep 2; pkill -f Emulicious.jar; ws "1: astro"
 
 echo "--- screenshots of the installed system"
 shot vm-01-editor-after-login
@@ -89,6 +89,6 @@ cat /tmp/r.out
 
 3d >/dev/null 2>&1; sleep 20; shot vm-07-blender-workspace; pkill -x blender; sleep 2
 projects use raylib-hello >/dev/null 2>&1
-ws "1: code"; sleep 2; shot vm-05-back-to-editor
+ws "1: astro"; sleep 2; shot vm-05-back-to-editor
 
 echo "=== END nullptr guest tests"

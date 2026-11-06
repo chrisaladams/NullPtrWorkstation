@@ -140,10 +140,23 @@ nw_in_graphical() { [ -n "${DISPLAY:-}" ]; }
 # without I3SOCK, i3-msg reads the live path from the X root window.
 nw_i3() { env -u I3SOCK i3-msg "$@"; }
 
-# nw_i3_workspace N — switch i3 to workspace N (1 code, 2 art, 3 game, 4 tools) if i3 runs
+# Workspaces (keep in sync with config/dotfiles/i3/config and nullptr/project.lua):
+#   1 astro · 2 libresprite · 3 blender · 4 game · 5 tools
+nw_ws_name() {
+  case "$1" in
+    1|astro|code)  echo "1: astro" ;;
+    2|libresprite) echo "2: libresprite" ;;
+    3|blender)     echo "3: blender" ;;
+    4|game)        echo "4: game" ;;
+    5|tools)       echo "5: tools" ;;
+    *)             echo "$1" ;;
+  esac
+}
+
+# nw_i3_workspace ROLE|N — show that workspace (astro, libresprite, blender, game, tools) if i3 runs
 nw_i3_workspace() {
   local name
-  case "$1" in 1) name="1: code" ;; 2) name="2: art" ;; 3) name="3: game" ;; 4) name="4: tools" ;; 5) name="5: 3d" ;; *) name="$1" ;; esac
+  name="$(nw_ws_name "$1")"
   if nw_in_graphical && nw_have i3-msg; then nw_i3 -q "workspace number $name" >/dev/null 2>&1 || true; fi
 }
 
@@ -156,7 +169,7 @@ nw_editor_running() {
 nw_editor_lua() {
   nvim --server "$NW_NVIM_SOCKET" --remote-send "<C-\\><C-n><Cmd>lua $1<CR>" >/dev/null 2>&1 || return 1
   if [ -n "${TMUX:-}" ] || tmux has-session -t dev 2>/dev/null; then tmux select-window -t dev:1 2>/dev/null || true; fi
-  nw_i3_workspace 1
+  nw_i3_workspace astro
 }
 
 # Lua string literal for a path
