@@ -9,10 +9,12 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   Super+2            workspace 2: art    (LibreSprite)
   Super+3            workspace 3: game   (raylib games, Emulicious)
   Super+4            workspace 4: tools  (anything else)
-  Super+Shift+1..4   move the focused window to that workspace
+  Super+5            workspace 5: 3d     (Blender)
+  Super+Shift+1..5   move the focused window to that workspace
   Super+Enter        new terminal (plain shell)
   Super+Shift+Enter  go back to the main dev terminal (reopens it if closed)
   Super+A            LibreSprite (focuses it if already open)
+  Super+B            Blender (focuses it if already open)
   Super+D            app launcher (type a program name)
   Super+F            fullscreen on/off
   Super+Arrows       move focus      Super+Shift+Arrows  move window
@@ -92,7 +94,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
 
  Terminal commands
  --------------------------------------------------------------------------
-  dev   projects   code PATH   build   run-game   debug-game   art
+  dev   projects   code PATH   build   run-game   debug-game   art   3d
   new-c NAME   new-raylib NAME   new-gameboy NAME   projects adopt   build --clean
   gb-build   gb-run   gb-debug
   gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme

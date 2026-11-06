@@ -80,6 +80,14 @@ r "Emulicious window opens with the ROM" sh -c 'xdotool search --name "[Ee]mulic
 shot vm-03-gameboy-emulicious
 pkill -f Emulicious.jar; sleep 2
 art >/dev/null 2>&1; sleep 12; shot vm-04-libresprite; pkill -x libresprite
+
+echo "--- Blender -> glTF -> raylib"
+bt="$(mktemp -d)"
+r "Blender exports a glTF diorama headless" blender -b --factory-startup --python-exit-code 1 --python "$T/blender/make_diorama.py" -- "$bt/room.glb"
+r "raylib loads the Blender .glb (4 meshes)" sh -c "cc -O1 '$T/blender/load_glb.c' -o '$bt/load_glb' \$(pkg-config --cflags --libs raylib) -lm && '$bt/load_glb' '$bt/room.glb' 4"
+cat /tmp/r.out
+
+3d >/dev/null 2>&1; sleep 20; shot vm-07-blender-workspace; pkill -x blender; sleep 2
 projects use raylib-hello >/dev/null 2>&1
 ws "1: code"; sleep 2; shot vm-05-back-to-editor
 

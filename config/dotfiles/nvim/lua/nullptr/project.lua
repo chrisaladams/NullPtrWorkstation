@@ -253,7 +253,7 @@ function M.clean()
 end
 
 -- ---------------------------------------------------------------- i3 workspaces
-local ws_names = { "1: code", "2: art", "3: game", "4: tools" }
+local ws_names = { "1: code", "2: art", "3: game", "4: tools", "5: 3d" }
 --- Show i3 workspace n (no-op outside the graphical session)
 function M.workspace(n)
   if vim.env.DISPLAY and vim.fn.executable "i3-msg" == 1 then

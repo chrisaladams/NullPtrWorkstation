@@ -13,6 +13,7 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | `Super+2` | LibreSprite (`Super+A` / `art`) |
 | `Super+3` | running raylib games and Emulicious |
 | `Super+4` | anything else |
+| `Super+5` | Blender (`Super+B` / `3d`) for 3D and 2.5D scenes |
 
 > **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
 > passed **106/106** automated checks, run as the user would: tty1 login → graphical
@@ -72,6 +73,11 @@ automated VM test).
 
 ![LibreSprite](docs/screenshots/09-libresprite-sprite.png)
 
+**3D** (`Super+B` / `3d`). Blender on its own workspace `5: 3d`, here with a test diorama
+that the automated test exports as `.glb` and loads in raylib.
+
+![Blender workspace](docs/screenshots/12-blender-workspace.png)
+
 **Git** (`Ctrl+b 3`). LazyGit follows the active project: the new sprite and the code that
 uses it.
 
@@ -113,6 +119,7 @@ The result is `out/nullptr-workstation-amd64.iso`, plus `.sha256`, `packages.man
 | raylib | 5.5 from pinned source, X11 | |
 | Game Boy | GBDK-2020 4.5.0 (bundled SDCC), Emulicious + OpenJDK 21 | |
 | Debugging | nvim-dap → GDB's built-in DAP; nvim-dap → Emulicious's DAP server; fallbacks: VSCodium + Emulicious Debugger, Emulicious's own debugger | |
+| 3D | Blender (Debian) on its own workspace; glTF → raylib pipeline tested | |
 | Art | LibreSprite 1.2 (source build; 1.3 needs CMake 4.1) + Wacom/libinput tablet stack | |
 | Look | Tokyo Night everywhere, JetBrainsMono Nerd Font | |
 | Laptop | NetworkManager/nmtui, PipeWire, TLP (only power manager), brightnessctl, i3lock + xss-lock | |
@@ -147,6 +154,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 | [c-projects.md](docs/c-projects.md) | plain C projects, `projects adopt`, custom build/run commands, doing it by hand |
 | [raylib-guide.md](docs/raylib-guide.md) | C/raylib build and GDB debugging |
 | [gameboy-debugging.md](docs/gameboy-debugging.md) | GBDK build, Emulicious, C source debugging and its test status |
+| [blender.md](docs/blender.md) | Blender workspace, laptop settings, glTF into raylib, 2.5D approaches |
 | [drawing-tablet.md](docs/drawing-tablet.md) | tablets, `tablet-info`, `tablet-setup`, limitations |
 | [recovery.md](docs/recovery.md) | when the graphical session or anything else breaks |
 | [licenses.md](docs/licenses.md) | redistribution of bundled software (Emulicious!) |
@@ -154,7 +162,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 
 ## Commands
 
-`dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `art` ·
+`dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `art` · `3d` ·
 `new-c NAME` · `new-raylib NAME` · `new-gameboy NAME` · `projects adopt` · `gb-build` · `gb-run` · `gb-debug` · `gb-clean` ·
 `gb-info` · `tablet-info` · `tablet-setup` · `keys` · `helpme`
 

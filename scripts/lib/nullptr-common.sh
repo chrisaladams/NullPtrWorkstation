@@ -143,7 +143,7 @@ nw_i3() { env -u I3SOCK i3-msg "$@"; }
 # nw_i3_workspace N — switch i3 to workspace N (1 code, 2 art, 3 game, 4 tools) if i3 runs
 nw_i3_workspace() {
   local name
-  case "$1" in 1) name="1: code" ;; 2) name="2: art" ;; 3) name="3: game" ;; 4) name="4: tools" ;; *) name="$1" ;; esac
+  case "$1" in 1) name="1: code" ;; 2) name="2: art" ;; 3) name="3: game" ;; 4) name="4: tools" ;; 5) name="5: 3d" ;; *) name="$1" ;; esac
   if nw_in_graphical && nw_have i3-msg; then nw_i3 -q "workspace number $name" >/dev/null 2>&1 || true; fi
 }
 

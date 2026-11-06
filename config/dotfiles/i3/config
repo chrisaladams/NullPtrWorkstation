@@ -31,20 +31,24 @@ set $ws1 "1: code"
 set $ws2 "2: art"
 set $ws3 "3: game"
 set $ws4 "4: tools"
+set $ws5 "5: 3d"
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
 bindsym $mod+3 workspace number $ws3
 bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
 bindsym $mod+Shift+3 move container to workspace number $ws3
 bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
 
 # Applications always land on their workspace (switching workspaces never starts anything)
 assign [class="(?i)^libresprite$"] number $ws2
 assign [class="(?i)emulicious"] number $ws3
 assign [title="(?i)^emulicious"] number $ws3
 assign [class="(?i)^vscodium$"] number $ws4
+assign [class="^Blender$"] number $ws5
 for_window [class="^nullptr-dev$"] move container to workspace number $ws1, fullscreen enable
 for_window [class="^nullptr-help$"] floating enable, resize set 1000 700, move position center
 for_window [window_role="pop-up"] floating enable
@@ -57,6 +61,7 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+q kill
 bindsym $mod+l exec --no-startup-id nullptr-lock
 bindsym $mod+a exec --no-startup-id art
+bindsym $mod+b exec --no-startup-id 3d
 bindsym $mod+d exec --no-startup-id dmenu_run -fn 'JetBrainsMono Nerd Font-11' -nb '#1a1b26' -nf '#c0caf5' -sb '#7aa2f7' -sf '#1a1b26'
 bindsym $mod+F1 exec --no-startup-id kitty --class nullptr-help -e keys
 

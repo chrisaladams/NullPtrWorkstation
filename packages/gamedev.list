@@ -1,5 +1,8 @@
 # Game Boy (GBDK-2020 + Emulicious need Java) and LibreSprite build/runtime dependencies
 default-jre
+# Blender for 3D / 2.5D scenes (numpy: required by its glTF exporter)
+blender
+python3-numpy
 libcurl4-gnutls-dev
 libfreetype-dev
 libgif-dev
