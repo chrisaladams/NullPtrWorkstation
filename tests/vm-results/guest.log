@@ -1,5 +1,5 @@
-[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,F2C83E8F-CD7A-4ACE-94FA-FFE34C7A9435,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
-BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,F2C83E8F-CD7A-4ACE-94FA-FFE34C7A9435,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,78FFE7E7-0421-4565-A215-9F6E0496EEA0,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,78FFE7E7-0421-4565-A215-9F6E0496EEA0,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
 === BEGIN nullptr guest tests
 --- system
 debian 13.7  kernel 6.12.115+deb13.1-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
@@ -51,6 +51,10 @@ RESULT PASS command libresprite
 RESULT PASS command emulicious
 RESULT PASS command codium
 RESULT PASS command java
+RESULT PASS command blender
+RESULT PASS command gh
+RESULT PASS command nullptr-update
+RESULT PASS command nullptr-iso
 RESULT PASS GDB version >= 16
 RESULT PASS raylib 5.5 via pkg-config
 RESULT PASS GBDK 4.5.0 lcc
@@ -113,11 +117,15 @@ RESULT PASS workflow: keys prints the cheat sheet
 RESULT PASS workflow: helpme prints the guide
 RESULT PASS workflow: art launches LibreSprite
 RESULT PASS workflow: LibreSprite window appears
-RESULT PASS workflow: LibreSprite lands on workspace 2
+RESULT PASS workflow: LibreSprite lands on workspace 2 (libresprite)
 RESULT PASS workflow: art again focuses, no duplicate
+RESULT PASS workflow: 3d launches Blender
+RESULT PASS workflow: Blender window appears
+RESULT PASS workflow: Blender lands on workspace 3 (blender)
+RESULT PASS workflow: 3d again focuses Blender, no duplicate
 RESULT PASS workflow: tablet-setup handles no tablet gracefully
 ----
-PASS: 57  FAIL: 0
+PASS: 61  FAIL: 0
 --- raylib: GDB through nvim-dap
 [1m[38;5;111m▶ Building (debug)[0m [1mraylib-hello[0m  [2m(raylib · /home/nullptr/Projects/raylib-hello)[0m
 ninja: no work to do.
@@ -157,24 +165,24 @@ ninja: no work to do.
 }
 == nvim-dap
  blink.cmp  Downloading pre-built binary blink.cmp  Downloaded pre-built binary successfully{
- "root": "/home/nullptr/Projects/raylib-hello",
  "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
  "after_step_line": 22,
- "variable": {
-  "scope": "Locals",
-  "type": "int",
-  "name": "frameCount",
-  "value": "0"
- },
+ "after_continue_line": 19,
  "PASS": true,
+ "variable": {
+  "value": "0",
+  "name": "frameCount",
+  "scope": "Locals",
+  "type": "int"
+ },
  "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
  "stopped_line": 19,
- "nvim": "0.12.6+v0.12.6",
- "after_continue_line": 19,
+ "stopped_frame": "main",
+ "root": "/home/nullptr/Projects/raylib-hello",
  "call_stack": [
   "main"
  ],
- "stopped_frame": "main",
+ "nvim": "0.12.6+v0.12.6",
  "adapter": "gdb",
  "stops": [
   {
@@ -230,7 +238,7 @@ make: Leaving directory '/home/nullptr/Projects/gameboy-hello'
   "PASS": true
 }
 RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
-{"stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"root":"/home/nullptr/Projects/gameboy-hello","PASS":true,"adapter":"emulicious","after_step_line":20,"breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","variable":{"value":"0 (value in register)","name":"keys","type":"unsigned char","scope":"Locals"},"nvim":"0.12.6+v0.12.6","call_stack":["main()"]}
+{"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","adapter":"emulicious","breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"after_step_line":20,"root":"/home/nullptr/Projects/gameboy-hello","PASS":true,"call_stack":["main()"],"variable":{"value":"0 (value in register)","type":"unsigned char","scope":"Locals","name":"keys"},"nvim":"0.12.6+v0.12.6","stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}]}
 RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
 --- screenshots of the installed system
 SCREENSHOT vm-01-editor-after-login
@@ -238,6 +246,11 @@ SCREENSHOT vm-02-raylib-running
 RESULT PASS Emulicious window opens with the ROM
 SCREENSHOT vm-03-gameboy-emulicious
 SCREENSHOT vm-04-libresprite
+--- Blender -> glTF -> raylib
+RESULT PASS Blender exports a glTF diorama headless
+RESULT PASS raylib loads the Blender .glb (4 meshes)
+meshes=4 materials=3 bounds=(-4.1 -0.1 -4.1)..(4.0 3.0 4.0)
+SCREENSHOT vm-07-blender-workspace
 SCREENSHOT vm-05-back-to-editor
 === END nullptr guest tests
 TTY2 tty=/dev/tty2 display=[] xorgs=1

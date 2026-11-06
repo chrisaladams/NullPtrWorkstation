@@ -16,7 +16,7 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | `Super+5` | anything else |
 
 > **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
-> passed **106/106** automated checks, run as the user would: tty1 login → graphical
+> passed **116/116** automated checks, run as the user would: tty1 login → graphical
 > workspace → builds, raylib and Game Boy C debugging, LibreSprite, tty2 recovery console.
 > Only laptop hardware (tablet, Wi-Fi, battery, suspend, GPU, keys) remains to be checked on
 > the X1 Carbon. Details: [tests/REPORT.md](tests/REPORT.md).

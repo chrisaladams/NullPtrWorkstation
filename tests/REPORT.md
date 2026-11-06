@@ -1,16 +1,17 @@
 # nullptr Workstation — test report
 
-Last full verification: 2026-11-05, commit `1f76f16`,
-[GitHub Actions run 41957878175](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/41957878175).
-**106 checks passed, 0 failed** on a fresh installation of the ISO (the first verified build,
-`b559437`, passed 94/94; this one adds the generic C project type and its 12 tests).
+Last full verification: 2026-11-06, commit `e82775d`,
+[GitHub Actions run 42137348764](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/42137348764).
+**116 checks passed, 0 failed** on a fresh installation of the ISO. Earlier verified builds:
+`b559437` 94/94, `1f76f16` 106/106. This run adds Blender (workspace 3, glTF → raylib), the
+reordered workspaces, `nullptr-update` and `nullptr-iso`.
 
 ## ISO
 
 | | |
 |---|---|
-| File | `nullptr-workstation-amd64.iso`, 2.0 GB, hybrid (USB/DVD, UEFI + BIOS) |
-| SHA-256 | `e83937253d369d107f1625f35f978e32e8de443ef7e2265dabd08ec2666bc878` |
+| File | `nullptr-workstation-amd64.iso`, 2.2 GB, hybrid (USB/DVD, UEFI + BIOS) |
+| SHA-256 | `c36dd416bd7062bcdeeed9141913591c919454f6e18c725e27847e93f1f818b8` |
 | Built by | `./build-iso.sh --docker` (live-build in `debian:trixie`) in GitHub Actions |
 | Where | the `iso` artifact of the run above (not stored in the repository) |
 
@@ -48,11 +49,11 @@ Last full verification: 2026-11-05, commit `1f76f16`,
 | 8 | Game Boy ROM runs in Emulicious | **PASS** | `gb-run` opens Emulicious with the ROM (`vm-03-gameboy-emulicious.png`). |
 | 9 | GDB C breakpoint works for raylib | **PASS** | GDB 16.3 through AstroVim's nvim-dap config: breakpoint on `frameCount++;`, `frameCount` read, step, continue (`tests/dap/raylib-dap-test.sh`). |
 | 10 | C source-level debugging for GBDK | **PASS** | Emulicious debug adapter, both through a raw DAP client and **through AstroVim's nvim-dap config**: breakpoint on `keys = joypad();` verified and hit, `keys` read (`unsigned char`, Locals), step → next line, continue → stops again. Backend: **Emulicious DAP via nvim-dap** (primary path). |
-| 11 | LibreSprite launches | **PASS** | Workspace `2: art`, no duplicates (`vm-04-libresprite.png`). |
+| 11 | LibreSprite launches | **PASS** | Workspace `2: libresprite`, no duplicates (`vm-04-libresprite.png`). Blender likewise on `3: blender`, and a Blender-exported `.glb` loads in raylib (`vm-07-blender-workspace.png`). |
 | 12 | Build/run commands select the correct project | **PASS** | Workflow suite on the installed system, including the refuse-on-conflict case. |
 | 13 | TTY recovery if X11 fails | **PASS** | tty2 login is a plain text console with no second X server (`vm-06-tty2-text-console.png`). A failing `startx` on tty1 leaves a working shell with recovery hints (simulated failure, workflow suite). |
 
-All 106 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
+All 116 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
 guest output is in [`vm-results/guest.log`](vm-results/guest.log).
 
 ## Hardware-dependent (no matching hardware)
