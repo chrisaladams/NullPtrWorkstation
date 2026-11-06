@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# nullptr-update — update this installed workstation from the GitHub repository.
+#
+# Safe by design: your projects are never touched; every config file it replaces is backed
+# up first; only components whose pinned version changed are reinstalled. Uses sudo (asks
+# for your password) for the system-wide parts.
+usage() { cat <<'U'
+Usage: nullptr-update [options]
+  --dry-run        show what would change, change nothing
+  --repo URL       git URL (default: git@github.com:chrisaladams/NullPtrWorkstation.git,
+                   or NULLPTR_REPO)
+  --branch NAME    branch to follow (default: main)
+  --dir DIR        local clone (default: the clone this script runs from, else
+                   ~/src/NullPtrWorkstation)
+  --no-dotfiles    leave your ~/.config etc. alone (system files only)
+  --all-upstream   reinstall every pinned component, changed or not
+After updating: log out (Super+Shift+E) and back in for i3/X changes.
+U
+}
+repo_url="${NULLPTR_REPO:-git@github.com:chrisaladams/NullPtrWorkstation.git}"
+branch=main; dir=""; dry=0; dotfiles=1; all_up=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dry-run) dry=1 ;; --no-dotfiles) dotfiles=0 ;; --all-upstream) all_up=1 ;;
+    --repo) repo_url="${2:?}"; shift ;; --branch) branch="${2:?}"; shift ;; --dir) dir="${2:?}"; shift ;;
+    -h|--help) usage; exit 0 ;; *) usage >&2; exit 64 ;;
+  esac; shift
+done
+nw_have git || nw_die "git is not installed."
+step() { printf '\n%s%s== %s%s\n' "$NW_C_BOLD" "$NW_C_BLUE" "$*" "$NW_C_OFF" >&2; }
+run() { if [ "$dry" = 1 ]; then printf '   (dry run) %s\n' "$*" >&2; else "$@"; fi; }
+
+# ------------------------------------------------------------------ 1. the code
+if [ -z "$dir" ]; then
+  self_repo="$(git -C "$_d" rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$self_repo" ] && [ -f "$self_repo/versions.lock" ]; then dir="$self_repo"; else dir="$HOME/src/NullPtrWorkstation"; fi
+fi
+step "Repository: $dir"
+if [ -d "$dir/.git" ]; then
+  [ -z "$(git -C "$dir" status --porcelain)" ] || nw_die "$dir has local changes. Commit or stash them first (git -C $dir status)."
+  old="$(git -C "$dir" rev-parse --short HEAD)"
+  git -C "$dir" fetch -q origin "$branch" || nw_die "git fetch failed (is your GitHub SSH key set up? ssh -T git@github.com)"
+  new="$(git -C "$dir" rev-parse --short "origin/$branch")"
+  if [ "$old" = "$new" ]; then nw_ok "Already at the latest commit ($new)"
+  else
+    git -C "$dir" log --oneline "$old..origin/$branch" | sed 's/^/   /' >&2
+    [ "$dry" = 1 ] || git -C "$dir" merge -q --ff-only "origin/$branch" || nw_die "Cannot fast-forward $dir; resolve it with git."
+  fi
+else
+  [ "$dry" = 1 ] && nw_die "No clone at $dir yet; run without --dry-run to clone $repo_url"
+  mkdir -p "$(dirname "$dir")"
+  git clone -q --branch "$branch" "$repo_url" "$dir" || nw_die "git clone failed (is your GitHub SSH key set up? ssh -T git@github.com)"
+fi
+[ -f "$dir/versions.lock" ] && [ -x "$dir/scripts/install/install-workstation.sh" ] || nw_die "$dir does not look like the NullPtrWorkstation repository."
+commit="$(git -C "$dir" rev-parse --short HEAD)"
+
+# ------------------------------------------------------------------ 2. Debian packages
+step "Debian packages"
+mapfile -t wanted < <(grep -hv '^\s*#' "$dir"/packages/{base,desktop,devel,gamedev}.list | sed 's/#.*//; s/\s//g; /^$/d' | sort -u)
+missing=()
+for p in "${wanted[@]}"; do
+  dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q 'install ok installed' || missing+=("$p")
+done
+if [ "${#missing[@]}" -eq 0 ]; then nw_ok "All ${#wanted[@]} listed packages are installed"
+else
+  nw_info "Missing: ${missing[*]}"
+  run sudo apt-get update -qq
+  if [ "$dry" = 0 ] && ! sudo apt-get install -y --no-install-recommends "${missing[@]}"; then
+    # one unavailable package must not block the rest: retry one by one
+    failed=()
+    for p in "${missing[@]}"; do
+      sudo apt-get install -y -qq --no-install-recommends "$p" >/dev/null 2>&1 || failed+=("$p")
+    done
+    [ "${#failed[@]}" -eq 0 ] || nw_warn "Could not install: ${failed[*]} (continuing)"
+  fi
+fi
+
+# ------------------------------------------------------------------ 3. pinned upstream components
+step "Pinned components (versions.lock)"
+installed_lock="$NW_SHARE/versions.lock"
+declare -A comp=([NVIM]=neovim [TREESITTER_CLI]=tree-sitter [GBDK]=gbdk [LAZYGIT]=lazygit [NERDFONT]=nerdfont
+                 [RAYLIB]=raylib [LIBRESPRITE]=libresprite [EMULICIOUS]=emulicious [VSCODIUM]=vscodium [EMULICIOUS_VSIX]=vscodium)
+changed=()
+if [ "$all_up" = 1 ] || [ ! -f "$installed_lock" ]; then
+  changed=(neovim tree-sitter gbdk lazygit nerdfont raylib libresprite emulicious vscodium)
+else
+  while IFS= read -r var; do
+    pre=""
+    for k in "${!comp[@]}"; do case "$var" in "${k}_"*) [ "${#k}" -gt "${#pre}" ] && pre="$k" ;; esac; done
+    [ -n "$pre" ] && changed+=("${comp[$pre]}")
+  done < <(diff <(grep -E '^[A-Z0-9_]+=' "$installed_lock" | sort) <(grep -E '^[A-Z0-9_]+=' "$dir/versions.lock" | sort) \
+           | sed -n 's/^[<>] \([A-Z0-9_]*\)=.*/\1/p' | sort -u)
+  mapfile -t changed < <(printf '%s\n' "${changed[@]}" | sed '/^$/d' | sort -u)
+fi
+if [ "${#changed[@]}" -eq 0 ]; then nw_ok "No pinned component changed"
+else
+  nw_info "Reinstalling: ${changed[*]}  (LibreSprite builds from source: ~10 minutes)"
+  run sudo "$dir/scripts/install/install-upstream.sh" "${changed[@]}"
+fi
+
+# ------------------------------------------------------------------ 4. system files
+step "System files (commands, templates, docs, /etc)"
+run sudo "$dir/scripts/install/install-workstation.sh" --no-nvim-plugins
+
+# ------------------------------------------------------------------ 5. your configuration
+if [ "$dotfiles" = 1 ]; then
+  step "Your configuration (backed up before replacing)"
+  D="$dir/config/dotfiles"
+  backup="${XDG_STATE_HOME:-$HOME/.local/state}/nullptr/backups/$(date +%Y%m%d-%H%M%S)"
+  pairs=("$D/shell/bash_profile:$HOME/.bash_profile" "$D/shell/xinitrc:$HOME/.xinitrc" "$D/shell/Xresources:$HOME/.Xresources")
+  for app in i3 i3status kitty tmux lazygit btop nvim; do
+    while IFS= read -r f; do pairs+=("$D/$app/$f:$HOME/.config/$app/$f"); done < <(cd "$D/$app" && find . -type f -printf '%P\n')
+  done
+  n=0
+  for pr in "${pairs[@]}"; do
+    src="${pr%%:*}"; dst="${pr#*:}"
+    cmp -s "$src" "$dst" 2>/dev/null && continue
+    n=$((n+1)); rel="${dst#"$HOME"/}"
+    printf '   %s ~/%s\n' "$([ -e "$dst" ] && echo updated || echo new)" "$rel" >&2
+    [ "$dry" = 1 ] && continue
+    if [ -e "$dst" ]; then mkdir -p "$backup/$(dirname "$rel")"; cp -a "$dst" "$backup/$rel"; fi
+    mkdir -p "$(dirname "$dst")"; cp "$src" "$dst"
+  done
+  if [ "$n" = 0 ]; then nw_ok "Your configuration is already current"
+  elif [ "$dry" = 0 ]; then nw_ok "$n file(s) updated; previous versions in $backup"; fi
+  if [ "$dry" = 0 ] && nw_have nvim; then
+    step "AstroVim plugins (pinned by lazy-lock.json)"
+    nvim --headless "+Lazy! restore" +qa >/dev/null 2>&1 && nw_ok "Plugins match lazy-lock.json" || nw_warn "Plugin sync reported a problem: open AstroVim and run :Lazy"
+  fi
+fi
+
+# ------------------------------------------------------------------ done
+if [ "$dry" = 0 ]; then
+  echo "$commit" | sudo tee "$NW_SHARE/INSTALLED-COMMIT" >/dev/null
+  step "Done: workstation updated to $commit"
+  [ -n "${TMUX:-}" ] && tmux source-file "$HOME/.config/tmux/tmux.conf" 2>/dev/null
+  echo "Log out (Super+Shift+E) and log in again so i3/X pick up the changes." >&2
+else
+  step "Dry run finished: nothing was changed"
+fi
