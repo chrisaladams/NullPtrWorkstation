@@ -1,4 +1,4 @@
-# VM verification: 116 passed, 0 failed
+# VM verification: 123 passed, 0 failed
 
 ```
 RESULT PASS unattended installation finished (debian-installer, UEFI, 40 GB virtio disk)
@@ -35,6 +35,8 @@ RESULT PASS command nvim
 RESULT PASS command lazygit
 RESULT PASS command tree-sitter
 RESULT PASS command libresprite
+RESULT PASS command tiled
+RESULT PASS command tiles
 RESULT PASS command emulicious
 RESULT PASS command codium
 RESULT PASS command java
@@ -105,15 +107,20 @@ RESULT PASS workflow: art launches LibreSprite
 RESULT PASS workflow: LibreSprite window appears
 RESULT PASS workflow: LibreSprite lands on workspace 2 (libresprite)
 RESULT PASS workflow: art again focuses, no duplicate
+RESULT PASS workflow: tiles launches Tiled
+RESULT PASS workflow: Tiled window appears
+RESULT PASS workflow: Tiled lands on workspace 3 (tiled)
+RESULT PASS workflow: tiles again focuses Tiled, no duplicate
 RESULT PASS workflow: 3d launches Blender
 RESULT PASS workflow: Blender window appears
-RESULT PASS workflow: Blender lands on workspace 3 (blender)
+RESULT PASS workflow: Blender lands on workspace 4 (blender)
 RESULT PASS workflow: 3d again focuses Blender, no duplicate
 RESULT PASS workflow: tablet-setup handles no tablet gracefully
 RESULT PASS raylib C breakpoint, variables, step, continue (GDB + nvim-dap)
 RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
 RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
 RESULT PASS Emulicious window opens with the ROM
+RESULT PASS Tiled exports a TMX map to JSON and CSV
 RESULT PASS Blender exports a glTF diorama headless
 RESULT PASS raylib loads the Blender .glb (4 meshes)
 RESULT PASS tty2 login stays a text console (no second X server)

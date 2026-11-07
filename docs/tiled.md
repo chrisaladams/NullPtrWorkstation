@@ -149,6 +149,8 @@ described, not yet covered by the automated test.*
 
 ## Versions and tests
 
-Tiled comes from Debian 13. The automated VM test opens it on workspace 3 and exports a map to
-JSON and CSV from the command line, checking every cell. The raylib example above was compiled
-and run with raylib 5.5.
+Tiled 1.11.0 comes from Debian 13 and is updated with the system (`sudo apt upgrade`). Ignore
+Tiled's own *Update Available* notice in its status bar: that points to the download for
+Windows/macOS. The automated VM test opens Tiled on workspace 3 and exports a map to JSON and CSV
+from the command line, checking every cell. The raylib example above was compiled and run with
+raylib 5.5.
