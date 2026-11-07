@@ -33,7 +33,7 @@ while [ $# -gt 0 ]; do
     *) usage >&2; exit 64 ;;
   esac; shift
 done
-nw_in_graphical || nw_die "tablet-setup must run inside the graphical session."
+nw_need_graphical "tablet-setup"
 nw_have xinput || nw_die "xinput is not installed."
 quiet_exit() { [ "$apply_only" = 1 ] && exit 0; nw_die "$*"; }
 

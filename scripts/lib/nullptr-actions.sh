@@ -113,7 +113,7 @@ nw_do_run() {
       [ "$(nw_meta "$root" window)" = yes ] && nw_i3_workspace astro
       return 0 ;;
   esac
-  nw_in_graphical || nw_die "Running a game needs the graphical session (DISPLAY is not set)."
+  nw_need_graphical "Running a game"
   case "$(nw_type "$root")" in
     raylib)
       nw_i3_workspace game

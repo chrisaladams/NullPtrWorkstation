@@ -8,7 +8,7 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 . "$_l/nullptr-actions.sh"
 # art [FILE] — focus LibreSprite on workspace 2, or start it (never starts a duplicate)
 case "${1:-}" in -h|--help) echo "Usage: art [FILE.png|.ase]   Open LibreSprite (workspace 2: libresprite). Default folder: active project's assets/"; exit 0 ;; esac
-nw_in_graphical || nw_die "LibreSprite needs the graphical session."
+nw_need_graphical "LibreSprite"
 bin="$(command -v libresprite || true)"
 [ -n "$bin" ] || nw_die "LibreSprite is not installed."
 if [ $# -eq 0 ] && pgrep -u "$(id -u)" -x libresprite >/dev/null 2>&1; then

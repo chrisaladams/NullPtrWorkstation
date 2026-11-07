@@ -132,8 +132,45 @@ nw_validate_name() {
     nw_die "Project names must start with a letter and use only letters, digits, '-' or '_' (max 64)."
 }
 
-# nw_in_graphical — true if we can open X11 windows
-nw_in_graphical() { [ -n "${DISPLAY:-}" ]; }
+# nw_x_env VAR — VAR (DISPLAY or XAUTHORITY) of this user's running i3, if any
+nw_x_env() {
+  local pid v
+  for pid in $(pgrep -u "$(id -u)" -x i3 2>/dev/null); do
+    v="$(tr '\0' '\n' <"/proc/$pid/environ" 2>/dev/null | sed -n "s/^$1=//p" | head -n1)"
+    [ -n "$v" ] && { printf '%s\n' "$v"; return 0; }
+  done
+  return 1
+}
+
+# nw_in_graphical — true if we can open X11 windows. A shell that was started before the
+# graphical session (e.g. a tmux window opened from the text console, then startx) has no
+# DISPLAY; if this user's i3 is running, use its display instead of refusing.
+NW_X_ADOPTED=0
+nw_in_graphical() {
+  [ -n "${DISPLAY:-}" ] && return 0
+  local d a
+  d="$(nw_x_env DISPLAY)" || return 1
+  export DISPLAY="$d"
+  if [ -z "${XAUTHORITY:-}" ]; then a="$(nw_x_env XAUTHORITY || true)"; [ -n "$a" ] && export XAUTHORITY="$a"; fi
+  NW_X_ADOPTED=1
+  return 0
+}
+
+# nw_need_graphical WHAT — stop with a clear way out when there is no graphical session
+nw_need_graphical() {
+  if nw_in_graphical; then
+    if [ "$NW_X_ADOPTED" = 1 ] && [ -z "${TMUX:-}" ] && tty 2>/dev/null | grep -q '^/dev/tty[0-9]'; then
+      nw_info "Opening on the graphical screen ($DISPLAY). If you are on a text console, press Ctrl+Alt+F1."
+    fi
+    return 0
+  fi
+  if pgrep -x Xorg >/dev/null 2>&1; then
+    nw_die "$1 needs the graphical session. It is running on tty1: press Ctrl+Alt+F1."
+  fi
+  nw_die "$1 needs the graphical session, and it is not running (you are in the text console: no bar at the top).
+   Start it:  leave tmux with Ctrl+b d, then type  startx   (on tty1).
+   If it fails or closes at once:  less ~/.local/state/nullptr/xsession.log   and  helpme recovery"
+}
 
 # nw_i3 ARGS… — i3-msg that always reaches the *running* i3. I3SOCK is ignored on purpose:
 # a tmux server outlives an i3 restart (exit i3, startx again) and keeps the old socket path;

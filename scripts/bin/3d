@@ -8,7 +8,7 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 . "$_l/nullptr-actions.sh"
 # 3d [FILE.blend] — focus Blender on workspace 3 (blender), or start it (never starts a duplicate)
 case "${1:-}" in -h|--help) echo "Usage: 3d [FILE.blend]   Open Blender (workspace 3: blender). Starts in the active project's assets/"; exit 0 ;; esac
-nw_in_graphical || nw_die "Blender needs the graphical session."
+nw_need_graphical "Blender"
 nw_have blender || nw_die "Blender is not installed (sudo apt install blender python3-numpy)."
 if [ $# -eq 0 ] && pgrep -u "$(id -u)" -x blender >/dev/null 2>&1; then
   nw_i3 -q '[class="^Blender$"] focus' 2>/dev/null || nw_i3_workspace blender

@@ -31,6 +31,16 @@ nullptr Workstation — recovery                                 (q to close)
       init=/bin/bash
     to the  linux  line, Ctrl+X, then:  mount -o remount,rw /  … fix …  reboot -f
 
+ No bar at the top, and LibreSprite / Blender / games will not open
+ --------------------------------------------------------------------------
+  The graphical session is not running: you are looking at tmux in the
+  text console. (On workspace 1 the bar is hidden on purpose, because kitty
+  is fullscreen there. Press Super+2 and the bar should appear.)
+      Ctrl+Alt+F1               back to the graphical screen, if it runs
+      Ctrl+b d                  leave tmux (everything keeps running), then
+      startx                    start it again (on tty1), then Super+A / Super+B
+  art, 3d and run-game say which of these applies when you type them.
+
  The screen is locked and you forgot the password
  --------------------------------------------------------------------------
   In GRUB press  e , add  init=/bin/bash  to the  linux  line, Ctrl+X, then:
