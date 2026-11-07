@@ -25,7 +25,7 @@ nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
     Close the build output with  q  (in that window) or Ctrl+w o.
 
  5. Run
-    Space m r   — the game opens on workspace 4. Esc closes it and you are
+    Space m r   — the game opens on workspace 5. Esc closes it and you are
     back in AstroVim (Super+1 also takes you back).
 
  6. Debug
@@ -81,8 +81,8 @@ nullptr Workstation — beginner guide                           (q to close)
   tmux keeps running if you close kitty or leave the graphical session.
   Type  dev  in any terminal to get back to it.  Ctrl+b d  detaches.
 
-  Super+2 shows LibreSprite (art), Super+3 Blender (3d), Super+4 the
-  running game, Super+5 is for anything else.
+  Super+2 shows LibreSprite (art), Super+3 Tiled (tiles), Super+4 Blender
+  (3d), Super+5 the running game, Super+6 is for anything else.
   Super+1 brings you back to the editor.
 
  Projects
@@ -108,7 +108,8 @@ nullptr Workstation — beginner guide                           (q to close)
   run-game            build + run (raylib window or ROM in Emulicious)
   debug-game          build Debug + start the debugger in AstroVim
   art [FILE]          LibreSprite on workspace 2 (saves into assets/)
-  3d [FILE.blend]     Blender on workspace 3 (export .glb into assets/)
+  tiles [FILE.tmx]    Tiled map editor on workspace 3 (maps into assets/)
+  3d [FILE.blend]     Blender on workspace 4 (export .glb into assets/)
   new-c NAME          new plain C project (CMake, no libraries) in ~/Projects/NAME
   new-raylib NAME     new raylib project in ~/Projects/NAME
   new-gameboy NAME    new Game Boy project in ~/Projects/NAME

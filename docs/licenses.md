@@ -11,6 +11,7 @@ with other people.
 | tree-sitter CLI 0.27.1, parsers | MIT | yes | ✓ |
 | GBDK-2020 4.5.0 (+ bundled SDCC) | GPL-2.0+ with linking exceptions, see `/opt/gbdk/licenses` | yes | ✓ upstream binary release, license files kept |
 | raylib 5.5 | zlib | yes | ✓ |
+| Tiled | GPL-2.0 (editor); BSD-2 for its file-format libraries | Debian package | ✓ Maps you make are yours. Debian ships its source, like every other Debian package |
 | LibreSprite 1.2 | GPL-2.0 | yes (built from source) | ✓ for you. **If you share the ISO**, GPL-2.0 §3 requires offering the source: the exact commit is in `versions.lock`; ship `https://github.com/LibreSprite/LibreSprite` at `5cb089be…` with it |
 | lazygit 0.66.2 | MIT | yes | ✓ |
 | JetBrains Mono Nerd Font 3.5.1 | SIL OFL 1.1 | yes | ✓ |

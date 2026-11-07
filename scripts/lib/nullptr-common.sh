@@ -178,14 +178,15 @@ nw_need_graphical() {
 nw_i3() { env -u I3SOCK i3-msg "$@"; }
 
 # Workspaces (keep in sync with config/dotfiles/i3/config and nullptr/project.lua):
-#   1 astro · 2 libresprite · 3 blender · 4 game · 5 tools
+#   1 astro · 2 libresprite · 3 tiled · 4 blender · 5 game · 6 tools
 nw_ws_name() {
   case "$1" in
     1|astro|code)  echo "1: astro" ;;
     2|libresprite) echo "2: libresprite" ;;
-    3|blender)     echo "3: blender" ;;
-    4|game)        echo "4: game" ;;
-    5|tools)       echo "5: tools" ;;
+    3|tiled|tiles) echo "3: tiled" ;;
+    4|blender)     echo "4: blender" ;;
+    5|game)        echo "5: game" ;;
+    6|tools)       echo "6: tools" ;;
     *)             echo "$1" ;;
   esac
 }

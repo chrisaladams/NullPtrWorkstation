@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test map for the Tiled export check: 8x6 room, 16x16 tiles, walls (2) around a floor (1). -->
+<map version="1.8" orientation="orthogonal" renderorder="right-down" width="8" height="6" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+ <tileset firstgid="1" name="room" tilewidth="16" tileheight="16" tilecount="2" columns="2">
+  <image source="tiles.png" width="32" height="16"/>
+ </tileset>
+ <layer id="1" name="ground" width="8" height="6">
+  <data encoding="csv">
+2,2,2,2,2,2,2,2,
+2,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,2,
+2,1,1,1,1,1,1,2,
+2,2,2,2,2,2,2,2
+</data>
+ </layer>
+</map>

@@ -20,7 +20,7 @@ nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
     Close the build output with  q  (in that window) or Ctrl+w o.
 
  5. Run
-    Space m r   — the game opens on workspace 4. Esc closes it and you are
+    Space m r   — the game opens on workspace 5. Esc closes it and you are
     back in AstroVim (Super+1 also takes you back).
 
  6. Debug

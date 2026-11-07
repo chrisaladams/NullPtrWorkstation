@@ -13,13 +13,15 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
  --------------------------------------------------------------------------
   Super+1            workspace 1: astro        (kitty → tmux → AstroVim)
   Super+2            workspace 2: libresprite  (LibreSprite)
-  Super+3            workspace 3: blender      (Blender)
-  Super+4            workspace 4: game         (raylib games, Emulicious)
-  Super+5            workspace 5: tools        (anything else)
-  Super+Shift+1..5   move the focused window to that workspace
+  Super+3            workspace 3: tiled        (Tiled map editor)
+  Super+4            workspace 4: blender      (Blender)
+  Super+5            workspace 5: game         (raylib games, Emulicious)
+  Super+6            workspace 6: tools        (anything else)
+  Super+Shift+1..6   move the focused window to that workspace
   Super+Enter        new terminal (plain shell)
   Super+Shift+Enter  go back to the main dev terminal (reopens it if closed)
   Super+A            LibreSprite (focuses it if already open)
+  Super+T            Tiled (focuses it if already open)
   Super+B            Blender (focuses it if already open)
   Super+D            app launcher (type a program name)
   Super+F            fullscreen on/off
@@ -74,7 +76,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   Space m d  or F5   build Debug + start the debugger
   Space m p          open project           Space m R   recent projects
   Space m n          new project            Space m i   project info
-  Space m a          LibreSprite
+  Space m a          LibreSprite            Space m t   Tiled
   F9  (Space d b)    toggle breakpoint on this line
   F5                 continue               F10  step over
   F11                step into              Shift+F11  step out
@@ -100,7 +102,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
 
  Terminal commands
  --------------------------------------------------------------------------
-  dev   projects   code PATH   build   run-game   debug-game   art   3d
+  dev   projects   code PATH   build   run-game   debug-game   art   tiles   3d
   new-c NAME   new-raylib NAME   new-gameboy NAME   projects adopt   build --clean
   gb-build   gb-run   gb-debug
   gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme

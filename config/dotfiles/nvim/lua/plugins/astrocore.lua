@@ -60,6 +60,7 @@ return {
         ["<Leader>mn"] = { function() require("nullptr.project").new() end, desc = "New project" },
         ["<Leader>mi"] = { function() require("nullptr.project").info() end, desc = "Project info" },
         ["<Leader>ma"] = { function() vim.system { "art" } end, desc = "Open LibreSprite (art)" },
+        ["<Leader>mt"] = { function() vim.system { "tiles" } end, desc = "Open Tiled map editor (tiles)" },
         ["<Leader>fp"] = { function() require("nullptr.project").pick() end, desc = "Find project" },
         ["<Leader>gD"] = { "<Cmd>DiffviewOpen<CR>", desc = "Diffview: all changes in project" },
         ["<Leader>?"] = { function() require("nullptr.help").open "cheatsheet.txt" end, desc = "nullptr cheat sheet" },

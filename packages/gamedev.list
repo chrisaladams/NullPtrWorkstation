@@ -1,5 +1,7 @@
 # Game Boy (GBDK-2020 + Emulicious need Java) and LibreSprite build/runtime dependencies
 default-jre
+# Tiled: tile map editor (TMX maps; exports JSON/CSV/Lua for raylib and Game Boy)
+tiled
 # Blender for 3D / 2.5D scenes (numpy: required by its glTF exporter)
 blender
 python3-numpy

@@ -27,7 +27,7 @@ nullptr Workstation — recovery                                 (q to close)
       Ctrl+Alt+F1               back to the graphical screen, if it runs
       Ctrl+b d                  leave tmux (everything keeps running), then
       startx                    start it again (on tty1), then Super+A / Super+B
-  art, 3d and run-game say which of these applies when you type them.
+  art, tiles, 3d and run-game say which of these applies when you type them.
 
  The screen is locked and you forgot the password
  --------------------------------------------------------------------------

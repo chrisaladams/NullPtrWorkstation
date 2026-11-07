@@ -44,7 +44,7 @@ sys.exit(0 if f(t) else 1)"'
 
 echo "--- toolchains"
 gb-info
-for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter libresprite emulicious codium java blender gh nullptr-update nullptr-iso; do
+for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter libresprite tiled tiles emulicious codium java blender gh nullptr-update nullptr-iso; do
   r "command $c" command -v "$c"
 done
 r "GDB version >= 16" sh -c 'v=$(gdb --version | head -1 | grep -o "[0-9][0-9]*\.[0-9]*" | head -1); [ "${v%%.*}" -ge 16 ]'
@@ -81,6 +81,10 @@ shot vm-03-gameboy-emulicious
 pkill -f Emulicious.jar; sleep 2
 art >/dev/null 2>&1; sleep 12; shot vm-04-libresprite; pkill -x libresprite
 
+echo "--- Tiled: map export from the command line"
+rv "Tiled exports a TMX map to JSON and CSV" bash "$T/tiled/export-test.sh"
+QT_QPA_PLATFORM=offscreen tiled --version 2>/dev/null || true
+
 echo "--- Blender -> glTF -> raylib"
 bt="$(mktemp -d)"
 r "Blender exports a glTF diorama headless" blender -b --factory-startup --python-exit-code 1 --python "$T/blender/make_diorama.py" -- "$bt/room.glb"
@@ -88,6 +92,7 @@ r "raylib loads the Blender .glb (4 meshes)" sh -c "cc -O1 '$T/blender/load_glb.
 cat /tmp/r.out
 
 3d >/dev/null 2>&1; sleep 20; shot vm-07-blender-workspace; pkill -x blender; sleep 2
+tiles "$T/tiled/room.tmx" >/dev/null 2>&1; sleep 12; shot vm-08-tiled-workspace; pkill -x tiled; sleep 2
 projects use raylib-hello >/dev/null 2>&1
 ws "1: astro"; sleep 2; shot vm-05-back-to-editor
 

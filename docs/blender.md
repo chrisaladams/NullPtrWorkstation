@@ -4,7 +4,7 @@ Blender has its own workspace, like LibreSprite:
 
 | | |
 |---|---|
-| `Super+3` | workspace **3: blender** (Blender always opens here) |
+| `Super+4` | workspace **4: blender** (Blender always opens here) |
 | `Super+B` or `3d` | focus Blender, or start it if it isn't running (never a second copy) |
 | `3d file.blend` | open a specific file |
 

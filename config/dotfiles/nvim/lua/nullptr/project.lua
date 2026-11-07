@@ -255,9 +255,9 @@ end
 -- ---------------------------------------------------------------- i3 workspaces
 -- keep in sync with config/dotfiles/i3/config and scripts/lib/nullptr-common.sh
 local ws_names = {
-  astro = "1: astro", libresprite = "2: libresprite", blender = "3: blender", game = "4: game", tools = "5: tools",
+  astro = "1: astro", libresprite = "2: libresprite", tiled = "3: tiled", blender = "4: blender", game = "5: game", tools = "6: tools",
 }
---- Show an i3 workspace by role: astro, libresprite, blender, game, tools (no-op outside X)
+--- Show an i3 workspace by role: astro, libresprite, tiled, blender, game, tools (no-op outside X)
 function M.workspace(n)
   if vim.env.DISPLAY and vim.fn.executable "i3-msg" == 1 then
     -- ignore I3SOCK: tmux (and this editor) may outlive an i3 restart and hold a dead path

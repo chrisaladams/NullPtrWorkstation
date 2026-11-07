@@ -5,7 +5,7 @@ Three project types share the same commands. Only the template and the default b
 | Type | Create | Build | Run | Debug |
 |---|---|---|---|---|
 | `generic` | `new-c NAME` | CMake + Ninja (or your Makefile, or your `build=` command) | in the terminal | GDB |
-| `raylib` | `new-raylib NAME` | CMake + Ninja, raylib linked | game window on workspace 4 | GDB |
+| `raylib` | `new-raylib NAME` | CMake + Ninja, raylib linked | game window on workspace 5 | GDB |
 | `gameboy` | `new-gameboy NAME` | `make` with GBDK's `lcc` | ROM in Emulicious | Emulicious |
 
 All of this is optional. `cmake`, `make`, `gcc`, `clang` and `gdb` are ordinary commands, and
@@ -60,7 +60,7 @@ build=make CONFIG=$CONFIG          # what `build` / Space m b runs (in the proje
 run=./myprog --verbose input.txt   # what `run-game` / Space m r runs after building
 artifact=myprog                    # the program the debugger (F5) starts
 clean=make clean                   # what `build --clean` / Space m c runs
-window=yes                         # it opens a window: show workspace 4 (game) while it runs
+window=yes                         # it opens a window: show workspace 5 (game) while it runs
 ```
 
 `window=yes` matters for SDL/GLFW programs. They wait until their window is visible, and a
