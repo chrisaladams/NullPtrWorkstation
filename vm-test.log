@@ -1,0 +1,338 @@
+
+[vm-test 02:07:11] Extracting the installer kernel from the ISO
+
+[vm-test 02:07:11] Installing (unattended CI preseed; the ISO's own preseed is loaded too)
+
+[vm-test 02:10:37] Installer exited with 0
+[0m[H[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[J[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 07 [37m 2:07 [32m][0m[2;80H [3;80H [4;80H [5;80H [6;80H [7;80H [8;80H [9;80H [10;80H [11;80H [12;80H [13;80H [14;80H [15;80H [16;80H [17;80H [18;80H [19;80H [20;80H [21;80H [22;80H [23;80H [24;80H [H[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 07 [37m 2:07 [32m][24;80H[0m[2;1H[H[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[J[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 07 [37m 2:07 [32m][0m[2;80H [3;80H [4;80H [5;80H [6;80H [7;80H [8;80H [9;80H [10;80H [11;80H [12;80H [13;80H [14;80H [15;80H [16;80H [17;80H [18;80H [19;80H [20;80H [21;80H [22;80H [23;80H [24;80H [H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 07 [37m 2:07 [32m][24;80H[0m[2;1H[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[J[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 07 [37m 2:07 [32m][0m[2;80H [3;80H [4;80H [5;80H [6;80H [7;80H [8;80H [9;80H [10;80H [11;80H [12;80H [13;80H [14;80H [15;80H [16;80H [17;80H [18;80H [19;80H [20;80H [21;80H [22;80H [23;80H [24;80H [H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 07 [37m 2:07 [32m][24;80H[0m[2;1H[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[      [37m0 start  [31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log       [32m][[34m Nov 07 [37m 2:07 [32m]
+[0m[H[7m[m[32m[40m[      [37m0 start  [31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log       [32m][[34m Nov 07 [37m 2:07 [32m]
+[0mDetecting hardware to find installation media  ... 2%... 95%... 100%
+Scanning installation media  ... 2%... 10%... 21%... 32%... 40%... 51%... 62%... 70%... 81%... 91%... 100%
+[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 07 [37m 2:07 [32m][4B[0mLoading additional components  ... 0%... 10%... 20%... 30%... 40%... 50%... 60%... 70%... 80%... 90%... 100%
+Detecting network hardware  ... 2%... 95%... 100%
+Detecting link on enp0s1; please wait...  ... 0%
+Waiting for link-local address...  ... 16%... 25%... 33%... 41%... 50%... 100%
+Attempting IPv6 autoconfiguration...  ... 8%... 100%
+Attempting IPv6 autoconfiguration...  ... 5%... 10%... 20%... 30%... 40%... 50%... 60%... 70%... 80%... 90%... 100%
+Configuring the network with DHCP  ... 4%... 100%
+Detecting disks and all other hardware  ... 2%... 95%... 100%
+Loading additional components  ... 12%... 25%... 37%... 50%... 62%... 75%... 87%... 100%
+Loading additional components  ... 25%... 50%... 75%... 100%
+Starting up the partitioner  ... 4%... 13%... 21%... 30%... 43%... 52%... 60%... 73%... 82%... 91%... 100%
+Guided partitioning  ... 20%... 40%... 60%... 80%
+Partitions formatting  ... 33%
+Partitions formatting  
+Partitions formatting  
+Installing the system...  ... 0%... 10%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 07 [37m 2:08 [32m][24;40H[0m... 20%... 30%... 40%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 07 [37m 2:09 [32m][24;61H[0m... 50%... 60%... 70[2;24r[24;1H
+[23;80H0%... 80%... 90%... 100%
+Configuring apt  ... 6%... 12%... 25%... 31%... 43%... 50%... 56%... 62%... 75%.
+[23;80H... 81%... 93%... 100%
+Installing GRUB boot loader  ... 16%... 33%... 50%... 66%... 83%... 100%
+Finishing the installation  ... 3%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 07 [37m 2:10 [32m][24;35H[0m... 10%... 20%... 30%... 33%... 40%... 50%... 
+[23;80H 60%... 70%... 80%... 90%The system is going down NOW!
+Sent SIGTERM to all processes
+Sent SIGKILL to all processes
+Requesting system poweroff
+[  203.882226] reboot: Power down
+
+[vm-test 02:10:37] Booting the installed system
+
+[vm-test 02:11:07] Logging in on tty1
+
+[vm-test 02:12:51] Running guest tests in tmux window 2
+
+[vm-test 02:13:40] screenshot vm-01-editor-after-login
+
+[vm-test 02:13:59] screenshot vm-02-raylib-running
+
+[vm-test 02:14:33] screenshot vm-03-gameboy-emulicious
+
+[vm-test 02:14:53] screenshot vm-04-libresprite
+
+[vm-test 02:15:21] screenshot vm-07-blender-workspace
+
+[vm-test 02:15:41] screenshot vm-08-tiled-workspace
+
+[vm-test 02:15:53] screenshot vm-05-back-to-editor
+
+[vm-test 02:15:59] Checking tty2
+
+[vm-test 02:16:46] Full guest log:
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,D771D01D-78DA-4C6C-8491-46D50ED9B4A5,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,D771D01D-78DA-4C6C-8491-46D50ED9B4A5,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+=== BEGIN nullptr guest tests
+--- system
+debian 13.7  kernel 6.12.115+deb13.1-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
+RESULT PASS running as user nullptr
+RESULT PASS home is /home/nullptr
+RESULT PASS nullptr is in group sudo
+RESULT PASS sudo asks for a password (no NOPASSWD)
+RESULT PASS no live-boot/live-config left in the installed system
+RESULT PASS ~/Projects starter projects present
+RESULT PASS ~/Projects owned by nullptr and writable
+RESULT PASS NetworkManager running (nmtui available)
+RESULT PASS TLP enabled, power-profiles-daemon absent
+RESULT PASS PipeWire running for the user
+--- graphical session (started by the tty1 login)
+RESULT PASS Xorg running on tty1
+RESULT PASS i3 running
+RESULT PASS kitty (nullptr-dev) running
+RESULT PASS tmux session dev with windows 1-5
+RESULT PASS AstroVim running in window 1
+RESULT PASS AstroVim shows the dashboard
+RESULT PASS kitty is fullscreen on workspace 1
+--- toolchains
+Game Boy toolchain status
+  GBDK_HOME              /opt/gbdk
+  GBDK version           4.5.0
+  lcc                    /opt/gbdk/bin/lcc $Id: lcc.c,v 2.0 2025/12/28 02:09:50 gbdk-2020 Exp $
+  sdcc                   SDCC : z80/sm83/mos6502/mos65c02 TD- 4.5.1 #15267 (Linux)
+  Java                   openjdk version "21.0.13" 2026-10-20
+  Emulicious             /opt/emulicious/Emulicious.jar
+  Emulicious sha256      6e1c6d511014033b…
+  nvim-dap adapter       emulicious (TCP DAP server, port 58870)
+  VSCodium fallback      1.143.17232
+  Active project         none
+RESULT PASS command gcc
+RESULT PASS command clang
+RESULT PASS command clangd
+RESULT PASS command clang-format
+RESULT PASS command clang-tidy
+RESULT PASS command gdb
+RESULT PASS command cmake
+RESULT PASS command ninja
+RESULT PASS command make
+RESULT PASS command pkg-config
+RESULT PASS command git
+RESULT PASS command nvim
+RESULT PASS command lazygit
+RESULT PASS command tree-sitter
+RESULT PASS command libresprite
+RESULT PASS command tiled
+RESULT PASS command tiles
+RESULT PASS command emulicious
+RESULT PASS command codium
+RESULT PASS command java
+RESULT PASS command blender
+RESULT PASS command gh
+RESULT PASS command nullptr-update
+RESULT PASS command nullptr-iso
+RESULT PASS GDB version >= 16
+RESULT PASS raylib 5.5 via pkg-config
+RESULT PASS GBDK 4.5.0 lcc
+RESULT PASS Emulicious installed
+RESULT PASS JetBrainsMono Nerd Font installed
+RESULT PASS AstroNvim plugins pre-installed (offline)
+RESULT PASS treesitter parsers pre-compiled
+--- workflow suite
+RESULT PASS workflow: new-raylib creates project
+RESULT PASS workflow: new-raylib project builds
+RESULT PASS workflow: raylib Debug binary exists
+RESULT PASS workflow: compile_commands.json linked
+RESULT PASS workflow: build --release works
+RESULT PASS workflow: Release binary exists
+RESULT PASS workflow: new-raylib refuses existing name
+RESULT PASS workflow: existing project left untouched
+RESULT PASS workflow: invalid project name rejected
+RESULT PASS workflow: new-gameboy creates project
+RESULT PASS workflow: gb-build builds the ROM
+RESULT PASS workflow: Debug ROM + .cdb exist
+RESULT PASS workflow: .cdb has C line records
+RESULT PASS workflow: ROM header title set
+RESULT PASS workflow: gb-build --release
+RESULT PASS workflow: gb-clean removes build/
+RESULT PASS workflow: gb-build rejects raylib project
+RESULT PASS workflow: new projects are git repositories
+RESULT PASS workflow: new-c creates a plain C project
+RESULT PASS workflow: --no-git skips git init
+RESULT PASS workflow: new-c project has its own CMakeLists
+RESULT PASS workflow: generic project builds (CMake)
+RESULT PASS workflow: run-game runs a generic program in the terminal
+RESULT PASS workflow: build --clean removes build output
+RESULT PASS workflow: projects adopt marks an existing folder
+RESULT PASS workflow: adopted plain folder is generic
+RESULT PASS workflow: adopt refuses an existing project
+RESULT PASS workflow: generic Makefile project builds and runs
+RESULT PASS workflow: run= line in .nullptr-project is used
+RESULT PASS workflow: generic project listed by projects
+RESULT PASS workflow: projects use raylib-hello
+RESULT PASS workflow: build (from ~) uses active raylib project
+RESULT PASS workflow: projects use gameboy-hello
+RESULT PASS workflow: build (from ~) follows switch to Game Boy
+RESULT PASS workflow: conflict (cwd A, active B) refuses instead of guessing
+RESULT PASS workflow: explicit project name wins
+RESULT PASS workflow: projects list shows active (*)
+RESULT PASS workflow: AstroVim file switch updates active project
+RESULT PASS workflow: shell build follows AstroVim's project
+RESULT PASS workflow: autostart: local login on tty1 starts X
+RESULT PASS workflow: autostart: tty2 stays text (recovery console)
+RESULT PASS workflow: autostart: never for SSH
+RESULT PASS workflow: autostart: never inside tmux
+RESULT PASS workflow: autostart: never for nested shells
+RESULT PASS workflow: autostart: not when X already running
+RESULT PASS workflow: autostart: ~/.config/nullptr/no-autostart disables X
+RESULT PASS workflow: X failure falls back to text console with recovery hints
+RESULT PASS workflow: GBDK_HOME exported by /etc/profile.d
+RESULT PASS workflow: lcc on PATH for login shells
+RESULT PASS workflow: tablet-info runs without a tablet
+RESULT PASS workflow: keys prints the cheat sheet
+RESULT PASS workflow: helpme prints the guide
+RESULT PASS workflow: art launches LibreSprite
+RESULT PASS workflow: LibreSprite window appears
+RESULT PASS workflow: LibreSprite lands on workspace 2 (libresprite)
+RESULT PASS workflow: art again focuses, no duplicate
+RESULT PASS workflow: tiles launches Tiled
+RESULT PASS workflow: Tiled window appears
+RESULT PASS workflow: Tiled lands on workspace 3 (tiled)
+RESULT PASS workflow: tiles again focuses Tiled, no duplicate
+RESULT PASS workflow: 3d launches Blender
+RESULT PASS workflow: Blender window appears
+RESULT PASS workflow: Blender lands on workspace 4 (blender)
+RESULT PASS workflow: 3d again focuses Blender, no duplicate
+RESULT PASS workflow: tablet-setup handles no tablet gracefully
+----
+PASS: 65  FAIL: 0
+--- raylib: GDB through nvim-dap
+[1m[38;5;111m▶ Building (debug)[0m [1mraylib-hello[0m  [2m(raylib · /home/nullptr/Projects/raylib-hello)[0m
+ninja: no work to do.
+[38;5;150m ✔ [0m Built /home/nullptr/Projects/raylib-hello/build/debug/raylib-hello
+== raw DAP (gdb 16.3)
+{
+  "adapter": "gdb --quiet --interpreter=dap",
+  "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
+  "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
+  "initialize": true,
+  "setBreakpoints": [
+    {
+      "id": 1,
+      "verified": false,
+      "reason": "pending"
+    }
+  ],
+  "stopped_reason": "breakpoint",
+  "stop_location": {
+    "name": "main",
+    "line": 19,
+    "source": "/home/nullptr/Projects/raylib-hello/src/main.c"
+  },
+  "call_stack": [
+    "main"
+  ],
+  "variable": {
+    "frameCount": {
+      "scope": "Locals",
+      "value": "0",
+      "type": "int"
+    }
+  },
+  "after_step_line": 22,
+  "after_continue_stopped_again_at_line": 19,
+  "PASS": true
+}
+== nvim-dap
+ blink.cmp  Downloading pre-built binary blink.cmp  Downloaded pre-built binary successfully{
+ "stopped_frame": "main",
+ "adapter": "gdb",
+ "stops": [
+  {
+   "reason": "breakpoint"
+  },
+  {
+   "reason": "step"
+  },
+  {
+   "reason": "breakpoint"
+  }
+ ],
+ "PASS": true,
+ "after_continue_line": 19,
+ "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
+ "root": "/home/nullptr/Projects/raylib-hello",
+ "after_step_line": 22,
+ "nvim": "0.12.6+v0.12.6",
+ "call_stack": [
+  "main"
+ ],
+ "variable": {
+  "value": "0",
+  "name": "frameCount",
+  "scope": "Locals",
+  "type": "int"
+ },
+ "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
+ "stopped_line": 19
+}
+RESULT PASS raylib C breakpoint, variables, step, continue (GDB + nvim-dap)
+--- Game Boy: Emulicious debug adapter
+[1m[38;5;111m▶ Building ROM (debug)[0m [1mgameboy-hello[0m  [2m(gameboy · /home/nullptr/Projects/gameboy-hello)[0m
+make: Entering directory '/home/nullptr/Projects/gameboy-hello'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/nullptr/Projects/gameboy-hello'
+[38;5;150m ✔ [0m Built /home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb
+{
+  "adapter": "127.0.0.1:58870",
+  "program": "/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb",
+  "breakpoint": "/home/nullptr/Projects/gameboy-hello/src/main.c:19",
+  "initialize": true,
+  "setBreakpoints": [
+    {
+      "line": 19,
+      "verified": true,
+      "source": {
+        "path": "/home/nullptr/Projects/gameboy-hello/src/main.c"
+      }
+    }
+  ],
+  "stopped_reason": "breakpoint",
+  "stop_location": {
+    "name": "main()",
+    "line": 19,
+    "source": "/home/nullptr/Projects/gameboy-hello/src/main.c"
+  },
+  "call_stack": [
+    "main()"
+  ],
+  "variable": {
+    "keys": {
+      "scope": "Locals",
+      "value": "0 (value in register)",
+      "type": "unsigned char"
+    }
+  },
+  "after_step_line": 20,
+  "after_continue_stopped_again_at_line": 19,
+  "PASS": true
+}
+RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
+{"nvim":"0.12.6+v0.12.6","call_stack":["main()"],"PASS":true,"stopped_frame":"main()","stopped_line":19,"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"after_step_line":20,"variable":{"type":"unsigned char","value":"0 (value in register)","scope":"Locals","name":"keys"},"adapter":"emulicious","root":"/home/nullptr/Projects/gameboy-hello","breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19}
+RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
+--- screenshots of the installed system
+SCREENSHOT vm-01-editor-after-login
+SCREENSHOT vm-02-raylib-running
+RESULT PASS Emulicious window opens with the ROM
+SCREENSHOT vm-03-gameboy-emulicious
+SCREENSHOT vm-04-libresprite
+--- Tiled: map export from the command line
+JSON ok: 8x6, 24 floor tiles
+CSV ok: room.csv (0-based tile indexes)
+RESULT PASS Tiled exports a TMX map to JSON and CSV
+Tiled 1.11.0
+--- Blender -> glTF -> raylib
+RESULT PASS Blender exports a glTF diorama headless
+RESULT PASS raylib loads the Blender .glb (4 meshes)
+meshes=4 materials=3 bounds=(-4.1 -0.1 -4.1)..(4.0 3.0 4.0)
+SCREENSHOT vm-07-blender-workspace
+SCREENSHOT vm-08-tiled-workspace
+SCREENSHOT vm-05-back-to-editor
+=== END nullptr guest tests
+TTY2 tty=/dev/tty2 display=[] xorgs=1
