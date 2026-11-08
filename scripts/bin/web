@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# web [URL|FILE] — focus Firefox on workspace 2, or start it; with a URL, open it in a new tab
+case "${1:-}" in -h|--help) echo "Usage: web [URL|FILE]   Open Firefox (workspace 2: firefox). A URL or file opens in a new tab."; exit 0 ;; esac
+nw_need_graphical "Firefox"
+bin="$(command -v firefox-esr || command -v firefox || true)"
+[ -n "$bin" ] || nw_die "Firefox is not installed (sudo apt install firefox-esr)."
+running=0; pgrep -u "$(id -u)" -x 'firefox-esr|firefox' >/dev/null 2>&1 && running=1
+if [ $# -eq 0 ] && [ "$running" = 1 ]; then
+  nw_i3 -q '[class="(?i)^firefox"] focus' 2>/dev/null || nw_i3_workspace firefox
+  exit 0
+fi
+nw_i3_workspace firefox
+arg=()
+if [ $# -gt 0 ]; then
+  if [ -e "$1" ]; then arg=("$(readlink -f -- "$1")"); else arg=("$1"); fi
+fi
+# a running Firefox takes the URL as a new tab; otherwise this starts it
+setsid -f "$bin" "${arg[@]}" >/dev/null 2>&1 </dev/null
+[ "$running" = 1 ] || nw_info "Firefox is starting on workspace 2."

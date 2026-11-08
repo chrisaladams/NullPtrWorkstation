@@ -44,7 +44,7 @@ sys.exit(0 if f(t) else 1)"'
 
 echo "--- toolchains"
 gb-info
-for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter libresprite tiled tiles emulicious codium java blender gh nullptr-update nullptr-iso; do
+for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter firefox-esr web libresprite tiled tiles emulicious codium java blender gh nullptr-update nullptr-iso; do
   r "command $c" command -v "$c"
 done
 r "GDB version >= 16" sh -c 'v=$(gdb --version | head -1 | grep -o "[0-9][0-9]*\.[0-9]*" | head -1); [ "${v%%.*}" -ge 16 ]'
@@ -80,6 +80,23 @@ r "Emulicious window opens with the ROM" sh -c 'xdotool search --name "[Ee]mulic
 shot vm-03-gameboy-emulicious
 pkill -f Emulicious.jar; sleep 2
 art >/dev/null 2>&1; sleep 12; shot vm-04-libresprite; pkill -x libresprite
+
+echo "--- Firefox: docs bookmarks toolbar (system policy)"
+fp="$(mktemp -d)"
+(timeout 60 firefox-esr --headless --no-remote --profile "$fp" about:blank >/dev/null 2>&1 &); sleep 40; pkill -f -- "--profile $fp" ; sleep 3
+rv "Firefox applies the policy: docs bookmarks on the toolbar" python3 - "$fp/places.sqlite" <<'PY'
+import sqlite3,sys,shutil,tempfile,os
+d=tempfile.mkdtemp(); 
+for ext in ("","-wal"):
+    if os.path.exists(sys.argv[1]+ext): shutil.copy(sys.argv[1]+ext, os.path.join(d,"p.sqlite"+ext))
+c=sqlite3.connect(os.path.join(d,"p.sqlite"))
+rows=c.execute("select b.title,p.url from moz_bookmarks b join moz_places p on p.id=b.fk where b.parent=(select id from moz_bookmarks where guid='toolbar_____')").fetchall()
+for r in rows: print("  ",r[0],"->",r[1])
+titles={r[0] for r in rows}
+need={"raylib cheatsheet","C reference","GBDK docs","Pan Docs (Game Boy)","Tiled manual"}
+sys.exit(0 if need<=titles else 1)
+PY
+web https://www.raylib.com/cheatsheet/cheatsheet.html >/dev/null 2>&1; sleep 25; shot vm-09-firefox-workspace; pkill -x firefox-esr; sleep 2
 
 echo "--- Tiled: map export from the command line"
 rv "Tiled exports a TMX map to JSON and CSV" bash "$T/tiled/export-test.sh"

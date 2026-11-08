@@ -6,4 +6,4 @@ target=__NAME__
 #run=./build/debug/__NAME__ --some-flag
 #artifact=build/debug/__NAME__     (the program the debugger starts)
 #clean=rm -rf build
-#window=yes                        (opens a window: run it on workspace 5, game)
+#window=yes                        (opens a window: run it on workspace 6, game)

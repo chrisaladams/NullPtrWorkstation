@@ -8,7 +8,7 @@ here="$(cd "$(dirname "$0")" && pwd)"
 root="${1:-$HOME/Projects/raylib-hello}"
 line="$(grep -n 'frameCount++;' "$root/src/main.c" | cut -d: -f1)"
 build "$root"
-i3-msg -q 'workspace number "5: game"' 2>/dev/null || true   # games must be visible to start
+i3-msg -q 'workspace number "6: game"' 2>/dev/null || true   # games must be visible to start
 echo "== raw DAP (gdb $(gdb --version | head -1 | awk '{print $NF}'))"
 python3 -I "$here/dap_client.py" --stdio "gdb --quiet --interpreter=dap" \
   --program "$root/build/debug/$(sed -n 's/^target=//p' "$root/.nullptr-project")" \

@@ -178,20 +178,21 @@ nw_need_graphical() {
 nw_i3() { env -u I3SOCK i3-msg "$@"; }
 
 # Workspaces (keep in sync with config/dotfiles/i3/config and nullptr/project.lua):
-#   1 astro · 2 libresprite · 3 tiled · 4 blender · 5 game · 6 tools
+#   1 astro · 2 firefox · 3 libresprite · 4 tiled · 5 blender · 6 game · 7 tools
 nw_ws_name() {
   case "$1" in
     1|astro|code)  echo "1: astro" ;;
-    2|libresprite) echo "2: libresprite" ;;
-    3|tiled|tiles) echo "3: tiled" ;;
-    4|blender)     echo "4: blender" ;;
-    5|game)        echo "5: game" ;;
-    6|tools)       echo "6: tools" ;;
+    2|firefox|web) echo "2: firefox" ;;
+    3|libresprite) echo "3: libresprite" ;;
+    4|tiled|tiles) echo "4: tiled" ;;
+    5|blender)     echo "5: blender" ;;
+    6|game)        echo "6: game" ;;
+    7|tools)       echo "7: tools" ;;
     *)             echo "$1" ;;
   esac
 }
 
-# nw_i3_workspace ROLE|N — show that workspace (astro, libresprite, blender, game, tools) if i3 runs
+# nw_i3_workspace ROLE|N — show that workspace (astro, firefox, libresprite, tiled, blender, game, tools) if i3 runs
 nw_i3_workspace() {
   local name
   name="$(nw_ws_name "$1")"

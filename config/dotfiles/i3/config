@@ -29,31 +29,35 @@ workspace_auto_back_and_forth no
 # ---------------------------------------------------------------- workspaces
 # keep in sync with scripts/lib/nullptr-common.sh and nvim lua/nullptr/project.lua
 set $ws1 "1: astro"
-set $ws2 "2: libresprite"
-set $ws3 "3: tiled"
-set $ws4 "4: blender"
-set $ws5 "5: game"
-set $ws6 "6: tools"
+set $ws2 "2: firefox"
+set $ws3 "3: libresprite"
+set $ws4 "4: tiled"
+set $ws5 "5: blender"
+set $ws6 "6: game"
+set $ws7 "7: tools"
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
 bindsym $mod+3 workspace number $ws3
 bindsym $mod+4 workspace number $ws4
 bindsym $mod+5 workspace number $ws5
 bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
 bindsym $mod+Shift+1 move container to workspace number $ws1
 bindsym $mod+Shift+2 move container to workspace number $ws2
 bindsym $mod+Shift+3 move container to workspace number $ws3
 bindsym $mod+Shift+4 move container to workspace number $ws4
 bindsym $mod+Shift+5 move container to workspace number $ws5
 bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
 
 # Applications always land on their workspace (switching workspaces never starts anything)
-assign [class="(?i)^libresprite$"] number $ws2
-assign [class="(?i)^tiled$"] number $ws3
-assign [class="^Blender$"] number $ws4
-assign [class="(?i)emulicious"] number $ws5
-assign [title="(?i)^emulicious"] number $ws5
-assign [class="(?i)^vscodium$"] number $ws6
+assign [class="(?i)^firefox"] number $ws2
+assign [class="(?i)^libresprite$"] number $ws3
+assign [class="(?i)^tiled$"] number $ws4
+assign [class="^Blender$"] number $ws5
+assign [class="(?i)emulicious"] number $ws6
+assign [title="(?i)^emulicious"] number $ws6
+assign [class="(?i)^vscodium$"] number $ws7
 for_window [class="^nullptr-dev$"] move container to workspace number $ws1, fullscreen enable
 for_window [class="^nullptr-help$"] floating enable, resize set 1000 700, move position center
 for_window [window_role="pop-up"] floating enable
@@ -65,6 +69,7 @@ bindsym $mod+Shift+Return exec --no-startup-id dev-terminal
 bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+q kill
 bindsym $mod+l exec --no-startup-id nullptr-lock
+bindsym $mod+w exec --no-startup-id web
 bindsym $mod+a exec --no-startup-id art
 bindsym $mod+t exec --no-startup-id tiles
 bindsym $mod+b exec --no-startup-id 3d
@@ -85,7 +90,7 @@ bindsym $mod+Shift+Right move right
 bindsym $mod+h split h
 bindsym $mod+v split v
 bindsym $mod+e layout toggle split
-bindsym $mod+w layout tabbed
+bindsym $mod+Shift+w layout tabbed
 bindsym $mod+Shift+space floating toggle
 floating_modifier $mod
 

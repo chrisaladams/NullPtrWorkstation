@@ -20,7 +20,7 @@ nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
     Close the build output with  q  (in that window) or Ctrl+w o.
 
  5. Run
-    Space m r   — the game opens on workspace 5. Esc closes it and you are
+    Space m r   — the game opens on workspace 6. Esc closes it and you are
     back in AstroVim (Super+1 also takes you back).
 
  6. Debug
@@ -35,7 +35,7 @@ nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
     Ctrl+b 1   → back to AstroVim.
 
  8. Open LibreSprite
-    Super+A (or type  art ). LibreSprite opens on workspace 2, started in the
+    Super+A (or type  art ). LibreSprite opens on workspace 3, started in the
     active project's assets/ folder. Draw a sprite, File ▸ Save As…, and save
     it as ~/Projects/raylib-hello/assets/player.png.
 

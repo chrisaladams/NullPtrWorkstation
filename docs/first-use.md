@@ -25,7 +25,7 @@ nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
     Close the build output with  q  (in that window) or Ctrl+w o.
 
  5. Run
-    Space m r   — the game opens on workspace 5. Esc closes it and you are
+    Space m r   — the game opens on workspace 6. Esc closes it and you are
     back in AstroVim (Super+1 also takes you back).
 
  6. Debug
@@ -40,7 +40,7 @@ nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
     Ctrl+b 1   → back to AstroVim.
 
  8. Open LibreSprite
-    Super+A (or type  art ). LibreSprite opens on workspace 2, started in the
+    Super+A (or type  art ). LibreSprite opens on workspace 3, started in the
     active project's assets/ folder. Draw a sprite, File ▸ Save As…, and save
     it as ~/Projects/raylib-hello/assets/player.png.
 
@@ -81,8 +81,12 @@ nullptr Workstation — beginner guide                           (q to close)
   tmux keeps running if you close kitty or leave the graphical session.
   Type  dev  in any terminal to get back to it.  Ctrl+b d  detaches.
 
-  Super+2 shows LibreSprite (art), Super+3 Tiled (tiles), Super+4 Blender
-  (3d), Super+5 the running game, Super+6 is for anything else.
+  Super+2 shows Firefox (web), Super+3 LibreSprite (art), Super+4 Tiled
+  (tiles), Super+5 Blender (3d), Super+6 the running game, Super+7 is for
+  anything else.
+  A workspace is dark until its program runs: switching never starts
+  anything. Super+W (Firefox), Super+A (LibreSprite), Super+T (Tiled) and
+  Super+B (Blender) start the program, or jump to it if it is open.
   Super+1 brings you back to the editor.
 
  Projects
@@ -107,9 +111,10 @@ nullptr Workstation — beginner guide                           (q to close)
   build [--release]   compile the active project
   run-game            build + run (raylib window or ROM in Emulicious)
   debug-game          build Debug + start the debugger in AstroVim
-  art [FILE]          LibreSprite on workspace 2 (saves into assets/)
-  tiles [FILE.tmx]    Tiled map editor on workspace 3 (maps into assets/)
-  3d [FILE.blend]     Blender on workspace 4 (export .glb into assets/)
+  web [URL]           Firefox on workspace 2 (docs bookmarks in its toolbar)
+  art [FILE]          LibreSprite on workspace 3 (saves into assets/)
+  tiles [FILE.tmx]    Tiled map editor on workspace 4 (maps into assets/)
+  3d [FILE.blend]     Blender on workspace 5 (export .glb into assets/)
   new-c NAME          new plain C project (CMake, no libraries) in ~/Projects/NAME
   new-raylib NAME     new raylib project in ~/Projects/NAME
   new-gameboy NAME    new Game Boy project in ~/Projects/NAME

@@ -10,11 +10,12 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | Workspace | Purpose |
 |---|---|
 | `Super+1` | kitty → tmux (`1` AstroVim · `2` build · `3` LazyGit · `4` shell · `5` btop) |
-| `Super+2` | LibreSprite (`Super+A` / `art`) |
-| `Super+3` | Tiled map editor (`Super+T` / `tiles`) for tile maps and levels |
-| `Super+4` | Blender (`Super+B` / `3d`) for 3D and 2.5D scenes |
-| `Super+5` | running raylib games and Emulicious |
-| `Super+6` | anything else |
+| `Super+2` | Firefox (`Super+W` / `web`), with a toolbar of raylib, C, GBDK, Tiled and Blender docs |
+| `Super+3` | LibreSprite (`Super+A` / `art`) |
+| `Super+4` | Tiled map editor (`Super+T` / `tiles`) for tile maps and levels |
+| `Super+5` | Blender (`Super+B` / `3d`) for 3D and 2.5D scenes |
+| `Super+6` | running raylib games and Emulicious |
+| `Super+7` | anything else |
 
 > **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
 > passed **123/123** automated checks, run as the user would: tty1 login → graphical
@@ -43,7 +44,7 @@ the output.
 
 ![Build in the editor](docs/screenshots/03-build-in-editor.png)
 
-**Run** (`Space m r`). The game opens on workspace `5: game` and draws the sprite from
+**Run** (`Space m r`). The game opens on workspace `6: game` and draws the sprite from
 LibreSprite.
 
 ![raylib game running](docs/screenshots/04-raylib-game-running.png)
@@ -69,17 +70,17 @@ automated VM test).
 
 ![Game Boy ROM in Emulicious](tests/vm-results/screens/vm-03-gameboy-emulicious.png)
 
-**Pixel art** (`Super+A` / `art`). LibreSprite 1.2 on workspace `2: libresprite`, editing
+**Pixel art** (`Super+A` / `art`). LibreSprite 1.2 on workspace `3: libresprite`, editing
 `assets/player.png`.
 
 ![LibreSprite](docs/screenshots/09-libresprite-sprite.png)
 
-**3D** (`Super+B` / `3d`). Blender on its own workspace `4: blender`, here with a test diorama
+**3D** (`Super+B` / `3d`). Blender on its own workspace `5: blender`, here with a test diorama
 that the automated test exports as `.glb` and loads in raylib.
 
 ![Blender workspace](docs/screenshots/12-blender-workspace.png)
 
-**Tile maps** (`Super+T` / `tiles`). Tiled on workspace `3: tiled` with the test map, a tileset
+**Tile maps** (`Super+T` / `tiles`). Tiled on workspace `4: tiled` with the test map, a tileset
 drawn as a PNG. The automated test exports it to JSON and CSV for the game
 ([docs/tiled.md](docs/tiled.md)).
 
@@ -126,6 +127,7 @@ The result is `out/nullptr-workstation-amd64.iso`, plus `.sha256`, `packages.man
 | raylib | 5.5 from pinned source, X11 | |
 | Game Boy | GBDK-2020 4.5.0 (bundled SDCC), Emulicious + OpenJDK 21 | |
 | Debugging | nvim-dap → GDB's built-in DAP; nvim-dap → Emulicious's DAP server; fallbacks: VSCodium + Emulicious Debugger, Emulicious's own debugger | |
+| Web | Firefox ESR (Debian) on its own workspace, docs bookmarks toolbar | |
 | Maps | Tiled (Debian) on its own workspace; TMX → JSON/CSV export tested |
 | 3D | Blender (Debian) on its own workspace; glTF → raylib pipeline tested | |
 | Art | LibreSprite 1.2 (source build; 1.3 needs CMake 4.1) + Wacom/libinput tablet stack | |
@@ -172,7 +174,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 
 ## Commands
 
-`dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `art` · `tiles` · `3d` ·
+`dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `web` · `art` · `tiles` · `3d` ·
 `new-c NAME` · `new-raylib NAME` · `new-gameboy NAME` · `projects adopt` · `gb-build` · `gb-run` · `gb-debug` · `gb-clean` ·
 `gb-info` · `tablet-info` · `tablet-setup` · `keys` · `helpme` · `nullptr-update` · `nullptr-iso`
 

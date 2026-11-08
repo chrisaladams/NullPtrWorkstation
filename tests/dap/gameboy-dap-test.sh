@@ -12,7 +12,7 @@ target="$(sed -n 's/^target=//p' "$root/.nullptr-project")"
 gb-build "$root"
 line="$(grep -n 'keys = joypad();' "$root/src/main.c" | cut -d: -f1)"
 port=58870
-i3-msg -q 'workspace number "5: game"' 2>/dev/null || true
+i3-msg -q 'workspace number "6: game"' 2>/dev/null || true
 emulicious -remotedebug "$port" >/tmp/emulicious-dap.log 2>&1 &
 emu=$!
 trap 'kill $emu 2>/dev/null || true' EXIT

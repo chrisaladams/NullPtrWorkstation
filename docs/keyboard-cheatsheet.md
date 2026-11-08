@@ -12,14 +12,16 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
  i3 (windows and workspaces)
  --------------------------------------------------------------------------
   Super+1            workspace 1: astro        (kitty → tmux → AstroVim)
-  Super+2            workspace 2: libresprite  (LibreSprite)
-  Super+3            workspace 3: tiled        (Tiled map editor)
-  Super+4            workspace 4: blender      (Blender)
-  Super+5            workspace 5: game         (raylib games, Emulicious)
-  Super+6            workspace 6: tools        (anything else)
-  Super+Shift+1..6   move the focused window to that workspace
+  Super+2            workspace 2: firefox      (Firefox, docs bookmarks)
+  Super+3            workspace 3: libresprite  (LibreSprite)
+  Super+4            workspace 4: tiled        (Tiled map editor)
+  Super+5            workspace 5: blender      (Blender)
+  Super+6            workspace 6: game         (raylib games, Emulicious)
+  Super+7            workspace 7: tools        (anything else)
+  Super+Shift+1..7   move the focused window to that workspace
   Super+Enter        new terminal (plain shell)
   Super+Shift+Enter  go back to the main dev terminal (reopens it if closed)
+  Super+W            Firefox (focuses it if already open)
   Super+A            LibreSprite (focuses it if already open)
   Super+T            Tiled (focuses it if already open)
   Super+B            Blender (focuses it if already open)
@@ -102,7 +104,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
 
  Terminal commands
  --------------------------------------------------------------------------
-  dev   projects   code PATH   build   run-game   debug-game   art   tiles   3d
+  dev   projects   code PATH   build   run-game   debug-game   web   art   tiles   3d
   new-c NAME   new-raylib NAME   new-gameboy NAME   projects adopt   build --clean
   gb-build   gb-run   gb-debug
   gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme

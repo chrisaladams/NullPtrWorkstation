@@ -45,14 +45,14 @@ Binaries: `build/debug/NAME` and `build/release/NAME`.
 
 ## Run
 
-`run-game` (or `Space m r`) builds incrementally, switches to i3 workspace 5 (game), runs the game
+`run-game` (or `Space m r`) builds incrementally, switches to i3 workspace 6 (game), runs the game
 from the project root, and returns to workspace 1 when the game exits.
 
 ## Debug (GDB through nvim-dap)
 
 1. Put the cursor on an executable line (e.g. `frameCount++;`) and press **F9**
    (`Space d b`). A breakpoint sign appears.
-2. Press **F5** (`Space m d`). A Debug build is made, the game starts on workspace 5, and
+2. Press **F5** (`Space m d`). A Debug build is made, the game starts on workspace 6, and
    when the breakpoint is hit **i3 switches back to the editor** with the debugger panels:
    *Scopes/Locals* (variables), *Stacks* (call stack), *Breakpoints*, *Watches*, *REPL*.
 3. **F10** step over, **F11** step into, **Shift+F11** step out, **F5** continue

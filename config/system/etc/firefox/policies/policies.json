@@ -1,0 +1,20 @@
+{
+  "policies": {
+    "DontCheckDefaultBrowser": true,
+    "DisableTelemetry": true,
+    "OverrideFirstRunPage": "",
+    "NoDefaultBookmarks": true,
+    "DisplayBookmarksToolbar": "always",
+    "Bookmarks": [
+      { "Title": "raylib cheatsheet", "URL": "https://www.raylib.com/cheatsheet/cheatsheet.html", "Placement": "toolbar" },
+      { "Title": "raylib examples",   "URL": "https://www.raylib.com/examples.html",              "Placement": "toolbar" },
+      { "Title": "C reference",       "URL": "https://en.cppreference.com/w/c",                  "Placement": "toolbar" },
+      { "Title": "GBDK docs",         "URL": "https://gbdk-2020.github.io/gbdk-2020/docs/api/",  "Placement": "toolbar" },
+      { "Title": "Pan Docs (Game Boy)", "URL": "https://gbdev.io/pandocs/",                      "Placement": "toolbar" },
+      { "Title": "Tiled manual",      "URL": "https://doc.mapeditor.org/en/stable/",             "Placement": "toolbar" },
+      { "Title": "Blender manual",    "URL": "https://docs.blender.org/manual/en/latest/",       "Placement": "toolbar" },
+      { "Title": "CMake tutorial",    "URL": "https://cmake.org/cmake/help/latest/guide/tutorial/index.html", "Placement": "toolbar" },
+      { "Title": "NullPtrWorkstation", "URL": "https://github.com/chrisaladams/NullPtrWorkstation", "Placement": "toolbar" }
+    ]
+  }
+}

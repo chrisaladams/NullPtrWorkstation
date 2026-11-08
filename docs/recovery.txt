@@ -23,7 +23,7 @@ nullptr Workstation — recovery                                 (q to close)
  --------------------------------------------------------------------------
   The graphical session is not running: you are looking at tmux in the
   text console. (On workspace 1 the bar is hidden on purpose, because kitty
-  is fullscreen there. Press Super+2 and the bar should appear.)
+  is fullscreen there. Press Super+7 and the bar should appear.)
       Ctrl+Alt+F1               back to the graphical screen, if it runs
       Ctrl+b d                  leave tmux (everything keeps running), then
       startx                    start it again (on tty1), then Super+A / Super+B

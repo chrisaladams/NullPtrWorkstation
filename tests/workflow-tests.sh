@@ -118,10 +118,28 @@ def w(n,ws=None):
     if (n.get("window_properties") or {}).get("class","").lower()=="libresprite": print(ws); return True
     return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
 w(t)')"
-  [ "$ws" = "2: libresprite" ] && ok "LibreSprite lands on workspace 2 (libresprite)" || bad "LibreSprite lands on workspace 2 (libresprite)" "ws=$ws"
+  [ "$ws" = "3: libresprite" ] && ok "LibreSprite lands on workspace 3 (libresprite)" || bad "LibreSprite lands on workspace 3 (libresprite)" "ws=$ws"
   art >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x libresprite)" = 1 ] && ok "art again focuses, no duplicate" || bad "art again focuses, no duplicate" "count=$(pgrep -c -x libresprite)"
-  # Tiled: its own workspace (3: tiled), focus-or-launch like art
+  # Firefox: workspace 2 (firefox), focus-or-launch like art (skipped where Firefox isn't installed)
+  if command -v firefox-esr >/dev/null 2>&1; then
+    ffwin() { i3-msg -t get_tree | python3 -c 'import json,sys
+t=json.load(sys.stdin); out=[]
+def w(n,ws=None):
+    if n.get("type")=="workspace": ws=n["name"]
+    if (n.get("window_properties") or {}).get("class","").lower().startswith("firefox"): out.append(ws)
+    for c in n.get("nodes",[])+n.get("floating_nodes",[]): w(c,ws)
+w(t); print(len(out), out[0] if out else "")'; }
+    pkill -x firefox-esr 2>/dev/null; sleep 2
+    check "web launches Firefox"            web
+    for _ in $(seq 1 90); do [ "$(ffwin | cut -d' ' -f1)" -ge 1 ] && break; sleep 1; done
+    fw="$(ffwin)"
+    [ "${fw#* }" = "2: firefox" ] && ok "Firefox lands on workspace 2 (firefox)" || bad "Firefox lands on workspace 2 (firefox)" "found=$fw"
+    web >/dev/null 2>&1; sleep 3
+    [ "$(ffwin | cut -d' ' -f1)" = 1 ] && ok "web again focuses Firefox, no second window" || bad "web again focuses Firefox, no second window" "found=$(ffwin)"
+    pkill -x firefox-esr 2>/dev/null; sleep 2
+  fi
+  # Tiled: its own workspace (4: tiled), focus-or-launch like art
   pkill -x tiled 2>/dev/null; for _ in $(seq 1 20); do pgrep -x tiled >/dev/null || break; sleep 0.5; done
   check "tiles launches Tiled"            tiles
   for _ in $(seq 1 40); do xdotool search --class '^tiled$' >/dev/null 2>&1 && break; sleep 1; done
@@ -133,11 +151,11 @@ def w(n,ws=None):
     if (n.get("window_properties") or {}).get("class","").lower()=="tiled": print(ws); return True
     return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
 w(t)')"
-  [ "$tws" = "3: tiled" ] && ok "Tiled lands on workspace 3 (tiled)" || bad "Tiled lands on workspace 3 (tiled)" "ws=$tws"
+  [ "$tws" = "4: tiled" ] && ok "Tiled lands on workspace 4 (tiled)" || bad "Tiled lands on workspace 4 (tiled)" "ws=$tws"
   tiles >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x tiled)" = 1 ] && ok "tiles again focuses Tiled, no duplicate" || bad "tiles again focuses Tiled, no duplicate" "count=$(pgrep -c -x tiled)"
   pkill -x tiled 2>/dev/null; sleep 1
-  # Blender: its own workspace (4: blender), focus-or-launch like art
+  # Blender: its own workspace (5: blender), focus-or-launch like art
   pkill -x blender 2>/dev/null; for _ in $(seq 1 20); do pgrep -x blender >/dev/null || break; sleep 0.5; done
   check "3d launches Blender"             3d
   for _ in $(seq 1 60); do xdotool search --class '^Blender$' >/dev/null 2>&1 && break; sleep 1; done
@@ -149,7 +167,7 @@ def w(n,ws=None):
     if (n.get("window_properties") or {}).get("class","")=="Blender": print(ws); return True
     return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
 w(t)')"
-  [ "$bws" = "4: blender" ] && ok "Blender lands on workspace 4 (blender)" || bad "Blender lands on workspace 4 (blender)" "ws=$bws"
+  [ "$bws" = "5: blender" ] && ok "Blender lands on workspace 5 (blender)" || bad "Blender lands on workspace 5 (blender)" "ws=$bws"
   3d >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x blender)" = 1 ] && ok "3d again focuses Blender, no duplicate" || bad "3d again focuses Blender, no duplicate" "count=$(pgrep -c -x blender)"
   pkill -x blender 2>/dev/null; sleep 1

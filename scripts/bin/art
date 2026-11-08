@@ -6,8 +6,8 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 . "$_l/nullptr-common.sh"
 # shellcheck source=../lib/nullptr-actions.sh
 . "$_l/nullptr-actions.sh"
-# art [FILE] — focus LibreSprite on workspace 2, or start it (never starts a duplicate)
-case "${1:-}" in -h|--help) echo "Usage: art [FILE.png|.ase]   Open LibreSprite (workspace 2: libresprite). Default folder: active project's assets/"; exit 0 ;; esac
+# art [FILE] — focus LibreSprite on workspace 3, or start it (never starts a duplicate)
+case "${1:-}" in -h|--help) echo "Usage: art [FILE.png|.ase]   Open LibreSprite (workspace 3: libresprite). Default folder: active project's assets/"; exit 0 ;; esac
 nw_need_graphical "LibreSprite"
 bin="$(command -v libresprite || true)"
 [ -n "$bin" ] || nw_die "LibreSprite is not installed."
@@ -21,4 +21,4 @@ nw_i3_workspace libresprite
 cd "$dir"
 if [ $# -gt 0 ]; then f="$(readlink -f -- "$1")"; setsid -f "$bin" "$f" >/dev/null 2>&1 </dev/null
 else setsid -f "$bin" >/dev/null 2>&1 </dev/null; fi
-nw_info "LibreSprite is starting on workspace 2. Save sprites into: $dir"
+nw_info "LibreSprite is starting on workspace 3. Save sprites into: $dir"

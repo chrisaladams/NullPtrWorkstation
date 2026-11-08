@@ -29,3 +29,5 @@ kitty-terminfo
 tmux
 fonts-dejavu-core
 fontconfig
+# Web browser (workspace 2: firefox; Super+W or `web`)
+firefox-esr
