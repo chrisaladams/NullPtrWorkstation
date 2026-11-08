@@ -18,7 +18,7 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | `Super+7` | anything else |
 
 > **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
-> passed **123/123** automated checks, run as the user would: tty1 login → graphical
+> passed **129/129** automated checks, run as the user would: tty1 login → graphical
 > workspace → builds, raylib and Game Boy C debugging, LibreSprite, tty2 recovery console.
 > Only laptop hardware (tablet, Wi-Fi, battery, suspend, GPU, keys) remains to be checked on
 > the X1 Carbon. Details: [tests/REPORT.md](tests/REPORT.md).
@@ -85,6 +85,11 @@ drawn as a PNG. The automated test exports it to JSON and CSV for the game
 ([docs/tiled.md](docs/tiled.md)).
 
 ![Tiled workspace](docs/screenshots/14-tiled-workspace.png)
+
+**Docs one key away** (`Super+W` / `web`). Firefox on workspace `2: firefox`, with a toolbar of
+the references used here: raylib, C, GBDK, Pan Docs, Tiled, Blender, CMake.
+
+![Firefox workspace](docs/screenshots/15-firefox-workspace.png)
 
 **Git** (`Ctrl+b 3`). LazyGit follows the active project: the new sprite and the code that
 uses it.
