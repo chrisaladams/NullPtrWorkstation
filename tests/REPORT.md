@@ -1,18 +1,18 @@
 # nullptr Workstation — test report
 
-Last full verification: 2026-11-07, commit `0c2fd8e`,
-[GitHub Actions run 42325709189](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/42325709189).
-**123 checks passed, 0 failed** on a fresh installation of the ISO. Earlier verified builds:
-`b559437` 94/94, `1f76f16` 106/106, `e82775d` 116/116. This run adds the Tiled map editor
-(Debian's Tiled 1.11.0 on workspace 3, TMX → JSON/CSV export checked cell by cell), moves Blender
-to workspace 4, and includes the fix that lets `art`/`3d`/`tiles` find a running graphical session.
+Last full verification: 2026-11-08, commit `8ef03e4`,
+[GitHub Actions run 42428608367](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/42428608367).
+**129 checks passed, 0 failed** on a fresh installation of the ISO. Earlier verified builds:
+`b559437` 94/94, `1f76f16` 106/106, `e82775d` 116/116, `0c2fd8e` 123/123. This run adds Firefox
+ESR on workspace 2 (no second window; the docs bookmarks toolbar read back from a fresh profile)
+and moves the other workspaces up one: 3 libresprite, 4 tiled, 5 blender, 6 game, 7 tools.
 
 ## ISO
 
 | | |
 |---|---|
 | File | `nullptr-workstation-amd64.iso`, 2.2 GB, hybrid (USB/DVD, UEFI + BIOS) |
-| SHA-256 | `17ee69f62da6a3de04839691751251b2fcdcb8e328240ec61cc20512c81b7f6e` |
+| SHA-256 | `5d933637cec4f6e51caeed3eecc7fe20dec0e9cfb00b40d5ac89306f857d642d` |
 | Built by | `./build-iso.sh --docker` (live-build in `debian:trixie`) in GitHub Actions |
 | Where | the `iso` artifact of the run above (not stored in the repository) |
 
@@ -50,11 +50,11 @@ to workspace 4, and includes the fix that lets `art`/`3d`/`tiles` find a running
 | 8 | Game Boy ROM runs in Emulicious | **PASS** | `gb-run` opens Emulicious with the ROM (`vm-03-gameboy-emulicious.png`). |
 | 9 | GDB C breakpoint works for raylib | **PASS** | GDB 16.3 through AstroVim's nvim-dap config: breakpoint on `frameCount++;`, `frameCount` read, step, continue (`tests/dap/raylib-dap-test.sh`). |
 | 10 | C source-level debugging for GBDK | **PASS** | Emulicious debug adapter, both through a raw DAP client and **through AstroVim's nvim-dap config**: breakpoint on `keys = joypad();` verified and hit, `keys` read (`unsigned char`, Locals), step → next line, continue → stops again. Backend: **Emulicious DAP via nvim-dap** (primary path). |
-| 11 | LibreSprite launches | **PASS** | Workspace `2: libresprite`, no duplicates (`vm-04-libresprite.png`). Tiled likewise on `3: tiled` (`vm-08-tiled-workspace.png`) and Blender on `4: blender`; a Blender-exported `.glb` loads in raylib (`vm-07-blender-workspace.png`). |
+| 11 | LibreSprite launches | **PASS** | Workspace `3: libresprite`, no duplicates (`vm-04-libresprite.png`). Firefox on `2: firefox` (`vm-09-firefox-workspace.png`), Tiled on `4: tiled` (`vm-08-tiled-workspace.png`) and Blender on `5: blender`; a Blender-exported `.glb` loads in raylib (`vm-07-blender-workspace.png`). |
 | 12 | Build/run commands select the correct project | **PASS** | Workflow suite on the installed system, including the refuse-on-conflict case. |
 | 13 | TTY recovery if X11 fails | **PASS** | tty2 login is a plain text console with no second X server (`vm-06-tty2-text-console.png`). A failing `startx` on tty1 leaves a working shell with recovery hints (simulated failure, workflow suite). |
 
-All 123 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
+All 129 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
 guest output is in [`vm-results/guest.log`](vm-results/guest.log).
 
 ## Hardware-dependent (no matching hardware)
