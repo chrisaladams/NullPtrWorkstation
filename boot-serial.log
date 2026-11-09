@@ -1,0 +1,17 @@
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,13543CF1-8AA2-48D7-8293-08D12052AFC8,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,13543CF1-8AA2-48D7-8293-08D12052AFC8,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+[H[J[1;1H[?25l[m[H[J[1;1H[2;25HGNU GRUB  version 2.12-9+deb13u2
+
+[m[4;2H+----------------------------------------------------------------------------+[5;2H|[5;79H|[6;2H|[6;79H|[7;2H|[7;79H|[8;2H|[8;79H|[9;2H|[9;79H|[10;2H|[10;79H|[11;2H|[11;79H|[12;2H|[12;79H|[13;2H|[13;79H|[14;2H|[14;79H|[15;2H|[15;79H|[16;2H|[16;79H|[17;2H+----------------------------------------------------------------------------+[m[18;2H[19;2H[m     Use the ^ and v keys to select which entry is highlighted.          
+      Press enter to boot the selected OS, `e' to edit the commands       
+      before booting or `c' for a command-line.                           [5;80H [7m[5;3H*nullptr Workstation (Debian) GNU/Linux                                     [m[5;78H[m[m[6;3H Advanced options for nullptr Workstation (Debian) GNU/Linux                [m[6;78H[m[m[7;3H UEFI Firmware Settings                                                     [m[7;78H[m[m[8;3H                                                                            [m[8;78H[m[m[9;3H                                                                            [m[9;78H[m[m[10;3H                                                                            [m[10;78H[m[m[11;3H                                                                            [m[11;78H[m[m[12;3H                                                                            [m[12;78H[m[m[13;3H                                                                            [m[13;78H[m[m[14;3H                                                                            [m[14;78H[m[m[15;3H                                                                            [m[15;78H[m[m[16;3H                                                                            [m[16;78H[m[16;80H [5;78H[22;1H   The highlighted entry will be executed automatically in 3s.                 [5;78H[22;1H   The highlighted entry will be executed automatically in 2s.                 [5;78H[22;1H   The highlighted entry will be executed automatically in 1s.                 [5;78H[22;1H   The highlighted entry will be executed automatically in 0s.                 [5;78H[?25h[H[J[1;1H[H[J[1;1H  Booting `nullptr Workstation (Debian) GNU/Linux'
+
+Loading Linux 6.12.116+deb13-amd64 ...
+Loading initial ramdisk ...
+[!p]104[?7h[6n[32766;32766H[6n[!p]104[?7h[6n[32766;32766H[6n
+nullptr Workstation (Debian GNU/Linux 13) nullptr ttyS0
+
+Log in as nullptr. On tty1 the graphical workspace starts automatically.
+Ctrl+Alt+F2..F6 give plain text consoles (no automatic start) for recovery.
+
+nullptr login: 

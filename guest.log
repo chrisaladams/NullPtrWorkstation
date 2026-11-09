@@ -1,0 +1,310 @@
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,13543CF1-8AA2-48D7-8293-08D12052AFC8,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,13543CF1-8AA2-48D7-8293-08D12052AFC8,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+=== BEGIN nullptr guest tests
+--- system
+debian 13.7  kernel 6.12.116+deb13-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
+RESULT PASS running as user nullptr
+RESULT PASS home is /home/nullptr
+RESULT PASS nullptr is in group sudo
+RESULT PASS sudo asks for a password (no NOPASSWD)
+RESULT PASS no live-boot/live-config left in the installed system
+RESULT PASS ~/Projects starter projects present
+RESULT PASS ~/Projects owned by nullptr and writable
+RESULT PASS NetworkManager running (nmtui available)
+RESULT PASS TLP enabled, power-profiles-daemon absent
+RESULT PASS PipeWire running for the user
+--- graphical session (started by the tty1 login)
+RESULT PASS Xorg running on tty1
+RESULT PASS i3 running
+RESULT PASS kitty (nullptr-dev) running
+RESULT PASS tmux session dev with windows 1-5
+RESULT PASS AstroVim running in window 1
+RESULT PASS AstroVim shows the dashboard
+RESULT PASS kitty is fullscreen on workspace 1
+--- toolchains
+Game Boy toolchain status
+  GBDK_HOME              /opt/gbdk
+  GBDK version           4.5.0
+  lcc                    /opt/gbdk/bin/lcc $Id: lcc.c,v 2.0 2025/12/28 02:09:50 gbdk-2020 Exp $
+  sdcc                   SDCC : z80/sm83/mos6502/mos65c02 TD- 4.5.1 #15267 (Linux)
+  Java                   openjdk version "21.0.13" 2026-10-20
+  Emulicious             /opt/emulicious/Emulicious.jar
+  Emulicious sha256      6e1c6d511014033b…
+  nvim-dap adapter       emulicious (TCP DAP server, port 58870)
+  VSCodium fallback      1.143.17232
+  Active project         none
+RESULT PASS command gcc
+RESULT PASS command clang
+RESULT PASS command clangd
+RESULT PASS command clang-format
+RESULT PASS command clang-tidy
+RESULT PASS command gdb
+RESULT PASS command cmake
+RESULT PASS command ninja
+RESULT PASS command make
+RESULT PASS command pkg-config
+RESULT PASS command git
+RESULT PASS command nvim
+RESULT PASS command lazygit
+RESULT PASS command tree-sitter
+RESULT PASS command firefox-esr
+RESULT PASS command web
+RESULT PASS command libresprite
+RESULT PASS command tiled
+RESULT PASS command tiles
+RESULT PASS command emulicious
+RESULT PASS command codium
+RESULT PASS command java
+RESULT PASS command blender
+RESULT PASS command gh
+RESULT PASS command github-login
+RESULT PASS command thunar
+RESULT PASS command files
+RESULT PASS command import-assets
+RESULT PASS command 7z
+RESULT PASS command nullptr-update
+RESULT PASS command nullptr-iso
+RESULT PASS GDB version >= 16
+RESULT PASS raylib 5.5 via pkg-config
+RESULT PASS GBDK 4.5.0 lcc
+RESULT PASS Emulicious installed
+RESULT PASS JetBrainsMono Nerd Font installed
+RESULT PASS AstroNvim plugins pre-installed (offline)
+RESULT PASS treesitter parsers pre-compiled
+--- workflow suite
+RESULT PASS workflow: new-raylib creates project
+RESULT PASS workflow: new-raylib project builds
+RESULT PASS workflow: raylib Debug binary exists
+RESULT PASS workflow: compile_commands.json linked
+RESULT PASS workflow: build --release works
+RESULT PASS workflow: Release binary exists
+RESULT PASS workflow: new-raylib refuses existing name
+RESULT PASS workflow: existing project left untouched
+RESULT PASS workflow: invalid project name rejected
+RESULT PASS workflow: new-gameboy creates project
+RESULT PASS workflow: gb-build builds the ROM
+RESULT PASS workflow: Debug ROM + .cdb exist
+RESULT PASS workflow: .cdb has C line records
+RESULT PASS workflow: ROM header title set
+RESULT PASS workflow: gb-build --release
+RESULT PASS workflow: gb-clean removes build/
+RESULT PASS workflow: gb-build rejects raylib project
+RESULT PASS workflow: new projects are git repositories
+RESULT PASS workflow: new-c creates a plain C project
+RESULT PASS workflow: --no-git skips git init
+RESULT PASS workflow: new-c project has its own CMakeLists
+RESULT PASS workflow: generic project builds (CMake)
+RESULT PASS workflow: run-game runs a generic program in the terminal
+RESULT PASS workflow: build --clean removes build output
+RESULT PASS workflow: projects adopt marks an existing folder
+RESULT PASS workflow: adopted plain folder is generic
+RESULT PASS workflow: adopt refuses an existing project
+RESULT PASS workflow: generic Makefile project builds and runs
+RESULT PASS workflow: run= line in .nullptr-project is used
+RESULT PASS workflow: generic project listed by projects
+RESULT PASS workflow: projects use raylib-hello
+RESULT PASS workflow: build (from ~) uses active raylib project
+RESULT PASS workflow: projects use gameboy-hello
+RESULT PASS workflow: build (from ~) follows switch to Game Boy
+RESULT PASS workflow: conflict (cwd A, active B) refuses instead of guessing
+RESULT PASS workflow: explicit project name wins
+RESULT PASS workflow: projects list shows active (*)
+RESULT PASS workflow: AstroVim file switch updates active project
+RESULT PASS workflow: shell build follows AstroVim's project
+RESULT PASS workflow: autostart: local login on tty1 starts X
+RESULT PASS workflow: autostart: tty2 stays text (recovery console)
+RESULT PASS workflow: autostart: never for SSH
+RESULT PASS workflow: autostart: never inside tmux
+RESULT PASS workflow: autostart: never for nested shells
+RESULT PASS workflow: autostart: not when X already running
+RESULT PASS workflow: autostart: ~/.config/nullptr/no-autostart disables X
+RESULT PASS workflow: X failure falls back to text console with recovery hints
+RESULT PASS workflow: new-c for asset import
+RESULT PASS workflow: import-assets unpacks a zip
+RESULT PASS workflow: wrapping folder flattened
+RESULT PASS workflow: macOS clutter dropped
+RESULT PASS workflow: CREDITS.md names pack, URL, license
+RESULT PASS workflow: import-assets refuses to overwrite
+RESULT PASS workflow: pack paths cannot escape assets/
+RESULT PASS workflow: GBDK_HOME exported by /etc/profile.d
+RESULT PASS workflow: lcc on PATH for login shells
+RESULT PASS workflow: tablet-info runs without a tablet
+RESULT PASS workflow: keys prints the cheat sheet
+RESULT PASS workflow: helpme prints the guide
+RESULT PASS workflow: art launches LibreSprite
+RESULT PASS workflow: LibreSprite window appears
+RESULT PASS workflow: LibreSprite lands on workspace 3 (libresprite)
+RESULT PASS workflow: art again focuses, no duplicate
+RESULT PASS workflow: web launches Firefox
+RESULT PASS workflow: Firefox lands on workspace 2 (firefox)
+RESULT PASS workflow: web again focuses Firefox, no second window
+RESULT PASS workflow: tiles launches Tiled
+RESULT PASS workflow: Tiled window appears
+RESULT PASS workflow: Tiled lands on workspace 4 (tiled)
+RESULT PASS workflow: tiles again focuses Tiled, no duplicate
+RESULT PASS workflow: 3d launches Blender
+RESULT PASS workflow: Blender window appears
+RESULT PASS workflow: Blender lands on workspace 5 (blender)
+RESULT PASS workflow: 3d again focuses Blender, no duplicate
+RESULT PASS workflow: files opens Thunar
+RESULT PASS workflow: Thunar floats on the current workspace
+RESULT PASS workflow: file manager sidebar has Projects and Downloads
+RESULT PASS workflow: tablet-setup handles no tablet gracefully
+----
+PASS: 78  FAIL: 0
+--- raylib: GDB through nvim-dap
+[1m[38;5;111m▶ Building (debug)[0m [1mraylib-hello[0m  [2m(raylib · /home/nullptr/Projects/raylib-hello)[0m
+ninja: no work to do.
+[38;5;150m ✔ [0m Built /home/nullptr/Projects/raylib-hello/build/debug/raylib-hello
+== raw DAP (gdb 16.3)
+{
+  "adapter": "gdb --quiet --interpreter=dap",
+  "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
+  "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
+  "initialize": true,
+  "setBreakpoints": [
+    {
+      "id": 1,
+      "verified": false,
+      "reason": "pending"
+    }
+  ],
+  "stopped_reason": "breakpoint",
+  "stop_location": {
+    "name": "main",
+    "line": 19,
+    "source": "/home/nullptr/Projects/raylib-hello/src/main.c"
+  },
+  "call_stack": [
+    "main"
+  ],
+  "variable": {
+    "frameCount": {
+      "scope": "Locals",
+      "value": "0",
+      "type": "int"
+    }
+  },
+  "after_step_line": 22,
+  "after_continue_stopped_again_at_line": 19,
+  "PASS": true
+}
+== nvim-dap
+ blink.cmp  Downloading pre-built binary blink.cmp  Downloaded pre-built binary successfully{
+ "after_step_line": 22,
+ "after_continue_line": 19,
+ "root": "/home/nullptr/Projects/raylib-hello",
+ "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
+ "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
+ "stopped_line": 19,
+ "stopped_frame": "main",
+ "adapter": "gdb",
+ "stops": [
+  {
+   "reason": "breakpoint"
+  },
+  {
+   "reason": "step"
+  },
+  {
+   "reason": "breakpoint"
+  }
+ ],
+ "PASS": true,
+ "variable": {
+  "scope": "Locals",
+  "name": "frameCount",
+  "value": "0",
+  "type": "int"
+ },
+ "call_stack": [
+  "main"
+ ],
+ "nvim": "0.12.6+v0.12.6"
+}
+RESULT PASS raylib C breakpoint, variables, step, continue (GDB + nvim-dap)
+--- Game Boy: Emulicious debug adapter
+[1m[38;5;111m▶ Building ROM (debug)[0m [1mgameboy-hello[0m  [2m(gameboy · /home/nullptr/Projects/gameboy-hello)[0m
+make: Entering directory '/home/nullptr/Projects/gameboy-hello'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/nullptr/Projects/gameboy-hello'
+[38;5;150m ✔ [0m Built /home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb
+{
+  "adapter": "127.0.0.1:58870",
+  "program": "/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb",
+  "breakpoint": "/home/nullptr/Projects/gameboy-hello/src/main.c:19",
+  "initialize": true,
+  "setBreakpoints": [
+    {
+      "line": 19,
+      "verified": true,
+      "source": {
+        "path": "/home/nullptr/Projects/gameboy-hello/src/main.c"
+      }
+    }
+  ],
+  "stopped_reason": "breakpoint",
+  "stop_location": {
+    "name": "main()",
+    "line": 19,
+    "source": "/home/nullptr/Projects/gameboy-hello/src/main.c"
+  },
+  "call_stack": [
+    "main()"
+  ],
+  "variable": {
+    "keys": {
+      "scope": "Locals",
+      "value": "0 (value in register)",
+      "type": "unsigned char"
+    }
+  },
+  "after_step_line": 20,
+  "after_continue_stopped_again_at_line": 19,
+  "PASS": true
+}
+RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
+{"stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","variable":{"scope":"Locals","name":"keys","value":"0 (value in register)","type":"unsigned char"},"adapter":"emulicious","breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"after_step_line":20,"PASS":true,"nvim":"0.12.6+v0.12.6","root":"/home/nullptr/Projects/gameboy-hello","call_stack":["main()"]}
+RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
+--- screenshots of the installed system
+SCREENSHOT vm-01-editor-after-login
+SCREENSHOT vm-02-raylib-running
+RESULT PASS Emulicious window opens with the ROM
+SCREENSHOT vm-03-gameboy-emulicious
+SCREENSHOT vm-04-libresprite
+--- Firefox: docs bookmarks toolbar (system policy)
+   raylib cheatsheet -> https://www.raylib.com/cheatsheet/cheatsheet.html
+   raylib examples -> https://www.raylib.com/examples.html
+   C reference -> https://en.cppreference.com/w/c
+   GBDK docs -> https://gbdk-2020.github.io/gbdk-2020/docs/api/
+   Pan Docs (Game Boy) -> https://gbdev.io/pandocs/
+   Tiled manual -> https://doc.mapeditor.org/en/stable/
+   Blender manual -> https://docs.blender.org/manual/en/latest/
+   CMake tutorial -> https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+   NullPtrWorkstation -> https://github.com/chrisaladams/NullPtrWorkstation
+RESULT PASS Firefox applies the policy: docs bookmarks on the toolbar
+SCREENSHOT vm-09-firefox-workspace
+--- GitHub sign-in for git (fake token, scratch home: no real account involved)
+[38;5;150m ✔ [0m Already signed in to GitHub
+[38;5;150m ✔ [0m git uses your GitHub sign-in for https://github.com/… repositories
+[38;5;221m !  [0m Could not read your GitHub profile. Set your commit name and e-mail yourself:
+   git config --global user.name "Your Name"
+   git config --global user.email "you@example.com"
+RESULT PASS github-login sets git up to use the GitHub CLI sign-in
+RESULT PASS nullptr-update follows the GitHub sign-in (https)
+--- file manager: thumbnails of a sprite folder
+SCREENSHOT vm-10-file-manager
+--- Tiled: map export from the command line
+JSON ok: 8x6, 24 floor tiles
+CSV ok: room.csv (0-based tile indexes)
+RESULT PASS Tiled exports a TMX map to JSON and CSV
+Tiled 1.11.0
+--- Blender -> glTF -> raylib
+RESULT PASS Blender exports a glTF diorama headless
+RESULT PASS raylib loads the Blender .glb (4 meshes)
+meshes=4 materials=3 bounds=(-4.1 -0.1 -4.1)..(4.0 3.0 4.0)
+SCREENSHOT vm-07-blender-workspace
+SCREENSHOT vm-08-tiled-workspace
+SCREENSHOT vm-05-back-to-editor
+=== END nullptr guest tests
+TTY2 tty=/dev/tty2 display=[] xorgs=1
