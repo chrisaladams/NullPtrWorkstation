@@ -44,7 +44,7 @@ sys.exit(0 if f(t) else 1)"'
 
 echo "--- toolchains"
 gb-info
-for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter firefox-esr web libresprite tiled tiles emulicious codium java blender gh nullptr-update nullptr-iso; do
+for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter firefox-esr web libresprite tiled tiles emulicious codium java blender gh github-login thunar files import-assets 7z nullptr-update nullptr-iso; do
   r "command $c" command -v "$c"
 done
 r "GDB version >= 16" sh -c 'v=$(gdb --version | head -1 | grep -o "[0-9][0-9]*\.[0-9]*" | head -1); [ "${v%%.*}" -ge 16 ]'
@@ -97,6 +97,17 @@ need={"raylib cheatsheet","C reference","GBDK docs","Pan Docs (Game Boy)","Tiled
 sys.exit(0 if need<=titles else 1)
 PY
 web https://www.raylib.com/cheatsheet/cheatsheet.html >/dev/null 2>&1; sleep 25; shot vm-09-firefox-workspace; pkill -x firefox-esr; sleep 2
+
+echo "--- GitHub sign-in for git (fake token, scratch home: no real account involved)"
+gh_home="$(mktemp -d)"
+rv "github-login sets git up to use the GitHub CLI sign-in" sh -c "HOME='$gh_home' GH_CONFIG_DIR='$gh_home/gh' GH_TOKEN=ghp_not_a_real_token github-login --no-check && HOME='$gh_home' git config --global --get-all credential.https://github.com.helper | grep -q 'gh auth git-credential'"
+r "nullptr-update follows the GitHub sign-in (https)" sh -c 'nullptr-update --help | grep -q "https://github.com/chrisaladams/NullPtrWorkstation.git"'
+rm -rf "$gh_home"
+
+echo "--- file manager: thumbnails of a sprite folder"
+shots=/usr/local/src/nullptr-workstation/docs/screenshots; [ -d "$shots" ] || shots="$T/tiled"
+env -u I3SOCK i3-msg -q 'workspace number "7: tools"' >/dev/null 2>&1; sleep 1
+files "$shots" >/dev/null 2>&1; sleep 20; shot vm-10-file-manager; pkill -x thunar; sleep 2
 
 echo "--- Tiled: map export from the command line"
 rv "Tiled exports a TMX map to JSON and CSV" bash "$T/tiled/export-test.sh"

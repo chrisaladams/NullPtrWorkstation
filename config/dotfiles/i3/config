@@ -59,6 +59,8 @@ assign [class="(?i)emulicious"] number $ws6
 assign [title="(?i)^emulicious"] number $ws6
 assign [class="(?i)^vscodium$"] number $ws7
 for_window [class="^nullptr-dev$"] move container to workspace number $ws1, fullscreen enable
+# the file manager floats over whatever you are doing, so files can be dragged into the app below
+for_window [class="^Thunar$"] floating enable, resize set 1400 850, move position center
 for_window [class="^nullptr-help$"] floating enable, resize set 1000 700, move position center
 for_window [window_role="pop-up"] floating enable
 for_window [window_type="dialog"] floating enable
@@ -70,6 +72,7 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+Shift+q kill
 bindsym $mod+l exec --no-startup-id nullptr-lock
 bindsym $mod+w exec --no-startup-id web
+bindsym $mod+e exec --no-startup-id files
 bindsym $mod+a exec --no-startup-id art
 bindsym $mod+t exec --no-startup-id tiles
 bindsym $mod+b exec --no-startup-id 3d
@@ -89,7 +92,7 @@ bindsym $mod+Shift+Right move right
 # layout
 bindsym $mod+h split h
 bindsym $mod+v split v
-bindsym $mod+e layout toggle split
+bindsym $mod+Shift+v layout toggle split
 bindsym $mod+Shift+w layout tabbed
 bindsym $mod+Shift+space floating toggle
 floating_modifier $mod

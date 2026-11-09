@@ -112,6 +112,8 @@ nullptr Workstation — beginner guide                           (q to close)
   run-game            build + run (raylib window or ROM in Emulicious)
   debug-game          build Debug + start the debugger in AstroVim
   web [URL]           Firefox on workspace 2 (docs bookmarks in its toolbar)
+  files [DIR]         file manager over the current workspace (Super+E)
+  import-assets ZIP   unpack an itch.io pack into assets/ + CREDITS.md
   art [FILE]          LibreSprite on workspace 3 (saves into assets/)
   tiles [FILE.tmx]    Tiled map editor on workspace 4 (maps into assets/)
   3d [FILE.blend]     Blender on workspace 5 (export .glb into assets/)
@@ -134,6 +136,7 @@ nullptr Workstation — beginner guide                           (q to close)
 
  System
  --------------------------------------------------------------------------
+  GitHub:    github-login     (once: sign in with Google in the browser)
   Updates:   nullptr-update   (workstation from GitHub; --dry-run first)
   Reinstall: nullptr-iso      (GitHub-built ISO; --write /dev/sdX for a USB stick)
              sudo apt update && sudo apt upgrade   (Debian security updates)

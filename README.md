@@ -133,6 +133,8 @@ The result is `out/nullptr-workstation-amd64.iso`, plus `.sha256`, `packages.man
 | Game Boy | GBDK-2020 4.5.0 (bundled SDCC), Emulicious + OpenJDK 21 | |
 | Debugging | nvim-dap → GDB's built-in DAP; nvim-dap → Emulicious's DAP server; fallbacks: VSCodium + Emulicious Debugger, Emulicious's own debugger | |
 | Web | Firefox ESR (Debian) on its own workspace, docs bookmarks toolbar | |
+| Files | Thunar (floating, thumbnails, Extract Here, Trash, USB) + `import-assets` for itch.io packs | |
+| GitHub | `gh` sign-in through the browser (works with Google sign-in) used by git; no SSH key | |
 | Maps | Tiled (Debian) on its own workspace; TMX → JSON/CSV export tested |
 | 3D | Blender (Debian) on its own workspace; glTF → raylib pipeline tested | |
 | Art | LibreSprite 1.2 (source build; 1.3 needs CMake 4.1) + Wacom/libinput tablet stack | |
@@ -169,6 +171,8 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 | [c-projects.md](docs/c-projects.md) | plain C projects, `projects adopt`, custom build/run commands, doing it by hand |
 | [raylib-guide.md](docs/raylib-guide.md) | C/raylib build and GDB debugging |
 | [gameboy-debugging.md](docs/gameboy-debugging.md) | GBDK build, Emulicious, C source debugging and its test status |
+| [files-and-assets.md](docs/files-and-assets.md) | file manager, `import-assets` for itch.io packs, licenses and `CREDITS.md` |
+| [git-and-github.md](docs/git-and-github.md) | `github-login` (Google sign-in, no SSH key), putting projects on GitHub, LazyGit |
 | [tiled.md](docs/tiled.md) | Tiled workspace, maps and tilesets, getting a map into raylib and GBDK |
 | [blender.md](docs/blender.md) | Blender workspace, laptop settings, glTF into raylib, 2.5D approaches |
 | [drawing-tablet.md](docs/drawing-tablet.md) | tablets, `tablet-info`, `tablet-setup`, limitations |
@@ -179,7 +183,7 @@ tests/                    test report, workflow suite, DAP tests, QEMU scripts, 
 
 ## Commands
 
-`dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `web` · `art` · `tiles` · `3d` ·
+`dev` · `projects` · `code PATH` · `build` · `run-game` · `debug-game` · `web` · `files` · `import-assets` · `github-login` · `art` · `tiles` · `3d` ·
 `new-c NAME` · `new-raylib NAME` · `new-gameboy NAME` · `projects adopt` · `gb-build` · `gb-run` · `gb-debug` · `gb-clean` ·
 `gb-info` · `tablet-info` · `tablet-setup` · `keys` · `helpme` · `nullptr-update` · `nullptr-iso`
 

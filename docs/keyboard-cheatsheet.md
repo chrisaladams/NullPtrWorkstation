@@ -22,6 +22,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   Super+Enter        new terminal (plain shell)
   Super+Shift+Enter  go back to the main dev terminal (reopens it if closed)
   Super+W            Firefox (focuses it if already open)
+  Super+E            file manager (Thunar), floating over this workspace
   Super+A            LibreSprite (focuses it if already open)
   Super+T            Tiled (focuses it if already open)
   Super+B            Blender (focuses it if already open)
@@ -105,6 +106,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
  Terminal commands
  --------------------------------------------------------------------------
   dev   projects   code PATH   build   run-game   debug-game   web   art   tiles   3d
+  files   import-assets ZIP   github-login
   new-c NAME   new-raylib NAME   new-gameboy NAME   projects adopt   build --clean
   gb-build   gb-run   gb-debug
   gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme

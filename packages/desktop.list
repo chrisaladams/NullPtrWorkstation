@@ -31,3 +31,11 @@ fonts-dejavu-core
 fontconfig
 # Web browser (workspace 2: firefox; Super+W or `web`)
 firefox-esr
+# File manager (Super+E or `files`): thumbnails, Extract here, Trash, USB sticks
+thunar
+thunar-archive-plugin
+xarchiver
+tumbler
+gvfs
+udisks2
+7zip

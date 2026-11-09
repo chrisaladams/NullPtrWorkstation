@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# import-assets PACK [--name NAME] [--url URL] [--project P]
+# Unpack an asset pack (itch.io .zip/.7z/.tar.*, or a folder) into PROJECT/assets/NAME, never
+# overwriting anything, and record where it came from and its license in PROJECT/CREDITS.md.
+usage() { cat <<'U'
+Usage: import-assets PACK [--name NAME] [--url URL] [--project PROJECT]
+  PACK            a .zip, .7z, .tar.gz/.tar.xz/.tgz or a folder (e.g. ~/Downloads/dungeon.zip)
+  --name NAME     folder name under assets/ (default: from the file name)
+  --url URL       where it came from (the itch.io page); written into CREDITS.md
+  --project P     project to import into (default: the active project)
+Result: PROJECT/assets/NAME/ plus a line in PROJECT/CREDITS.md. Existing files are never replaced.
+U
+}
+pack=""; name=""; url=""; proj=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --name) name="${2:?}"; shift ;; --url) url="${2:?}"; shift ;; --project) proj="${2:?}"; shift ;;
+    -h|--help) usage; exit 0 ;; -*) usage >&2; exit 64 ;;
+    *) [ -z "$pack" ] || { usage >&2; exit 64; }; pack="$1" ;;
+  esac; shift
+done
+[ -n "$pack" ] || { usage >&2; exit 64; }
+[ -e "$pack" ] || nw_die "Not found: $pack"
+pack="$(readlink -f -- "$pack")"
+root="$(nw_resolve_project "$proj")"
+if [ -z "$name" ]; then
+  name="$(basename -- "$pack")"
+  name="${name%.zip}"; name="${name%.7z}"; name="${name%.rar}"; name="${name%.tgz}"
+  name="${name%.tar.gz}"; name="${name%.tar.xz}"; name="${name%.tar.bz2}"; name="${name%.tar}"
+  name="$(printf '%s' "$name" | tr ' ' '-' | tr -cd 'A-Za-z0-9._-')"
+fi
+case "$name" in ""|.|..|*/*) nw_die "Invalid name: '$name' (use --name)";; esac
+dest="$root/assets/$name"
+[ ! -e "$dest" ] || nw_die "$dest already exists. Nothing was changed. Use --name to import under another name."
+
+tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+nw_info "Unpacking $(basename -- "$pack")"
+if [ -d "$pack" ]; then cp -a "$pack/." "$tmp/"
+else
+  case "${pack,,}" in
+    *.tar|*.tar.gz|*.tgz|*.tar.xz|*.tar.bz2) tar -xf "$pack" -C "$tmp" --no-same-owner ;;
+    *.zip|*.7z|*.rar)
+      if nw_have 7z; then 7z x -y -bd -bso0 -bsp0 -o"$tmp" -- "$pack" || nw_die "Could not unpack $pack"
+      elif [[ "${pack,,}" == *.zip ]]; then unzip -q "$pack" -d "$tmp" || nw_die "Could not unpack $pack"
+      else nw_die "Need 7z to unpack this: sudo apt install 7zip"; fi ;;
+    *) nw_die "Unknown pack type: $pack (zip, 7z, tar.gz/xz/bz2 or a folder)" ;;
+  esac
+fi
+# drop macOS clutter, then flatten a single wrapping folder (pack.zip -> pack/…)
+find "$tmp" \( -name '__MACOSX' -o -name '.DS_Store' \) -prune -exec rm -rf {} + 2>/dev/null || true
+src="$tmp"
+while [ "$(find "$src" -mindepth 1 -maxdepth 1 | wc -l)" = 1 ] && [ -d "$(find "$src" -mindepth 1 -maxdepth 1)" ]; do
+  src="$(find "$src" -mindepth 1 -maxdepth 1)"
+done
+[ -n "$(find "$src" -mindepth 1 -print -quit)" ] || nw_die "The pack is empty."
+mkdir -p "$root/assets"
+cp -a "$src" "$dest"
+chmod -R u+rwX "$dest"
+
+# what came in
+count() { find "$dest" -type f -iregex ".*\.\($1\)" | wc -l; }
+imgs=$(count 'png\|jpg\|jpeg\|gif\|bmp\|aseprite\|ase'); snd=$(count 'wav\|ogg\|mp3\|flac'); maps=$(count 'tmx\|tsx\|json'); fonts=$(count 'ttf\|otf\|fnt')
+nw_ok "Imported into ${dest#"$HOME"/}: $imgs images, $snd sounds, $maps maps/data, $fonts fonts ($(find "$dest" -type f | wc -l) files)"
+
+# license and credits
+mapfile -t lic < <(find "$dest" -maxdepth 2 -type f \( -iname '*licen[cs]e*' -o -iname '*credit*' -o -iname '*readme*' -o -iname '*terms*' \) | sort)
+credits="$root/CREDITS.md"
+[ -f "$credits" ] || printf '# Credits\n\nThird-party assets used in this project.\n\n' >"$credits"
+{
+  printf -- '- **%s** (assets/%s/)' "$name" "$name"
+  [ -n "$url" ] && printf ' from %s' "$url"
+  if [ "${#lic[@]}" -gt 0 ]; then printf ' — license: see'; for f in "${lic[@]}"; do printf ' `%s`' "${f#"$root"/}"; done
+  else printf ' — license: **unknown, check the pack page**'; fi
+  printf ' (imported %s)\n' "$(date +%Y-%m-%d)"
+} >>"$credits"
+if [ "${#lic[@]}" -gt 0 ]; then
+  nw_info "License/readme in the pack — read it (most packs ask for a credit line):"
+  for f in "${lic[@]}"; do echo "   ${f#"$root"/}" >&2; done
+else
+  nw_warn "No license file in the pack. Check the pack's itch.io page for its terms before you publish."
+fi
+[ -n "$url" ] || echo "   Tip: add where it came from:  edit CREDITS.md, or next time use --url https://…itch.io/…" >&2
+nw_ok "Credit line added to ${credits#"$HOME"/}"

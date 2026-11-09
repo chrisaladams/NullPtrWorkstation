@@ -14,8 +14,8 @@ for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] &
 usage() { cat <<'U'
 Usage: nullptr-update [options]
   --dry-run        show what would change, change nothing
-  --repo URL       git URL (default: git@github.com:chrisaladams/NullPtrWorkstation.git,
-                   or NULLPTR_REPO)
+  --repo URL       git URL (default: https://github.com/chrisaladams/NullPtrWorkstation.git,
+                   or NULLPTR_REPO). Sign in once with: github-login
   --branch NAME    branch to follow (default: main)
   --dir DIR        local clone (default: the clone this script runs from, else
                    ~/src/NullPtrWorkstation)
@@ -25,7 +25,7 @@ Usage: nullptr-update [options]
 After updating: log out (Super+Shift+E) and back in for i3/X changes.
 U
 }
-repo_url="${NULLPTR_REPO:-git@github.com:chrisaladams/NullPtrWorkstation.git}"
+repo_url="${NULLPTR_REPO:-https://github.com/chrisaladams/NullPtrWorkstation.git}"
 branch=main; dir=""; dry=0; dotfiles=1; all_up=0; at=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -48,7 +48,24 @@ step "Repository: $dir"
 if [ -d "$dir/.git" ]; then
   [ -z "$(git -C "$dir" status --porcelain)" ] || nw_die "$dir has local changes. Commit or stash them first (git -C $dir status)."
   old="$(git -C "$dir" rev-parse --short HEAD)"
-  git -C "$dir" fetch -q origin "$branch" || nw_die "git fetch failed (is your GitHub SSH key set up? ssh -T git@github.com)"
+  if ! git -C "$dir" fetch -q origin "$branch"; then
+    remote="$(git -C "$dir" remote get-url origin 2>/dev/null || true)"
+    case "$remote" in
+      git@github.com:*)   # an SSH clone without a working key: use the GitHub sign-in instead
+        if gh auth token >/dev/null 2>&1; then
+          https="https://github.com/${remote#git@github.com:}"
+          if [ "$dry" = 1 ]; then
+            nw_info "SSH did not work; using your GitHub sign-in for this check (a real run switches the clone to $https)"
+            git -C "$dir" fetch -q "$https" "+refs/heads/$branch:refs/remotes/origin/$branch" || nw_die "git fetch failed. Run github-login, then try again."
+          else
+            nw_info "SSH did not work; switching $dir to your GitHub sign-in ($https)"
+            git -C "$dir" remote set-url origin "$https"
+            git -C "$dir" fetch -q origin "$branch" || nw_die "git fetch failed. Run github-login, then try again."
+          fi
+        else nw_die "git fetch failed. Sign in to GitHub once with: github-login"; fi ;;
+      *) nw_die "git fetch failed. Sign in to GitHub once with: github-login  (then try again)" ;;
+    esac
+  fi
   target="origin/$branch"
   if [ -n "$at" ]; then
     git -C "$dir" rev-parse -q --verify "$at^{commit}" >/dev/null || nw_die "Unknown commit: $at"
@@ -75,7 +92,7 @@ if [ -d "$dir/.git" ]; then
 else
   [ "$dry" = 1 ] && nw_die "No clone at $dir yet; run without --dry-run to clone $repo_url"
   mkdir -p "$(dirname "$dir")"
-  git clone -q --branch "$branch" "$repo_url" "$dir" || nw_die "git clone failed (is your GitHub SSH key set up? ssh -T git@github.com)"
+  git clone -q --branch "$branch" "$repo_url" "$dir" || nw_die "git clone failed. Sign in to GitHub once with: github-login  (then try again)"
 fi
 [ -f "$dir/versions.lock" ] && [ -x "$dir/scripts/install/install-workstation.sh" ] || nw_die "$dir does not look like the NullPtrWorkstation repository."
 commit="$(git -C "$dir" rev-parse --short HEAD)"

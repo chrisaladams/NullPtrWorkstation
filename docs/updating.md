@@ -12,22 +12,25 @@ There are two ways to bring a laptop up to date with it.
 
 ## One-time setup
 
-1. **GitHub access over SSH**: the repository is private (steps in the git section of
-   `docs/c-projects.md`, or quickly):
+1. **Sign in to GitHub** (no SSH key or password; you sign in with Google in the browser,
+   see [git-and-github.md](git-and-github.md)):
    ```bash
-   ssh-keygen -t ed25519 -C "x1-carbon"
+   github-login
+   ```
+   On a system installed before `github-login` existed, do the same by hand:
+   ```bash
+   sudo apt install gh
    ```
    ```bash
-   cat ~/.ssh/id_ed25519.pub
+   gh auth login --web --git-protocol https
    ```
-   Add the printed key on github.com → Settings → SSH and GPG keys, then check:
    ```bash
-   ssh -T git@github.com
+   gh auth setup-git
    ```
 2. **First update.** On a system installed from an ISO older than `nullptr-update` itself,
    clone once and run it from the clone:
    ```bash
-   git clone git@github.com:chrisaladams/NullPtrWorkstation.git ~/src/NullPtrWorkstation
+   git clone https://github.com/chrisaladams/NullPtrWorkstation.git ~/src/NullPtrWorkstation
    ```
    ```bash
    ~/src/NullPtrWorkstation/scripts/bin/nullptr-update
@@ -80,8 +83,8 @@ A later plain `nullptr-update` returns to the latest version.
 
 1. **Save your work first.** The installer erases the disk. Push your projects to GitHub, or
    copy `~/Projects` to a USB stick.
-2. **Get the ISO GitHub built and tested.** Sign in to GitHub once (`gh auth login`, choose
-   "Login with a web browser", approve the code on your phone), then:
+2. **Get the ISO GitHub built and tested.** Sign in to GitHub once (`github-login`: sign in
+   with Google in the browser and enter the code it shows), then:
    ```bash
    nullptr-iso
    ```

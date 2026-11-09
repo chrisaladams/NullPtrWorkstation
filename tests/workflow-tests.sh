@@ -100,6 +100,27 @@ echo "$out" | grep -q "graphical session failed" && echo "$out" | grep -q "SHELL
   && ok "X failure falls back to text console with recovery hints" || bad "X failure falls back to text console with recovery hints"
 rm -rf "$fakebin"
 
+# ---------------------------------------------------------------- asset packs (import-assets)
+check "new-c for asset import"           new-c nwtest-assets --no-git
+ad="$(mktemp -d)"
+python3 - "$ad" <<'PY'
+import zipfile,sys,os
+d=sys.argv[1]; png=b"\x89PNG\r\n\x1a\n"+b"0"*32
+with zipfile.ZipFile(os.path.join(d,"Dungeon Pack.zip"),"w") as z:
+    z.writestr("Dungeon Pack/tiles/floor.png",png); z.writestr("Dungeon Pack/sfx/door.wav",b"RIFF")
+    z.writestr("Dungeon Pack/LICENSE.txt","CC-BY 4.0"); z.writestr("__MACOSX/._junk","x")
+with zipfile.ZipFile(os.path.join(d,"evil.zip"),"w") as z:
+    z.writestr("../../nwtest-escaped.txt","x"); z.writestr("ok.png",png)
+PY
+check "import-assets unpacks a zip"      import-assets "$ad/Dungeon Pack.zip" --project nwtest-assets --url https://example.itch.io/dungeon
+check "wrapping folder flattened"        test -f "$P/nwtest-assets/assets/Dungeon-Pack/tiles/floor.png" -a -f "$P/nwtest-assets/assets/Dungeon-Pack/sfx/door.wav"
+check "macOS clutter dropped"            test ! -e "$P/nwtest-assets/assets/Dungeon-Pack/__MACOSX"
+check "CREDITS.md names pack, URL, license" sh -c "grep -q 'Dungeon-Pack.*example.itch.io.*LICENSE.txt' '$P/nwtest-assets/CREDITS.md'"
+if import-assets "$ad/Dungeon Pack.zip" --project nwtest-assets >/dev/null 2>&1; then bad "import-assets refuses to overwrite"; else ok "import-assets refuses to overwrite"; fi
+import-assets "$ad/evil.zip" --project nwtest-assets >/dev/null 2>&1
+check "pack paths cannot escape assets/" sh -c "test ! -e /nwtest-escaped.txt && [ -z \"\$(find /tmp \"\$HOME\" -name nwtest-escaped.txt -not -path '*/assets/evil/*' 2>/dev/null)\" ]"
+rm -rf "$ad"
+
 # ---------------------------------------------------------------- tools
 check "GBDK_HOME exported by /etc/profile.d" bash -lc '[ "$GBDK_HOME" = /opt/gbdk ]'
 check "lcc on PATH for login shells"     bash -lc 'command -v lcc'
@@ -171,6 +192,22 @@ w(t)')"
   3d >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x blender)" = 1 ] && ok "3d again focuses Blender, no duplicate" || bad "3d again focuses Blender, no duplicate" "count=$(pgrep -c -x blender)"
   pkill -x blender 2>/dev/null; sleep 1
+  # file manager: floats over the current workspace
+  if command -v thunar >/dev/null 2>&1; then
+    i3-msg -q 'workspace number "7: tools"' >/dev/null 2>&1; sleep 1
+    check "files opens Thunar"            files "$P"
+    for _ in $(seq 1 30); do xdotool search --class '^Thunar$' >/dev/null 2>&1 && break; sleep 1; done
+    tf="$(i3-msg -t get_tree | python3 -c 'import json,sys
+t=json.load(sys.stdin)
+def w(n,ws=None,fl=False):
+    if n.get("type")=="workspace": ws=n["name"]
+    if (n.get("window_properties") or {}).get("class","")=="Thunar": print(ws, "floating" if fl else "tiled"); return True
+    return any(w(c,ws,fl) for c in n.get("nodes",[])) or any(w(c,ws,True) for c in n.get("floating_nodes",[]))
+w(t)')"
+    [ "$tf" = "7: tools floating" ] && ok "Thunar floats on the current workspace" || bad "Thunar floats on the current workspace" "found=$tf"
+    check "file manager sidebar has Projects and Downloads" sh -c 'grep -q "/Projects Projects" ~/.config/gtk-3.0/bookmarks && grep -q "/Downloads Downloads" ~/.config/gtk-3.0/bookmarks'
+    pkill -x thunar 2>/dev/null; sleep 1
+  fi
   check "tablet-setup handles no tablet gracefully" sh -c 'tablet-setup 2>&1 | grep -q "No stylus"'
 fi
 

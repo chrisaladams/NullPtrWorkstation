@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# shellcheck source=../lib/nullptr-actions.sh
+. "$_l/nullptr-actions.sh"
+# github-login — use your GitHub account (however you sign in to it, e.g. "Continue with Google")
+# for git, nullptr-update and nullptr-iso. No password and no SSH key: GitHub's sign-in page does
+# the login, the GitHub CLI keeps the token, and git asks the CLI for it.
+usage() { cat <<'U'
+Usage: github-login [--no-check]
+  Signs in to GitHub through the browser (choose "Continue with Google" there if that is how
+  you sign in), then sets up git to use that sign-in for https://github.com repositories.
+  Sets your git name and e-mail if they are not set yet (GitHub's private noreply address).
+  --no-check   skip the final online check that git can reach your private repository
+Sign out:  gh auth logout
+U
+}
+check=1
+case "${1:-}" in -h|--help) usage; exit 0 ;; --no-check) check=0 ;; "") ;; *) usage >&2; exit 64 ;; esac
+nw_have gh || nw_die "The GitHub CLI is not installed: sudo apt install gh"
+repo="${NULLPTR_GH_REPO:-chrisaladams/NullPtrWorkstation}"
+
+# 1. sign in (skipped if the CLI already has a token)
+if gh auth token >/dev/null 2>&1; then
+  nw_ok "Already signed in to GitHub"
+else
+  nw_info "Signing in to GitHub. A one-time code is shown below."
+  if nw_in_graphical; then
+    echo "   Firefox opens GitHub's sign-in page: sign in (Continue with Google), then enter the code." >&2
+  else
+    echo "   Open https://github.com/login/device on your phone or another computer, sign in" >&2
+    echo "   (Continue with Google), then enter the code." >&2
+  fi
+  gh auth login --hostname github.com --git-protocol https --web \
+    || nw_die "Sign-in did not finish. Run github-login again."
+fi
+
+# 2. git asks the GitHub CLI for the token (only for github.com)
+gh auth setup-git --hostname github.com || nw_die "Could not set up git to use the GitHub sign-in."
+nw_ok "git uses your GitHub sign-in for https://github.com/… repositories"
+
+# 3. who you are in commits (only if not set yet)
+name="$(git config --global user.name || true)"; email="$(git config --global user.email || true)"
+if [ -z "$name" ] || [ -z "$email" ]; then
+  if u="$(gh api user --jq '[.id, .login, (.name // "")] | @tsv' 2>/dev/null)"; then
+    IFS=$'\t' read -r gid glogin gname <<<"$u"
+    [ -n "$name" ]  || git config --global user.name "${gname:-$glogin}"
+    [ -n "$email" ] || git config --global user.email "${gid}+${glogin}@users.noreply.github.com"
+    nw_ok "Commits are signed as: $(git config --global user.name) <$(git config --global user.email)>"
+    echo "   (the noreply address keeps your real e-mail private; change it with git config --global user.email ...)" >&2
+  else
+    nw_warn "Could not read your GitHub profile. Set your commit name and e-mail yourself:"
+    echo "   git config --global user.name \"Your Name\"" >&2
+    echo "   git config --global user.email \"you@example.com\"" >&2
+  fi
+else
+  nw_ok "Commits are signed as: $name <$email>"
+fi
+
+# 4. prove it works on the private repository
+if [ "$check" = 1 ]; then
+  if git ls-remote -q "https://github.com/$repo.git" HEAD >/dev/null 2>&1; then
+    nw_ok "git can reach $repo (private). nullptr-update and nullptr-iso are ready."
+  else
+    nw_die "git could not reach https://github.com/$repo. Check the account has access, or sign in again: gh auth logout; github-login"
+  fi
+fi

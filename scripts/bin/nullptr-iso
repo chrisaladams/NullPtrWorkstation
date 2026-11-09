@@ -13,7 +13,7 @@ Usage: nullptr-iso [--build] [--write /dev/sdX] [--dir DIR]
   --build          start a new build on GitHub first, wait for it (~40 min), then download
   --write DEVICE   after downloading and verifying, write it to a USB stick (ERASES it)
   --dir DIR        where to put it (default ~/Downloads/nullptr-iso)
-Needs the GitHub CLI, signed in once:  gh auth login
+Needs the GitHub CLI, signed in once:  github-login
 Repository: chrisaladams/NullPtrWorkstation (override with NULLPTR_GH_REPO)
 U
 }
@@ -26,7 +26,7 @@ while [ $# -gt 0 ]; do
   esac; shift
 done
 nw_have gh || nw_die "The GitHub CLI is not installed: sudo apt install gh"
-gh auth status >/dev/null 2>&1 || nw_die "Sign in to GitHub first: gh auth login  (choose 'Login with a web browser' and approve the code on your phone)"
+gh auth status >/dev/null 2>&1 || nw_die "Sign in to GitHub first: github-login  (uses your browser; Continue with Google works)"
 
 if [ "$build" = 1 ]; then
   nw_info "Starting a new build on GitHub (build ISO → install in a VM → run all tests)"
