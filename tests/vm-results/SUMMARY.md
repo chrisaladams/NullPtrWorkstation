@@ -1,4 +1,4 @@
-# VM verification: 129 passed, 0 failed
+# VM verification: 146 passed, 0 failed
 
 ```
 RESULT PASS unattended installation finished (debian-installer, UEFI, 40 GB virtio disk)
@@ -44,6 +44,11 @@ RESULT PASS command codium
 RESULT PASS command java
 RESULT PASS command blender
 RESULT PASS command gh
+RESULT PASS command github-login
+RESULT PASS command thunar
+RESULT PASS command files
+RESULT PASS command import-assets
+RESULT PASS command 7z
 RESULT PASS command nullptr-update
 RESULT PASS command nullptr-iso
 RESULT PASS GDB version >= 16
@@ -100,6 +105,13 @@ RESULT PASS workflow: autostart: never for nested shells
 RESULT PASS workflow: autostart: not when X already running
 RESULT PASS workflow: autostart: ~/.config/nullptr/no-autostart disables X
 RESULT PASS workflow: X failure falls back to text console with recovery hints
+RESULT PASS workflow: new-c for asset import
+RESULT PASS workflow: import-assets unpacks a zip
+RESULT PASS workflow: wrapping folder flattened
+RESULT PASS workflow: macOS clutter dropped
+RESULT PASS workflow: CREDITS.md names pack, URL, license
+RESULT PASS workflow: import-assets refuses to overwrite
+RESULT PASS workflow: pack paths cannot escape assets/
 RESULT PASS workflow: GBDK_HOME exported by /etc/profile.d
 RESULT PASS workflow: lcc on PATH for login shells
 RESULT PASS workflow: tablet-info runs without a tablet
@@ -120,12 +132,17 @@ RESULT PASS workflow: 3d launches Blender
 RESULT PASS workflow: Blender window appears
 RESULT PASS workflow: Blender lands on workspace 5 (blender)
 RESULT PASS workflow: 3d again focuses Blender, no duplicate
+RESULT PASS workflow: files opens Thunar
+RESULT PASS workflow: Thunar floats on the current workspace
+RESULT PASS workflow: file manager sidebar has Projects and Downloads
 RESULT PASS workflow: tablet-setup handles no tablet gracefully
 RESULT PASS raylib C breakpoint, variables, step, continue (GDB + nvim-dap)
 RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
 RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
 RESULT PASS Emulicious window opens with the ROM
 RESULT PASS Firefox applies the policy: docs bookmarks on the toolbar
+RESULT PASS github-login sets git up to use the GitHub CLI sign-in
+RESULT PASS nullptr-update follows the GitHub sign-in (https)
 RESULT PASS Tiled exports a TMX map to JSON and CSV
 RESULT PASS Blender exports a glTF diorama headless
 RESULT PASS raylib loads the Blender .glb (4 meshes)

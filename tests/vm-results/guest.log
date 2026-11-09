@@ -1,8 +1,8 @@
-[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,326FEBF2-94B4-49AA-BE1D-E74F0D054A1A,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
-BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,326FEBF2-94B4-49AA-BE1D-E74F0D054A1A,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,13543CF1-8AA2-48D7-8293-08D12052AFC8,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,13543CF1-8AA2-48D7-8293-08D12052AFC8,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
 === BEGIN nullptr guest tests
 --- system
-debian 13.7  kernel 6.12.115+deb13.1-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
+debian 13.7  kernel 6.12.116+deb13-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
 RESULT PASS running as user nullptr
 RESULT PASS home is /home/nullptr
 RESULT PASS nullptr is in group sudo
@@ -57,6 +57,11 @@ RESULT PASS command codium
 RESULT PASS command java
 RESULT PASS command blender
 RESULT PASS command gh
+RESULT PASS command github-login
+RESULT PASS command thunar
+RESULT PASS command files
+RESULT PASS command import-assets
+RESULT PASS command 7z
 RESULT PASS command nullptr-update
 RESULT PASS command nullptr-iso
 RESULT PASS GDB version >= 16
@@ -114,6 +119,13 @@ RESULT PASS workflow: autostart: never for nested shells
 RESULT PASS workflow: autostart: not when X already running
 RESULT PASS workflow: autostart: ~/.config/nullptr/no-autostart disables X
 RESULT PASS workflow: X failure falls back to text console with recovery hints
+RESULT PASS workflow: new-c for asset import
+RESULT PASS workflow: import-assets unpacks a zip
+RESULT PASS workflow: wrapping folder flattened
+RESULT PASS workflow: macOS clutter dropped
+RESULT PASS workflow: CREDITS.md names pack, URL, license
+RESULT PASS workflow: import-assets refuses to overwrite
+RESULT PASS workflow: pack paths cannot escape assets/
 RESULT PASS workflow: GBDK_HOME exported by /etc/profile.d
 RESULT PASS workflow: lcc on PATH for login shells
 RESULT PASS workflow: tablet-info runs without a tablet
@@ -134,9 +146,12 @@ RESULT PASS workflow: 3d launches Blender
 RESULT PASS workflow: Blender window appears
 RESULT PASS workflow: Blender lands on workspace 5 (blender)
 RESULT PASS workflow: 3d again focuses Blender, no duplicate
+RESULT PASS workflow: files opens Thunar
+RESULT PASS workflow: Thunar floats on the current workspace
+RESULT PASS workflow: file manager sidebar has Projects and Downloads
 RESULT PASS workflow: tablet-setup handles no tablet gracefully
 ----
-PASS: 68  FAIL: 0
+PASS: 78  FAIL: 0
 --- raylib: GDB through nvim-dap
 [1m[38;5;111m▶ Building (debug)[0m [1mraylib-hello[0m  [2m(raylib · /home/nullptr/Projects/raylib-hello)[0m
 ninja: no work to do.
@@ -176,16 +191,13 @@ ninja: no work to do.
 }
 == nvim-dap
  blink.cmp  Downloading pre-built binary blink.cmp  Downloaded pre-built binary successfully{
- "nvim": "0.12.6+v0.12.6",
+ "after_step_line": 22,
+ "after_continue_line": 19,
  "root": "/home/nullptr/Projects/raylib-hello",
+ "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
+ "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
  "stopped_line": 19,
  "stopped_frame": "main",
- "variable": {
-  "name": "frameCount",
-  "scope": "Locals",
-  "type": "int",
-  "value": "0"
- },
  "adapter": "gdb",
  "stops": [
   {
@@ -199,13 +211,16 @@ ninja: no work to do.
   }
  ],
  "PASS": true,
- "breakpoint": "/home/nullptr/Projects/raylib-hello/src/main.c:19",
- "after_step_line": 22,
+ "variable": {
+  "scope": "Locals",
+  "name": "frameCount",
+  "value": "0",
+  "type": "int"
+ },
  "call_stack": [
   "main"
  ],
- "program": "/home/nullptr/Projects/raylib-hello/build/debug/raylib-hello",
- "after_continue_line": 19
+ "nvim": "0.12.6+v0.12.6"
 }
 RESULT PASS raylib C breakpoint, variables, step, continue (GDB + nvim-dap)
 --- Game Boy: Emulicious debug adapter
@@ -249,7 +264,7 @@ make: Leaving directory '/home/nullptr/Projects/gameboy-hello'
   "PASS": true
 }
 RESULT PASS Game Boy C breakpoint, variables, step, continue (Emulicious DAP)
-{"breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"after_step_line":20,"call_stack":["main()"],"PASS":true,"stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"variable":{"scope":"Locals","type":"unsigned char","value":"0 (value in register)","name":"keys"},"nvim":"0.12.6+v0.12.6","root":"/home/nullptr/Projects/gameboy-hello","adapter":"emulicious","program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb"}
+{"stopped_frame":"main()","stopped_line":19,"stops":[{"reason":"breakpoint"},{"reason":"step"},{"reason":"breakpoint"}],"program":"/home/nullptr/Projects/gameboy-hello/build/debug/gameboy-hello.gb","variable":{"scope":"Locals","name":"keys","value":"0 (value in register)","type":"unsigned char"},"adapter":"emulicious","breakpoint":"/home/nullptr/Projects/gameboy-hello/src/main.c:19","after_continue_line":19,"after_step_line":20,"PASS":true,"nvim":"0.12.6+v0.12.6","root":"/home/nullptr/Projects/gameboy-hello","call_stack":["main()"]}
 RESULT PASS Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)
 --- screenshots of the installed system
 SCREENSHOT vm-01-editor-after-login
@@ -269,6 +284,16 @@ SCREENSHOT vm-04-libresprite
    NullPtrWorkstation -> https://github.com/chrisaladams/NullPtrWorkstation
 RESULT PASS Firefox applies the policy: docs bookmarks on the toolbar
 SCREENSHOT vm-09-firefox-workspace
+--- GitHub sign-in for git (fake token, scratch home: no real account involved)
+[38;5;150m ✔ [0m Already signed in to GitHub
+[38;5;150m ✔ [0m git uses your GitHub sign-in for https://github.com/… repositories
+[38;5;221m !  [0m Could not read your GitHub profile. Set your commit name and e-mail yourself:
+   git config --global user.name "Your Name"
+   git config --global user.email "you@example.com"
+RESULT PASS github-login sets git up to use the GitHub CLI sign-in
+RESULT PASS nullptr-update follows the GitHub sign-in (https)
+--- file manager: thumbnails of a sprite folder
+SCREENSHOT vm-10-file-manager
 --- Tiled: map export from the command line
 JSON ok: 8x6, 24 floor tiles
 CSV ok: room.csv (0-based tile indexes)

@@ -1,18 +1,20 @@
 # nullptr Workstation — test report
 
-Last full verification: 2026-11-08, commit `8ef03e4`,
-[GitHub Actions run 42428608367](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/42428608367).
-**129 checks passed, 0 failed** on a fresh installation of the ISO. Earlier verified builds:
-`b559437` 94/94, `1f76f16` 106/106, `e82775d` 116/116, `0c2fd8e` 123/123. This run adds Firefox
-ESR on workspace 2 (no second window; the docs bookmarks toolbar read back from a fresh profile)
-and moves the other workspaces up one: 3 libresprite, 4 tiled, 5 blender, 6 game, 7 tools.
+Last full verification: 2026-11-09, commit `bf29a4e`,
+[GitHub Actions run 42674686551](https://github.com/chrisaladams/NullPtrWorkstation/actions/runs/42674686551).
+**146 checks passed, 0 failed** on a fresh installation of the ISO. Earlier verified builds:
+`b559437` 94/94, `1f76f16` 106/106, `e82775d` 116/116, `0c2fd8e` 123/123, `8ef03e4` 129/129.
+This run adds `github-login` (git through the GitHub CLI sign-in; tested with a dummy token, no
+real account), `nullptr-update` over https, the Thunar file manager (floating, sidebar,
+thumbnails: `vm-10-file-manager.png`) and `import-assets` (unpack, flatten, never overwrite,
+paths kept inside `assets/`, `CREDITS.md`).
 
 ## ISO
 
 | | |
 |---|---|
 | File | `nullptr-workstation-amd64.iso`, 2.2 GB, hybrid (USB/DVD, UEFI + BIOS) |
-| SHA-256 | `5d933637cec4f6e51caeed3eecc7fe20dec0e9cfb00b40d5ac89306f857d642d` |
+| SHA-256 | `9d61ee895fa06b8a2a4ee4d94a994b1b9a1a7b73a4e44a7cd2f4a04286bcdda4` |
 | Built by | `./build-iso.sh --docker` (live-build in `debian:trixie`) in GitHub Actions |
 | Where | the `iso` artifact of the run above (not stored in the repository) |
 
@@ -54,7 +56,7 @@ and moves the other workspaces up one: 3 libresprite, 4 tiled, 5 blender, 6 game
 | 12 | Build/run commands select the correct project | **PASS** | Workflow suite on the installed system, including the refuse-on-conflict case. |
 | 13 | TTY recovery if X11 fails | **PASS** | tty2 login is a plain text console with no second X server (`vm-06-tty2-text-console.png`). A failing `startx` on tty1 leaves a working shell with recovery hints (simulated failure, workflow suite). |
 
-All 129 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
+All 146 lines are in [`vm-results/results.log`](vm-results/results.log), and the complete
 guest output is in [`vm-results/guest.log`](vm-results/guest.log).
 
 ## Hardware-dependent (no matching hardware)

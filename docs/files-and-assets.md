@@ -2,6 +2,8 @@
 
 ## The file manager
 
+![Thunar with thumbnails](screenshots/16-file-manager.png)
+
 | | |
 |---|---|
 | `Super+E` or `files` | Thunar, floating over whatever you are doing, opened in the active project's `assets/` |

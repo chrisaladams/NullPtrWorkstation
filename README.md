@@ -18,7 +18,7 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | `Super+7` | anything else |
 
 > **Status:** the ISO is built and verified. A fresh install in a UEFI virtual machine
-> passed **129/129** automated checks, run as the user would: tty1 login → graphical
+> passed **146/146** automated checks, run as the user would: tty1 login → graphical
 > workspace → builds, raylib and Game Boy C debugging, LibreSprite, tty2 recovery console.
 > Only laptop hardware (tablet, Wi-Fi, battery, suspend, GPU, keys) remains to be checked on
 > the X1 Carbon. Details: [tests/REPORT.md](tests/REPORT.md).
@@ -90,6 +90,12 @@ drawn as a PNG. The automated test exports it to JSON and CSV for the game
 the references used here: raylib, C, GBDK, Pan Docs, Tiled, Blender, CMake.
 
 ![Firefox workspace](docs/screenshots/15-firefox-workspace.png)
+
+**Files** (`Super+E` / `files`). Thunar floats over the current workspace with thumbnails, so
+sprites can be dragged into LibreSprite or Tiled. `import-assets pack.zip` unpacks an itch.io
+pack into the project and records its license in `CREDITS.md` ([docs/files-and-assets.md](docs/files-and-assets.md)).
+
+![File manager](docs/screenshots/16-file-manager.png)
 
 **Git** (`Ctrl+b 3`). LazyGit follows the active project: the new sprite and the code that
 uses it.
