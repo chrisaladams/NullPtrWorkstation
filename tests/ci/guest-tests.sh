@@ -87,7 +87,8 @@ nvr ':9<CR>'; sleep 1; nvr '<F9>'; sleep 1; nvr '<F5>'; sleep 25
 f5_at_bp() {
   local v=""
   for _ in $(seq 1 60); do
-    v="$(nvim --server "$sock" --remote-expr 'luaeval("(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()")' 2>&1 | tr -d '\r\n ')"
+    # --headless: inside tmux, a plain --remote-expr wraps its answer in terminal escape codes
+    v="$(nvim --headless --server "$sock" --remote-expr 'luaeval("(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()")' 2>&1 | tr -d '\r\n ')"
     [ "$v" = 9 ] && { echo "debugger stopped at line $v"; return 0; }
     sleep 1
   done
