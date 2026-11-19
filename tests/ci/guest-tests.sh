@@ -83,7 +83,17 @@ nvr ':NullptrBuild<CR>'; sleep 3
 shot vm-02-build-in-editor   # while CMake/Ninja run in the split (it closes when the build succeeds)
 sleep 15
 nvr ':9<CR>'; sleep 1; nvr '<F9>'; sleep 1; nvr '<F5>'; sleep 25
-r "F5 in the running AstroVim stops at the breakpoint (LLDB)" sh -c "nvim --server '$sock' --remote-expr 'luaeval(\"(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()\")' 2>&1 | grep -qx 9"
+# the line the running editor's debugger is stopped at (0 = not stopped); waits up to 60 s
+f5_at_bp() {
+  local v=""
+  for _ in $(seq 1 60); do
+    v="$(nvim --server "$sock" --remote-expr 'luaeval("(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()")' 2>&1 | tr -d '\r\n ')"
+    [ "$v" = 9 ] && { echo "debugger stopped at line $v"; return 0; }
+    sleep 1
+  done
+  echo "debugger line after 60 s: [$v]"; return 1
+}
+rv "F5 in the running AstroVim stops at the breakpoint (LLDB)" f5_at_bp
 shot vm-03-debugger-breakpoint
 nvr '<C-\><C-n>:lua require("dap").terminate(); pcall(function() require("dapui").close() end)<CR>'; sleep 3
 nvr ':enew<CR>:only<CR>'; sleep 1
