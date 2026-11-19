@@ -54,10 +54,13 @@ What it does, in order:
 1. **Code:** fetches `main` into `~/src/NullPtrWorkstation` (fast-forward only; it stops if
    you have uncommitted edits there).
 2. **Debian packages:** installs packages listed in `packages/*.list` that are missing (e.g.
-   Blender after it was added). If one can't be installed, it says so and continues.
+   Tiled after it was added). If one can't be installed, it says so and continues.
 3. **Pinned tools:** compares the repo's `versions.lock` with the installed one and
-   reinstalls only what changed (Neovim, GBDK, raylib, LibreSprite, lazygit, Emulicious, …).
-4. **System files:** commands, templates, docs and `/etc` configuration.
+   reinstalls only what changed (Neovim, LibreSprite, Blockbench, lazygit, …).
+   **Retired components:** if raylib, GBDK-2020, Emulicious, VSCodium or Blender from an
+   earlier version are still installed, it lists them and asks before removing them. Projects
+   in `~/Projects` (also ones made from the old starters) are never touched.
+4. **System files:** commands, docs, `/etc` configuration, clang as the default compiler.
 5. **Your configuration:** i3, i3status, kitty, tmux, lazygit, btop, AstroVim, `.bash_profile`,
    `.xinitrc`, `.Xresources`. Only files that differ are replaced, and the previous version of
    each goes to `~/.local/state/nullptr/backups/DATE-TIME/` first. Skip this step with

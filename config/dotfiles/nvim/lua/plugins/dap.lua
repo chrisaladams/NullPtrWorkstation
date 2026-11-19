@@ -1,7 +1,9 @@
--- Debug adapters (both talk the Debug Adapter Protocol directly; no Mason, no VS Code):
---   gdb         GDB >= 14 has a built-in DAP server:  gdb --interpreter=dap
---   emulicious  Emulicious *is* a DAP server: `emulicious -remotedebug PORT` listens on TCP.
---               (The VS Code "Emulicious Debugger" extension only spawns it and connects.)
+-- Debuggers (all speak the Debug Adapter Protocol directly; no Mason, no VS Code):
+--   lldb      LLVM's lldb-dap (the clang toolchain's debugger)         type = "lldb" / "lldb-dap"
+--   gdb       GDB >= 14 has a built-in DAP server: gdb --interpreter=dap  type = "gdb"
+--   gdb-multiarch  the same for other CPUs (ARM for GBA, remote stubs)  type = "gdb-multiarch"
+-- Which one a project uses, and how, lives in the project (.vscode/launch.json or .nvim.lua),
+-- never here. Without either, F5 debugs the program the build produced with LLDB.
 ---@type LazySpec
 return {
   "mfussenegger/nvim-dap",
@@ -9,29 +11,21 @@ return {
     require "astronvim.plugins.configs.nvim-dap"(plugin, opts)
     local dap = require "dap"
 
-    dap.adapters.gdb = {
-      type = "executable",
-      command = "gdb",
-      args = { "--quiet", "--interpreter=dap", "--eval-command", "set print pretty on" },
-    }
+    local lldb_dap = vim.fn.exepath "lldb-dap"
+    if lldb_dap == "" then lldb_dap = vim.fn.exepath "lldb-dap-19" end
+    dap.adapters.lldb = { type = "executable", command = lldb_dap ~= "" and lldb_dap or "lldb-dap", name = "lldb" }
+    dap.adapters["lldb-dap"] = dap.adapters.lldb
 
-    local emulicious = {
-      type = "server",
-      port = "${port}",
-      executable = { command = "emulicious", args = { "-remotedebug", "${port}" } },
-      -- the JVM needs a few seconds to start Emulicious: retry for up to 30 s (250 ms steps)
-      options = { max_retries = 120 },
-    }
-    dap.adapters.emulicious = emulicious
-    dap.adapters["emulicious-debugger"] = emulicious -- name used by .vscode/launch.json
-
-    -- `Space d c` / F5 inside a session pick the right configuration for the project.
-    local project = require "nullptr.project"
-    project.setup_dap_listeners(dap) -- game workspace while running, editor when stopped
-    dap.providers.configs["nullptr"] = function()
-      local root = project.current()
-      local cfg = root and project.dap_config(root)
-      return cfg and { cfg } or {}
+    local function gdb(cmd)
+      return { type = "executable", command = cmd, args = { "--quiet", "--interpreter=dap", "--eval-command", "set print pretty on" } }
     end
+    dap.adapters.gdb = gdb "gdb"
+    dap.adapters["gdb-multiarch"] = gdb "gdb-multiarch"
+
+    -- configurations from the project (.nvim.lua debug=) or the default LLDB launch;
+    -- .vscode/launch.json and dap.configurations are added by nvim-dap itself
+    local project = require "nullptr.project"
+    project.setup_dap_listeners(dap)
+    dap.providers.configs["nullptr"] = function() return project.dap_configs() end
   end,
 }

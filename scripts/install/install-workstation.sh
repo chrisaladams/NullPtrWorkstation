@@ -4,10 +4,10 @@
 #   sudo scripts/install/install-workstation.sh            # into / (chroot or real system)
 #   sudo scripts/install/install-workstation.sh --no-nvim-plugins
 #
-# Installs commands, templates, docs, system config and the default home
-# directory contents (/etc/skel: dotfiles, ~/Projects starter projects and the
-# pre-downloaded AstroNvim plugins/parsers). Existing users' homes are never
-# modified by this script; use `nullptr-update-home` for that (it never overwrites).
+# Installs commands, docs, system config (incl. clang as the default C/C++ compiler) and
+# the default home directory contents (/etc/skel: dotfiles, an empty ~/Projects and the
+# pre-downloaded AstroNvim plugins/parsers). Existing users' homes are never modified by
+# this script; nullptr-update does that (with backups).
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SKEL="${NULLPTR_SKEL:-/etc/skel}"
@@ -24,17 +24,16 @@ done
 log() { printf '\n\033[1;34m[nullptr]\033[0m %s\n' "$*"; }
 
 log "Commands -> $PREFIX/bin, helpers -> $PREFIX/lib/nullptr"
-install -d "$PREFIX/bin" "$PREFIX/lib/nullptr" "$PREFIX/sbin" "$SHARE/templates" "$SHARE/docs"
+install -d "$PREFIX/bin" "$PREFIX/lib/nullptr" "$SHARE/docs"
 install -m755 "$REPO"/scripts/bin/* "$PREFIX/bin/"
 install -m644 "$REPO"/scripts/lib/*.sh "$PREFIX/lib/nullptr/"
-install -m755 "$REPO"/scripts/sbin/* "$PREFIX/sbin/"
 install -m644 "$REPO/versions.lock" "$SHARE/versions.lock"
-
-log "Project templates -> $SHARE/templates"
-for t in "$REPO"/templates/*/; do
-  t="$(basename "$t")"; rm -rf "${SHARE:?}/templates/$t"; cp -a "$REPO/templates/$t" "$SHARE/templates/"
+# files of earlier versions (project templates, Game Boy/raylib commands)
+rm -rf "${SHARE:?}/templates" "$PREFIX/lib/nullptr/nullptr-actions.sh"
+for old in build run-game debug-game projects new-c new-raylib new-gameboy nullptr-new \
+           gb-build gb-clean gb-debug gb-info gb-run; do
+  [ -e "$REPO/scripts/bin/$old" ] || rm -f "$PREFIX/bin/$old"
 done
-chmod -R a+rX "$SHARE/templates"
 
 log "Docs -> $SHARE/docs"
 cp -a "$REPO"/docs/. "$SHARE/docs/"
@@ -42,6 +41,21 @@ chmod -R a+rX "$SHARE/docs"
 
 log "System configuration"
 cp -a "$REPO/config/system/." /
+rm -f /etc/profile.d/nullptr-gbdk.sh
+
+log "clang is the default C/C++ compiler (cc, c++; CMake and make use these)"
+if command -v clang >/dev/null 2>&1; then
+  update-alternatives --install /usr/bin/cc cc "$(readlink -f "$(command -v clang)")" 100 >/dev/null
+  update-alternatives --install /usr/bin/c++ c++ "$(readlink -f "$(command -v clang++)")" 100 >/dev/null
+  update-alternatives --set cc "$(readlink -f "$(command -v clang)")" >/dev/null
+  update-alternatives --set c++ "$(readlink -f "$(command -v clang++)")" >/dev/null
+fi
+# lldb-dap under its plain name (Debian ships it versioned, e.g. lldb-dap-19)
+# (the newest one if several LLVM versions are installed)
+if ! command -v lldb-dap >/dev/null 2>&1 || [ -L "$PREFIX/bin/lldb-dap" ]; then
+  d="$(ls -1 /usr/bin/lldb-dap-[0-9]* /usr/lib/llvm-*/bin/lldb-dap 2>/dev/null | sort -V | tail -n1)"
+  [ -n "$d" ] && [ -x "$d" ] && ln -sf "$d" "$PREFIX/bin/lldb-dap"
+fi
 [ -d /usr/lib/live/config ] && chmod 755 /usr/lib/live/config/2000-nullptr-lock-live-user 2>/dev/null || true
 
 log "Default home directory ($SKEL)"
@@ -56,21 +70,7 @@ done
 rm -rf "$SKEL/.config/nvim"; cp -a "$D/nvim" "$SKEL/.config/nvim"
 # lazygit reads ~/.config/lazygit/config.yml (XDG) — already in place
 
-log "Starter projects ($SKEL/Projects)"
-install -d "$SKEL/Projects"
-mk_project() { # TYPE NAME
-  local dest="$SKEL/Projects/$2"
-  if [ -e "$dest" ]; then echo "  $dest exists, kept"; return 0; fi
-  cp -a "$SHARE/templates/$1" "$dest"
-  local title; title="$(printf '%s' "$2" | tr '[:lower:]-' '[:upper:]_' | cut -c1-15)"
-  grep -rlI -e '__NAME__' -e '__ROMTITLE__' "$dest" | while IFS= read -r f; do
-    sed -i -e "s/__NAME__/$2/g" -e "s/__ROMTITLE__/$title/g" "$f"
-  done
-  git -C "$dest" init -q -b main 2>/dev/null || git -C "$dest" init -q
-  echo "  created $dest"
-}
-mk_project raylib raylib-hello
-mk_project gameboy gameboy-hello
+install -d "$SKEL/Projects"   # empty: clone your projects here (Space m g, or gh repo clone)
 
 if [ "$NVIM_PLUGINS" = 1 ]; then
   log "AstroNvim plugins and treesitter parsers (pinned by lazy-lock.json) -> $SKEL/.local/share/nvim"

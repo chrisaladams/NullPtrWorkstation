@@ -4,8 +4,6 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # web [URL|FILE] — focus Firefox on workspace 2, or start it; with a URL, open it in a new tab
 case "${1:-}" in -h|--help) echo "Usage: web [URL|FILE]   Open Firefox (workspace 2: firefox). A URL or file opens in a new tab."; exit 0 ;; esac
 nw_need_graphical "Firefox"

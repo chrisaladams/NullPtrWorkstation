@@ -4,8 +4,6 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # nullptr-update — update this installed workstation from the GitHub repository.
 #
 # Safe by design: your projects are never touched; every config file it replaces is backed
@@ -121,11 +119,11 @@ fi
 # ------------------------------------------------------------------ 3. pinned upstream components
 step "Pinned components (versions.lock)"
 installed_lock="$NW_SHARE/versions.lock"
-declare -A comp=([NVIM]=neovim [TREESITTER_CLI]=tree-sitter [GBDK]=gbdk [LAZYGIT]=lazygit [NERDFONT]=nerdfont
-                 [RAYLIB]=raylib [LIBRESPRITE]=libresprite [EMULICIOUS]=emulicious [VSCODIUM]=vscodium [EMULICIOUS_VSIX]=vscodium)
+declare -A comp=([NVIM]=neovim [TREESITTER_CLI]=tree-sitter [LAZYGIT]=lazygit [NERDFONT]=nerdfont
+                 [LIBRESPRITE]=libresprite [BLOCKBENCH]=blockbench)
 changed=()
 if [ "$all_up" = 1 ] || [ ! -f "$installed_lock" ]; then
-  changed=(neovim tree-sitter gbdk lazygit nerdfont raylib libresprite emulicious vscodium)
+  changed=(neovim tree-sitter lazygit nerdfont libresprite blockbench)
 else
   while IFS= read -r var; do
     pre=""
@@ -142,8 +140,42 @@ else
   run sudo "$dir/scripts/install/install-upstream.sh" "${changed[@]}"
 fi
 
+# ------------------------------------------------------------------ 3b. retired components
+# Earlier versions installed raylib, GBDK-2020, Emulicious, VSCodium and Blender. Offer to
+# remove what is still there (asks first; your projects in ~/Projects are never touched).
+step "Components this version no longer includes"
+old_pkgs=()
+for p in blender python3-numpy default-jre codium; do
+  dpkg-query -W -f='${Status}' "$p" 2>/dev/null | grep -q 'install ok installed' && old_pkgs+=("$p")
+done
+old_paths=()
+for f in /opt/gbdk /opt/emulicious /usr/local/bin/emulicious /usr/local/sbin/nullptr-install-emulicious \
+         /usr/local/share/nullptr/emulicious.sha256 /usr/local/share/nullptr/emulicious-debugger.vsix \
+         /usr/local/include/raylib.h /usr/local/include/raymath.h /usr/local/include/rlgl.h \
+         /usr/local/lib/pkgconfig/raylib.pc /usr/local/lib/cmake/raylib /etc/skel/.vscode-oss \
+         /etc/skel/Projects/raylib-hello /etc/skel/Projects/gameboy-hello /usr/local/lib/libraylib.*; do
+  [ -e "$f" ] && old_paths+=("$f")
+done
+if [ "${#old_pkgs[@]}" -eq 0 ] && [ "${#old_paths[@]}" -eq 0 ]; then
+  nw_ok "Nothing left over"
+else
+  [ "${#old_pkgs[@]}" -gt 0 ] && echo "   packages: ${old_pkgs[*]}" >&2
+  for f in "${old_paths[@]}"; do echo "   $f" >&2; done
+  echo "   (projects you made from the old starters, e.g. ~/Projects/raylib-hello, stay as they are)" >&2
+  if [ "$dry" = 1 ]; then echo "   (dry run) would ask to remove the above" >&2
+  elif [ -t 0 ]; then
+    printf '   Remove these? [y/N] ' >&2; read -r ans
+    if [ "$ans" = y ] || [ "$ans" = Y ]; then
+      [ "${#old_pkgs[@]}" -gt 0 ] && sudo apt-get purge -y "${old_pkgs[@]}"
+      [ "${#old_paths[@]}" -gt 0 ] && sudo rm -rf -- "${old_paths[@]}"
+      sudo ldconfig
+      nw_ok "Removed. Later, 'sudo apt autoremove' frees what only those packages needed."
+    else nw_info "Kept them."; fi
+  else nw_info "Not asking without a terminal; run nullptr-update in a terminal to remove them."; fi
+fi
+
 # ------------------------------------------------------------------ 4. system files
-step "System files (commands, templates, docs, /etc)"
+step "System files (commands, docs, /etc, clang as default compiler)"
 run sudo "$dir/scripts/install/install-workstation.sh" --no-nvim-plugins
 
 # ------------------------------------------------------------------ 5. your configuration

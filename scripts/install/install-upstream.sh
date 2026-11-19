@@ -2,7 +2,7 @@
 # install-upstream.sh — install the pinned non-Debian components listed in versions.lock.
 # Runs as root inside the live-build chroot (hook 0100) and also works on any Debian 13
 # system:  sudo scripts/install/install-upstream.sh [component...]
-# Components: neovim tree-sitter gbdk lazygit nerdfont raylib libresprite emulicious vscodium
+# Components: neovim tree-sitter lazygit nerdfont libresprite blockbench
 # Every download is SHA-256 verified and every git checkout is commit-verified.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -62,14 +62,6 @@ do_tree_sitter() {
   record tree-sitter "$TREESITTER_CLI_VERSION sha256:$TREESITTER_CLI_SHA256"
 }
 
-do_gbdk() {
-  log "GBDK-2020 $GBDK_VERSION"
-  fetch "$GBDK_URL" "$GBDK_SHA256" "$CACHE/gbdk.tar.gz"
-  rm -rf /opt/gbdk && tar -xzf "$CACHE/gbdk.tar.gz" -C /opt
-  mkdir -p /opt/gbdk/share && echo "$GBDK_VERSION" >/opt/gbdk/share/nullptr-gbdk-version
-  chmod -R a+rX /opt/gbdk
-  record gbdk "$GBDK_VERSION sha256:$GBDK_SHA256"
-}
 
 do_lazygit() {
   log "lazygit $LAZYGIT_VERSION"
@@ -89,19 +81,6 @@ do_nerdfont() {
   record nerdfont "$NERDFONT_VERSION sha256:$NERDFONT_SHA256"
 }
 
-do_raylib() {
-  log "raylib $RAYLIB_VERSION (from source, X11, shared + pkg-config)"
-  git_at "$RAYLIB_GIT" "$RAYLIB_COMMIT" "$CACHE/raylib"
-  rm -rf "$CACHE/raylib/build"
-  cmake -S "$CACHE/raylib" -B "$CACHE/raylib/build" -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local \
-    -DBUILD_SHARED_LIBS=ON -DPLATFORM=Desktop -DBUILD_EXAMPLES=OFF \
-    -DGLFW_BUILD_WAYLAND=OFF -DGLFW_BUILD_X11=ON -DCUSTOMIZE_BUILD=OFF
-  cmake --build "$CACHE/raylib/build" -j "$JOBS"
-  cmake --install "$CACHE/raylib/build"
-  ldconfig
-  record raylib "$RAYLIB_VERSION git:$RAYLIB_COMMIT"
-}
 
 do_libresprite() {
   log "LibreSprite $LIBRESPRITE_VERSION (from source)"
@@ -127,48 +106,25 @@ D
   record libresprite "$LIBRESPRITE_VERSION git:$LIBRESPRITE_COMMIT"
 }
 
-do_emulicious() {
-  log "Emulicious (freeware, downloaded from $EMULICIOUS_URL)"
-  local inst="$HERE/../sbin/nullptr-install-emulicious"
-  [ -x "$inst" ] || inst=/usr/local/sbin/nullptr-install-emulicious
-  EMULICIOUS_URL="$EMULICIOUS_URL" EMULICIOUS_SHA256="${EMULICIOUS_SHA256:-}" "$inst" || return 1
-  record emulicious "$(cat "$SHARE/emulicious.sha256")"
-}
 
-do_vscodium() {
-  log "VSCodium $VSCODIUM_VERSION + Emulicious Debugger $EMULICIOUS_VSIX_VERSION (fallback debugger UI)"
-  fetch "$VSCODIUM_URL" "$VSCODIUM_SHA256" "$CACHE/codium.deb"
-  fetch "$EMULICIOUS_VSIX_URL" "$EMULICIOUS_VSIX_SHA256" "$CACHE/emulicious-debugger.vsix"
+do_blockbench() {
+  log "Blockbench $BLOCKBENCH_VERSION"
+  fetch "$BLOCKBENCH_URL" "$BLOCKBENCH_SHA256" "$CACHE/blockbench.deb"
   # the ISO build installs the .deb via live-build's packages.chroot (main pass); elsewhere apt does it
-  dpkg -s codium >/dev/null 2>&1 || apt-get install -y --no-install-recommends "$CACHE/codium.deb"
-  install -D -m644 "$CACHE/emulicious-debugger.vsix" "$SHARE/emulicious-debugger.vsix"
-  local ud; ud="$(mktemp -d)"
-  codium --no-sandbox --user-data-dir "$ud" --extensions-dir /etc/skel/.vscode-oss/extensions \
-    --install-extension "$SHARE/emulicious-debugger.vsix" || echo "warning: could not pre-install VSIX; run: codium --install-extension $SHARE/emulicious-debugger.vsix"
-  rm -rf "$ud"
-  record vscodium "$VSCODIUM_VERSION sha256:$VSCODIUM_SHA256"
-  record emulicious-vsix "$EMULICIOUS_VSIX_VERSION sha256:$EMULICIOUS_VSIX_SHA256"
+  if [ "$(dpkg-query -W -f='${Version}' blockbench 2>/dev/null)" != "$BLOCKBENCH_VERSION" ]; then
+    apt-get install -y --no-install-recommends "$CACHE/blockbench.deb"
+  fi
+  record blockbench "$BLOCKBENCH_VERSION sha256:$BLOCKBENCH_SHA256"
 }
 
-all=(neovim tree-sitter gbdk lazygit nerdfont raylib libresprite)
-# Emulicious is freeware with unverified redistribution terms: bundled by default for a
-# personal image; NULLPTR_WITH_EMULICIOUS=0 builds an image you can share (users then run
-# `sudo nullptr-install-emulicious` after installation).
-[ "${NULLPTR_WITH_EMULICIOUS:-1}" = 1 ] && all+=(emulicious)
-[ "${NULLPTR_WITH_VSCODIUM:-1}" = 1 ] && all+=(vscodium)
+all=(neovim tree-sitter lazygit nerdfont libresprite blockbench)
 [ $# -gt 0 ] && all=("$@")
 : >"$RESOLVED.tmp"; [ -f "$RESOLVED" ] && cp "$RESOLVED" "$RESOLVED.tmp"
 mv "$RESOLVED.tmp" "$RESOLVED"
 for c in "${all[@]}"; do
   case "$c" in
-    neovim) do_neovim ;; tree-sitter) do_tree_sitter ;; gbdk) do_gbdk ;; lazygit) do_lazygit ;;
-    nerdfont) do_nerdfont ;; raylib) do_raylib ;; libresprite) do_libresprite ;;
-    emulicious)
-      if ! do_emulicious; then
-        [ "${NULLPTR_ALLOW_MISSING_EMULICIOUS:-0}" = 1 ] || { echo "Emulicious download failed" >&2; exit 1; }
-        echo "WARNING: Emulicious not installed; users can run: sudo nullptr-install-emulicious" >&2
-      fi ;;
-    vscodium) do_vscodium ;;
+    neovim) do_neovim ;; tree-sitter) do_tree_sitter ;; lazygit) do_lazygit ;;
+    nerdfont) do_nerdfont ;; libresprite) do_libresprite ;; blockbench) do_blockbench ;;
     *) echo "unknown component $c" >&2; exit 64 ;;
   esac
 done

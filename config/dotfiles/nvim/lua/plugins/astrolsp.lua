@@ -22,9 +22,12 @@ return {
           "--completion-style=detailed",
           "--function-arg-placeholders=true",
           "--fallback-style=llvm",
+          -- let clangd ask cross compilers (devkitARM, other toolchains under /opt or ~)
+          -- for their system headers, so any target works without editing this file
+          "--query-driver=/usr/bin/*,/usr/local/bin/*,/opt/**/bin/*," .. vim.env.HOME .. "/**/bin/*",
         },
         capabilities = { offsetEncoding = { "utf-8" } },
-        root_markers = { ".nullptr-project", "compile_commands.json", ".clangd", ".git" },
+        root_markers = { "compile_commands.json", ".clangd", ".git" },
       },
     },
   },

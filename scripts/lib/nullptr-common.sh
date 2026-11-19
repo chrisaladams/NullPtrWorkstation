@@ -3,25 +3,16 @@
 # Installed to /usr/local/lib/nullptr/nullptr-common.sh and sourced by
 # every command in /usr/local/bin. Not meant to be executed directly.
 #
-# Project model
-#   A project is a directory containing a `.nullptr-project` file:
-#       type=raylib|gameboy
-#       target=<executable or ROM base name>
-#   The *active project* is stored in $NW_STATE_DIR/active-project and is
-#   updated by `projects`, `code`, `new-*` and by AstroVim whenever you open
-#   or switch to a project there.
+# There is no project model: a project is a folder (usually a git repository) in ~/Projects.
+# nw_workdir picks the folder the tools act on: the repository you are in, else the one
+# open in AstroVim (it records that in $NW_STATE_DIR/editor-cwd), else ~/Projects.
 
 NW_PREFIX="${NW_PREFIX:-/usr/local}"
 NW_SHARE="${NW_SHARE:-$NW_PREFIX/share/nullptr}"
-NW_TEMPLATES="${NW_TEMPLATES:-$NW_SHARE/templates}"
 NW_PROJECTS_DIR="${NW_PROJECTS_DIR:-$HOME/Projects}"
 NW_STATE_DIR="${NW_STATE_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/nullptr}"
-NW_ACTIVE_FILE="$NW_STATE_DIR/active-project"
-NW_RECENT_FILE="$NW_STATE_DIR/recent-projects"
+NW_EDITOR_CWD_FILE="$NW_STATE_DIR/editor-cwd"
 NW_NVIM_SOCKET="${NW_NVIM_SOCKET:-${XDG_RUNTIME_DIR:-/tmp}/nullptr-nvim-$(id -u).sock}"
-GBDK_HOME="${GBDK_HOME:-/opt/gbdk}"
-EMULICIOUS_HOME="${EMULICIOUS_HOME:-/opt/emulicious}"
-export GBDK_HOME
 
 if [ -t 2 ]; then
   NW_C_BLUE=$'\e[38;5;111m' NW_C_GREEN=$'\e[38;5;150m' NW_C_YELLOW=$'\e[38;5;221m'
@@ -40,96 +31,18 @@ nw_have() { command -v "$1" >/dev/null 2>&1; }
 # nw_abspath PATH -> absolute, symlink-resolved path (PATH must exist)
 nw_abspath() { (cd -P -- "$1" 2>/dev/null && pwd) || return 1; }
 
-# nw_find_root DIR -> prints project root containing DIR, or fails
-nw_find_root() {
+# nw_git_root DIR -> top of the git repository containing DIR, or fails
+nw_git_root() { git -C "${1:-$PWD}" rev-parse --show-toplevel 2>/dev/null; }
+
+# nw_workdir -> the folder the tools act on (see above)
+nw_workdir() {
   local d
-  d="$(nw_abspath "${1:-$PWD}")" || return 1
-  while [ -n "$d" ]; do
-    if [ -f "$d/.nullptr-project" ]; then printf '%s\n' "$d"; return 0; fi
-    [ "$d" = "/" ] && break
-    d="$(dirname -- "$d")"
-  done
-  return 1
-}
-
-# nw_meta ROOT KEY -> value from .nullptr-project
-nw_meta() {
-  sed -n "s/^$2=//p" "$1/.nullptr-project" 2>/dev/null | head -n1
-}
-
-nw_type()   { nw_meta "$1" type; }
-nw_target() { local t; t="$(nw_meta "$1" target)"; printf '%s\n' "${t:-$(basename -- "$1")}"; }
-
-nw_active_get() {
-  local p
-  [ -f "$NW_ACTIVE_FILE" ] || return 1
-  p="$(head -n1 "$NW_ACTIVE_FILE")"
-  [ -n "$p" ] && [ -f "$p/.nullptr-project" ] || return 1
-  printf '%s\n' "$p"
-}
-
-# nw_active_set ROOT — mark ROOT as the active project and record it as recent
-nw_active_set() {
-  local root tmp
-  root="$(nw_find_root "$1")" || nw_die "Not a nullptr project: $1"
-  mkdir -p "$NW_STATE_DIR"
-  tmp="$(mktemp "$NW_STATE_DIR/.active.XXXXXX")"
-  printf '%s\n' "$root" >"$tmp" && mv -f "$tmp" "$NW_ACTIVE_FILE"
-  tmp="$(mktemp "$NW_STATE_DIR/.recent.XXXXXX")"
-  # (grep exits 1 when there are no other recent projects — not an error)
-  { printf '%s\n' "$root"; grep -vxF -- "$root" "$NW_RECENT_FILE" 2>/dev/null || true; } | head -n 20 >"$tmp"
-  mv -f "$tmp" "$NW_RECENT_FILE"
-  # Let tmux show the project in its status bar (ignored outside tmux).
-  if [ -n "${TMUX:-}" ] || tmux has-session -t dev 2>/dev/null; then
-    tmux set-environment -g NULLPTR_PROJECT "$root" 2>/dev/null || true
-    tmux refresh-client -S 2>/dev/null || true
+  if d="$(nw_git_root "$PWD")" && [ "$d" != "$HOME" ]; then printf '%s\n' "$d"; return 0; fi
+  if [ -f "$NW_EDITOR_CWD_FILE" ]; then
+    d="$(head -n1 "$NW_EDITOR_CWD_FILE")"
+    if [ -n "$d" ] && [ -d "$d" ] && [ "$d" != "$HOME" ]; then printf '%s\n' "$d"; return 0; fi
   fi
-}
-
-# nw_resolve_project [PATH] -> prints the project root to operate on.
-# Precedence: explicit PATH > the project you are standing in (only if it
-# agrees with the active one, or no project is active) > active project.
-# If your shell is inside project A but AstroVim/`projects` made B active,
-# we refuse instead of guessing.
-nw_resolve_project() {
-  local arg="${1:-}" here active
-  if [ -n "$arg" ]; then
-    if [ -d "$arg" ]; then
-      nw_find_root "$arg" || nw_die "'$arg' is not inside a nullptr project (no .nullptr-project file)."
-      return 0
-    elif [ -d "$NW_PROJECTS_DIR/$arg" ]; then
-      nw_find_root "$NW_PROJECTS_DIR/$arg" || nw_die "'$NW_PROJECTS_DIR/$arg' has no .nullptr-project file."
-      return 0
-    fi
-    nw_die "No such project: $arg (looked in . and $NW_PROJECTS_DIR)"
-  fi
-  here="$(nw_find_root "$PWD" 2>/dev/null || true)"
-  active="$(nw_active_get 2>/dev/null || true)"
-  if [ -n "$here" ] && [ -n "$active" ] && [ "$here" != "$active" ]; then
-    nw_warn "You are inside '$(basename "$here")' but the active project is '$(basename "$active")'."
-    nw_warn "Refusing to guess. Either:"
-    nw_warn "   projects use $(basename "$here")     # make this directory's project active"
-    nw_warn "   ${NW_CMD:-build} $(basename "$active")   # name the project explicitly"
-    exit 2
-  fi
-  if [ -n "$here" ]; then printf '%s\n' "$here"; return 0; fi
-  if [ -n "$active" ]; then printf '%s\n' "$active"; return 0; fi
-  nw_die "No project selected. Run 'projects' to choose one, or cd into a project."
-}
-
-nw_banner() {
-  # nw_banner VERB ROOT
-  printf '%s%s▶ %s%s %s%s%s  %s(%s · %s)%s\n' "$NW_C_BOLD" "$NW_C_BLUE" "$1" "$NW_C_OFF" \
-    "$NW_C_BOLD" "$(basename -- "$2")" "$NW_C_OFF" "$NW_C_DIM" "$(nw_type "$2")" "$2" "$NW_C_OFF" >&2
-}
-
-# nw_validate_name NAME — safe project directory names only
-nw_validate_name() {
-  case "$1" in
-    ''|.*|*/*) nw_die "Invalid project name '$1'." ;;
-  esac
-  printf '%s' "$1" | grep -Eq '^[A-Za-z][A-Za-z0-9_-]{0,63}$' ||
-    nw_die "Project names must start with a letter and use only letters, digits, '-' or '_' (max 64)."
+  mkdir -p "$NW_PROJECTS_DIR"; printf '%s\n' "$NW_PROJECTS_DIR"
 }
 
 # nw_x_env VAR — VAR (DISPLAY or XAUTHORITY) of this user's running i3, if any
@@ -178,21 +91,21 @@ nw_need_graphical() {
 nw_i3() { env -u I3SOCK i3-msg "$@"; }
 
 # Workspaces (keep in sync with config/dotfiles/i3/config and nullptr/project.lua):
-#   1 astro · 2 firefox · 3 libresprite · 4 tiled · 5 blender · 6 game · 7 tools
+#   1 astro · 2 firefox · 3 libresprite · 4 tiled · 5 blockbench · 6 run · 7 tools
 nw_ws_name() {
   case "$1" in
-    1|astro|code)  echo "1: astro" ;;
-    2|firefox|web) echo "2: firefox" ;;
-    3|libresprite) echo "3: libresprite" ;;
-    4|tiled|tiles) echo "4: tiled" ;;
-    5|blender)     echo "5: blender" ;;
-    6|game)        echo "6: game" ;;
-    7|tools)       echo "7: tools" ;;
-    *)             echo "$1" ;;
+    1|astro|code)    echo "1: astro" ;;
+    2|firefox|web)   echo "2: firefox" ;;
+    3|libresprite)   echo "3: libresprite" ;;
+    4|tiled|tiles)   echo "4: tiled" ;;
+    5|blockbench|3d) echo "5: blockbench" ;;
+    6|run)           echo "6: run" ;;
+    7|tools)         echo "7: tools" ;;
+    *)               echo "$1" ;;
   esac
 }
 
-# nw_i3_workspace ROLE|N — show that workspace (astro, firefox, libresprite, tiled, blender, game, tools) if i3 runs
+# nw_i3_workspace ROLE|N — show that workspace (astro, firefox, libresprite, tiled, blockbench, run, tools) if i3 runs
 nw_i3_workspace() {
   local name
   name="$(nw_ws_name "$1")"

@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| `Super+E` or `files` | Thunar, floating over whatever you are doing, opened in the active project's `assets/` |
+| `Super+E` or `files` | Thunar, floating over whatever you are doing, opened in the project open in AstroVim |
 | `files ~/Downloads` | open a specific folder |
 | `F3` (in Thunar) | split view: two folders side by side |
 | `Ctrl+H` | show hidden files |
@@ -37,8 +37,9 @@ import-assets ~/Downloads/dungeon-tileset.zip --url https://someartist.itch.io/d
 
 What it does:
 
-- Unpacks into the **active project's** `assets/dungeon-tileset/`. Use `--project NAME` for
-  another project and `--name NAME` for another folder name.
+- Unpacks into `assets/dungeon-tileset/` of the repository you are in (or, from elsewhere, the
+  project open in AstroVim). Use `--to DIR` for another project and `--name NAME` for another
+  folder name.
 - **Never overwrites.** If the folder exists, it stops and changes nothing.
 - Removes the wrapping folder most zips have (`pack.zip` → `pack/…`) and macOS clutter
   (`__MACOSX`, `.DS_Store`).
@@ -64,7 +65,8 @@ the credits for your game's credits screen or store page. If a pack has no licen
 - **Sprites and tilesets** → LibreSprite (`art assets/dungeon-tileset/tiles.png`) or Tiled
   (*New Tileset* from the PNG, see [tiled.md](tiled.md)).
 - **In raylib:** `LoadTexture("assets/dungeon-tileset/tiles.png")`. Paths are relative to the
-  project root, which is where `run-game` starts the game.
+  folder the program starts in: the project root for `Space m r` (change it with `cwd=` in
+  `.nvim.lua`, see [c-projects.md](c-projects.md)).
 - **Sounds:** `.wav`/`.ogg` load with `LoadSound` / `LoadMusicStream`.
 - **Game Boy:** packs made for the Game Boy (4 colours, 8×8 tiles) convert with `png2asset`.
   Most packs aren't; they need re-drawing in 4 colours.

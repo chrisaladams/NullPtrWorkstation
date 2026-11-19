@@ -4,7 +4,7 @@
 You paint tiles from a tileset image (made in LibreSprite) onto a grid. It also places
 objects such as doors, spawn points and collision boxes.
 
-Tiled has its own workspace, between LibreSprite and Blender:
+Tiled has its own workspace, between LibreSprite and Blockbench:
 
 | | |
 |---|---|
@@ -57,6 +57,8 @@ In the text console (no graphical screen) put `QT_QPA_PLATFORM=offscreen` in fro
 So in JSON, subtract `firstgid` to get the tile's position in the tileset.
 
 ## Into raylib: CSV, about 40 lines of C
+
+(raylib as an example; the same few lines work with SDL or any other library.)
 
 CSV is the easiest start: one number per cell, read with `fscanf`. This loads a map and draws
 it. The automated test's map (8×6 tiles, walls around a floor) looks like this:
@@ -134,8 +136,7 @@ add_dependencies(${PROJECT_NAME} maps)
 The Game Boy draws its background from **8×8 tiles**, up to 256 in VRAM, on a 32×32 tile map
 (the screen shows 20×18). Make the Tiled map with 8×8 tiles, at most 32×32. Then:
 
-- Convert the tileset PNG to tile data with GBDK's `png2asset` (`/opt/gbdk/bin/png2asset`), as
-  the starter project does for its graphics.
+- Convert the tileset PNG to tile data with GBDK's `png2asset` (GBDK-2020 is your install).
 - Turn the CSV export into a C array: the numbers are already 0-based tile indexes, so they can
   go straight into `set_bkg_tiles(0, 0, W, H, room_map)` as long as the tiles are loaded into
   VRAM in the same order as in the tileset.
@@ -153,4 +154,4 @@ Tiled 1.11.0 comes from Debian 13 and is updated with the system (`sudo apt upgr
 Tiled's own *Update Available* notice in its status bar: that points to the download for
 Windows/macOS. The automated VM test opens Tiled on workspace 4 and exports a map to JSON and CSV
 from the command line, checking every cell. The raylib example above was compiled and run with
-raylib 5.5.
+raylib 5.5 (raylib belongs to your project: see [c-projects.md](c-projects.md) for adding it).

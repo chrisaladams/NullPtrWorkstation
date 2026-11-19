@@ -2,77 +2,62 @@
 # nullptr Workstation — workflow test-suite.
 # Run as the workstation user inside the graphical session (DISPLAY set), e.g.:
 #   tests/workflow-tests.sh            # prints PASS/FAIL per test, exit 1 on any FAIL
-# Creates and removes scratch projects named nwtest-*; never touches other projects.
+# Creates and removes scratch folders named nwtest-* in ~/Projects; never touches others.
 set -uo pipefail
 P="$HOME/Projects"
-STATE="${XDG_STATE_HOME:-$HOME/.local/state}/nullptr/active-project"
+T="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/nullptr"
 pass=0; fail=0; results=()
 ok()   { results+=("PASS  $1"); pass=$((pass+1)); }
 bad()  { results+=("FAIL  $1${2:+  — $2}"); fail=$((fail+1)); }
 check(){ local name="$1"; shift; if "$@" >/tmp/nwtest.out 2>&1; then ok "$name"; else bad "$name" "$(tail -n2 /tmp/nwtest.out | tr '\n' ' ')"; fi; }
 cleanup() { rm -rf "$P"/nwtest-*; }
-cleanup; trap cleanup EXIT
-saved_active="$(cat "$STATE" 2>/dev/null || true)"
+mkdir -p "$P"; cleanup; trap cleanup EXIT
+# workspace of the first window whose class matches the regex (case-insensitive)
+wsof() { i3-msg -t get_tree | python3 -c 'import json,re,sys
+t=json.load(sys.stdin); rx=re.compile(sys.argv[1],re.I)
+def w(n,ws=None):
+    if n.get("type")=="workspace": ws=n["name"]
+    if rx.search((n.get("window_properties") or {}).get("class") or ""): print(ws); return True
+    return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
+w(t)' "$1"; }
+focused_ws() { i3-msg -t get_workspaces | python3 -c 'import json,sys; print([w["name"] for w in json.load(sys.stdin) if w["focused"]][0])'; }
 
-# ---------------------------------------------------------------- templates
-check "new-raylib creates project"        new-raylib nwtest-pirates
-check "new-raylib project builds"         build nwtest-pirates
-check "raylib Debug binary exists"        test -x "$P/nwtest-pirates/build/debug/nwtest-pirates"
-check "compile_commands.json linked"      test -f "$P/nwtest-pirates/compile_commands.json"
-check "build --release works"             build --release nwtest-pirates
-check "Release binary exists"             test -x "$P/nwtest-pirates/build/release/nwtest-pirates"
-echo "// my edit" >>"$P/nwtest-pirates/src/main.c"
-sum_before="$(sha256sum "$P/nwtest-pirates/src/main.c")"
-if new-raylib nwtest-pirates >/tmp/nwtest.out 2>&1; then bad "new-raylib refuses existing name"; else ok "new-raylib refuses existing name"; fi
-check "existing project left untouched"   test "$sum_before" = "$(sha256sum "$P/nwtest-pirates/src/main.c")"
-if new-raylib '../evil' >/dev/null 2>&1; then bad "invalid project name rejected"; else ok "invalid project name rejected"; fi
-check "new-gameboy creates project"       new-gameboy nwtest-kingdom-gb
-check "gb-build builds the ROM"           gb-build nwtest-kingdom-gb
-check "Debug ROM + .cdb exist"            test -s "$P/nwtest-kingdom-gb/build/debug/nwtest-kingdom-gb.gb" -a -s "$P/nwtest-kingdom-gb/build/debug/nwtest-kingdom-gb.cdb"
-check ".cdb has C line records"           grep -q '^L:C\$main.c\$' "$P/nwtest-kingdom-gb/build/debug/nwtest-kingdom-gb.cdb"
-check "ROM header title set"              sh -c "dd if='$P/nwtest-kingdom-gb/build/debug/nwtest-kingdom-gb.gb' bs=1 skip=308 count=15 2>/dev/null | grep -q NWTEST_KINGDOM"
-check "gb-build --release"                gb-build --release nwtest-kingdom-gb
-check "gb-clean removes build/"           sh -c "gb-clean nwtest-kingdom-gb && test ! -d '$P/nwtest-kingdom-gb/build'"
-if gb-build nwtest-pirates >/dev/null 2>&1; then bad "gb-build rejects raylib project"; else ok "gb-build rejects raylib project"; fi
-check "new projects are git repositories" git -C "$P/nwtest-kingdom-gb" rev-parse --git-dir
+# ---------------------------------------------------------------- C toolchain (clang default)
+check "cc is clang"                       sh -c 'cc --version | head -1 | grep -qi clang'
+check "c++ is clang++"                    sh -c 'c++ --version | head -1 | grep -qi clang'
+tc="$(mktemp -d)"; printf 'cmake_minimum_required(VERSION 3.20)\nproject(t C)\nadd_executable(t t.c)\n' >"$tc/CMakeLists.txt"; echo 'int main(void){return 0;}' >"$tc/t.c"
+check "CMake picks Clang by default"      sh -c "cmake -S '$tc' -B '$tc/b' -G Ninja | grep -q 'C compiler identification is Clang'"
+rm -rf "$tc"
+check "lldb-dap available (AstroVim's debugger)" sh -c 'timeout 10 lldb-dap --help </dev/null 2>&1 | grep -qi "dap"'
+check "gdb >= 14 (built-in DAP)"          sh -c 'v=$(gdb --version | head -1 | grep -o "[0-9][0-9]*\.[0-9]*" | head -1); [ "${v%%.*}" -ge 14 ]'
+check "gdb-multiarch for other CPUs (ARM)" sh -c 'gdb-multiarch -batch -ex "set architecture arm" 2>&1 | grep -qi "arm"'
+check "bear writes compile_commands.json for Make" command -v bear
+for c in build run-game debug-game projects new-c new-raylib new-gameboy gb-build lcc emulicious codium blender; do
+  if command -v "$c" >/dev/null 2>&1; then bad "no '$c' any more (removed)" "$(command -v "$c")"; else ok "no '$c' any more (removed)"; fi
+done
+check "no raylib installed system-wide"   sh -c '! pkg-config --exists raylib && test ! -e /usr/local/include/raylib.h'
 
-# ---------------------------------------------------------------- generic (plain C) projects
-check "new-c creates a plain C project"          new-c nwtest-tool --no-git
-check "--no-git skips git init"                  sh -c "! test -e '$P/nwtest-tool/.git'"
-check "new-c project has its own CMakeLists"     grep -q 'add_executable' "$P/nwtest-tool/CMakeLists.txt"
-check "generic project builds (CMake)"           build nwtest-tool
-check "run-game runs a generic program in the terminal" sh -c "run-game nwtest-tool 2>&1 | grep -q 'Hello from nwtest-tool!'"
-check "build --clean removes build output"       sh -c "build --clean nwtest-tool && test ! -d '$P/nwtest-tool/build'"
-mkdir -p "$P/nwtest-mk"
-printf 'all:\n\tcc -g -o hello hello.c\nclean:\n\trm -f hello\n' >"$P/nwtest-mk/Makefile"
-printf '#include <stdio.h>\nint main(void){puts("make ok");return 0;}\n' >"$P/nwtest-mk/hello.c"
-check "projects adopt marks an existing folder"  projects adopt "$P/nwtest-mk"
-check "adopted plain folder is generic"          grep -qx 'type=generic' "$P/nwtest-mk/.nullptr-project"
-if projects adopt "$P/nwtest-mk" >/dev/null 2>&1; then bad "adopt refuses an existing project"; else ok "adopt refuses an existing project"; fi
-echo 'artifact=hello' >>"$P/nwtest-mk/.nullptr-project"
-check "generic Makefile project builds and runs" sh -c "run-game nwtest-mk 2>&1 | grep -q 'make ok'"
-echo 'run=echo custom-run-$CONFIG' >>"$P/nwtest-mk/.nullptr-project"
-check "run= line in .nullptr-project is used"     sh -c "run-game nwtest-mk 2>&1 | grep -q custom-run-debug"
-check "generic project listed by projects"       sh -c "projects list | grep -q 'nwtest-mk  *generic'"
+# ---------------------------------------------------------------- a project from GitHub (simulated by a local repository)
+up="$(mktemp -d)"
+git -C "$up" init -q -b main 2>/dev/null || git -C "$up" init -q
+printf '#include <stdio.h>\nint main(void){puts("cloned ok");return 0;}\n' >"$up/main.c"
+printf 'cmake_minimum_required(VERSION 3.20)\nproject(game C)\nadd_executable(game main.c)\n' >"$up/CMakeLists.txt"
+git -C "$up" add -A && git -C "$up" -c user.name=t -c user.email=t@t commit -qm init
+check "git clone --recurse-submodules into ~/Projects" git clone -q --recurse-submodules "$up" "$P/nwtest-game"
+check "a cloned CMake project builds with plain cmake" sh -c "cd '$P/nwtest-game' && cmake -S . -B build -G Ninja >/dev/null && cmake --build build >/dev/null && ./build/game | grep -q 'cloned ok'"
+rm -rf "$up"
+# AstroVim records the project you open; the terminal tools follow it
+nvim --headless -c "lua require('nullptr.project').open('$P/nwtest-game/main.c')" -c "sleep 300m" -c "qa!" >/dev/null 2>&1
+[ "$(cat "$STATE/editor-cwd" 2>/dev/null)" = "$P/nwtest-game" ] && ok "AstroVim records the open project (tools follow it)" || bad "AstroVim records the open project (tools follow it)" "editor-cwd=$(cat "$STATE/editor-cwd" 2>/dev/null)"
+check "tmux status shows the pane's repository" sh -c "nullptr-tmux-status '$P/nwtest-game' | grep -q 'nwtest-game'"
 
-# ---------------------------------------------------------------- project selection
-cd "$HOME" || exit 1
-check "projects use raylib-hello"         projects use raylib-hello
-build >/tmp/nwtest.out 2>&1; grep -q "raylib-hello" /tmp/nwtest.out && grep -q "(raylib" /tmp/nwtest.out && ok "build (from ~) uses active raylib project" || bad "build (from ~) uses active raylib project"
-check "projects use gameboy-hello"        projects use gameboy-hello
-build >/tmp/nwtest.out 2>&1; grep -q "gameboy-hello" /tmp/nwtest.out && grep -q "gameboy-hello.gb" /tmp/nwtest.out && ok "build (from ~) follows switch to Game Boy" || bad "build (from ~) follows switch to Game Boy"
-cd "$P/raylib-hello/src" || exit 1
-build >/tmp/nwtest.out 2>&1; rc=$?
-[ "$rc" = 2 ] && grep -q "Refusing to guess" /tmp/nwtest.out && ok "conflict (cwd A, active B) refuses instead of guessing" || bad "conflict (cwd A, active B) refuses instead of guessing" "rc=$rc"
-check "explicit project name wins"        build raylib-hello
-cd "$HOME" || exit 1
-check "projects list shows active (*)"    sh -c "projects list | grep -q '^ \* gameboy-hello'"
-
-# AstroVim: entering a file of another project makes it active (shared with the shell)
-projects use gameboy-hello >/dev/null 2>&1
-nvim --headless -c "edit $P/raylib-hello/src/main.c" -c "sleep 300m" -c "qa!" >/dev/null 2>&1
-[ "$(cat "$STATE")" = "$P/raylib-hello" ] && ok "AstroVim file switch updates active project" || bad "AstroVim file switch updates active project" "active=$(cat "$STATE")"
-build >/tmp/nwtest.out 2>&1; grep -q "(raylib" /tmp/nwtest.out && ok "shell build follows AstroVim's project" || bad "shell build follows AstroVim's project"
+# ---------------------------------------------------------------- AstroVim: build, clangd, debug (CMake / Make / launch.json / .nvim.lua)
+bash "$T/editor/run-editor-tests.sh" >/tmp/nwtest-editor.out 2>&1
+while IFS= read -r l; do
+  case "$l" in "PASS editor: "*) ok "${l#PASS }" ;; "FAIL editor: "*) bad "${l#FAIL }" ;; esac
+done </tmp/nwtest-editor.out
+grep -q '^\(PASS\|FAIL\) editor: ' /tmp/nwtest-editor.out || bad "editor tests produced no result" "$(tail -n3 /tmp/nwtest-editor.out | tr '\n' ' ')"
 
 # ---------------------------------------------------------------- login autostart guard (logic only)
 guard() { # guard VAR=VAL ... -> prints yes/no   (bash increments SHLVL: 0 here = a fresh login shell)
@@ -101,7 +86,7 @@ echo "$out" | grep -q "graphical session failed" && echo "$out" | grep -q "SHELL
 rm -rf "$fakebin"
 
 # ---------------------------------------------------------------- asset packs (import-assets)
-check "new-c for asset import"           new-c nwtest-assets --no-git
+mkdir -p "$P/nwtest-assets" && git -C "$P/nwtest-assets" init -q
 ad="$(mktemp -d)"
 python3 - "$ad" <<'PY'
 import zipfile,sys,os
@@ -112,21 +97,20 @@ with zipfile.ZipFile(os.path.join(d,"Dungeon Pack.zip"),"w") as z:
 with zipfile.ZipFile(os.path.join(d,"evil.zip"),"w") as z:
     z.writestr("../../nwtest-escaped.txt","x"); z.writestr("ok.png",png)
 PY
-check "import-assets unpacks a zip"      import-assets "$ad/Dungeon Pack.zip" --project nwtest-assets --url https://example.itch.io/dungeon
+check "import-assets unpacks a zip"      import-assets "$ad/Dungeon Pack.zip" --to nwtest-assets --url https://example.itch.io/dungeon
 check "wrapping folder flattened"        test -f "$P/nwtest-assets/assets/Dungeon-Pack/tiles/floor.png" -a -f "$P/nwtest-assets/assets/Dungeon-Pack/sfx/door.wav"
 check "macOS clutter dropped"            test ! -e "$P/nwtest-assets/assets/Dungeon-Pack/__MACOSX"
 check "CREDITS.md names pack, URL, license" sh -c "grep -q 'Dungeon-Pack.*example.itch.io.*LICENSE.txt' '$P/nwtest-assets/CREDITS.md'"
-if import-assets "$ad/Dungeon Pack.zip" --project nwtest-assets >/dev/null 2>&1; then bad "import-assets refuses to overwrite"; else ok "import-assets refuses to overwrite"; fi
-import-assets "$ad/evil.zip" --project nwtest-assets >/dev/null 2>&1
+if import-assets "$ad/Dungeon Pack.zip" --to nwtest-assets >/dev/null 2>&1; then bad "import-assets refuses to overwrite"; else ok "import-assets refuses to overwrite"; fi
+import-assets "$ad/evil.zip" --to nwtest-assets >/dev/null 2>&1
 check "pack paths cannot escape assets/" sh -c "test ! -e /nwtest-escaped.txt && [ -z \"\$(find /tmp \"\$HOME\" -name nwtest-escaped.txt -not -path '*/assets/evil/*' 2>/dev/null)\" ]"
+check "import-assets uses the repository you are in" sh -c "cd '$P/nwtest-assets' && import-assets '$ad/Dungeon Pack.zip' --name from-cwd && test -d '$P/nwtest-assets/assets/from-cwd'"
 rm -rf "$ad"
 
 # ---------------------------------------------------------------- tools
-check "GBDK_HOME exported by /etc/profile.d" bash -lc '[ "$GBDK_HOME" = /opt/gbdk ]'
-check "lcc on PATH for login shells"     bash -lc 'command -v lcc'
 check "tablet-info runs without a tablet" tablet-info
 check "keys prints the cheat sheet"      sh -c 'keys | grep -q "Ctrl+b"'
-check "helpme prints the guide"          sh -c 'helpme | grep -qi "projects"'
+check "helpme prints the guide"          sh -c 'helpme | grep -qi "clone"'
 if [ -n "${DISPLAY:-}" ]; then
   pkill -x libresprite 2>/dev/null; for _ in $(seq 1 20); do pgrep -x libresprite >/dev/null || break; sleep 0.5; done
   check "art launches LibreSprite"        art
@@ -176,22 +160,26 @@ w(t)')"
   tiles >/dev/null 2>&1; sleep 2
   [ "$(pgrep -c -x tiled)" = 1 ] && ok "tiles again focuses Tiled, no duplicate" || bad "tiles again focuses Tiled, no duplicate" "count=$(pgrep -c -x tiled)"
   pkill -x tiled 2>/dev/null; sleep 1
-  # Blender: its own workspace (5: blender), focus-or-launch like art
-  pkill -x blender 2>/dev/null; for _ in $(seq 1 20); do pgrep -x blender >/dev/null || break; sleep 0.5; done
-  check "3d launches Blender"             3d
-  for _ in $(seq 1 60); do xdotool search --class '^Blender$' >/dev/null 2>&1 && break; sleep 1; done
-  check "Blender window appears"          sh -c 'xdotool search --class "^Blender$" | grep -q .'
-  bws="$(i3-msg -t get_tree | python3 -c 'import json,sys
-t=json.load(sys.stdin)
-def w(n,ws=None):
-    if n.get("type")=="workspace": ws=n["name"]
-    if (n.get("window_properties") or {}).get("class","")=="Blender": print(ws); return True
-    return any(w(c,ws) for c in n.get("nodes",[])+n.get("floating_nodes",[]))
-w(t)')"
-  [ "$bws" = "5: blender" ] && ok "Blender lands on workspace 5 (blender)" || bad "Blender lands on workspace 5 (blender)" "ws=$bws"
-  3d >/dev/null 2>&1; sleep 2
-  [ "$(pgrep -c -x blender)" = 1 ] && ok "3d again focuses Blender, no duplicate" || bad "3d again focuses Blender, no duplicate" "count=$(pgrep -c -x blender)"
-  pkill -x blender 2>/dev/null; sleep 1
+  # Blockbench: workspace 5 (blockbench), focus-or-launch like art
+  pkill -f '^/opt/Blockbench/blockbench' 2>/dev/null; sleep 2
+  check "3d launches Blockbench"          3d
+  for _ in $(seq 1 60); do xdotool search --class 'blockbench' >/dev/null 2>&1 && break; sleep 1; done
+  check "Blockbench window appears"       sh -c 'xdotool search --class "blockbench" | grep -q .'
+  bws="$(wsof '^net\.blockbench\.blockbench$')"
+  [ "$bws" = "5: blockbench" ] && ok "Blockbench lands on workspace 5 (blockbench)" || bad "Blockbench lands on workspace 5 (blockbench)" "ws=$bws"
+  3d >/dev/null 2>&1; sleep 3
+  n="$(i3-msg -t get_tree | grep -o '"class":"net.blockbench.blockbench"' | wc -l)"
+  [ "$n" = 1 ] && ok "3d again focuses Blockbench, no second window" || bad "3d again focuses Blockbench, no second window" "windows=$n"
+  pkill -f '^/opt/Blockbench/blockbench' 2>/dev/null; sleep 2
+  # a program window started from the editor workspace goes to "6: run"; back to 1 when it closes
+  pgrep -u "$(id -u)" -f nullptr-run-ws >/dev/null || (nullptr-run-ws >/dev/null 2>&1 &)
+  i3-msg -q 'workspace number "1: astro"'; sleep 1
+  xmessage -name nwtest-run "a program window" & xm=$!
+  for _ in $(seq 1 20); do [ -n "$(wsof '^xmessage$')" ] && break; sleep 0.5; done; sleep 1
+  rws="$(wsof '^xmessage$')"; fws="$(focused_ws)"
+  [ "$rws" = "6: run" ] && [ "$fws" = "6: run" ] && ok "a program started on workspace 1 opens on workspace 6 (run), shown" || bad "a program started on workspace 1 opens on workspace 6 (run), shown" "window=$rws focused=$fws"
+  kill $xm 2>/dev/null; sleep 2
+  [ "$(focused_ws)" = "1: astro" ] && ok "closing it returns to the editor (workspace 1)" || bad "closing it returns to the editor (workspace 1)" "focused=$(focused_ws)"
   # file manager: floats over the current workspace
   if command -v thunar >/dev/null 2>&1; then
     i3-msg -q 'workspace number "7: tools"' >/dev/null 2>&1; sleep 1
@@ -211,7 +199,6 @@ w(t)')"
   check "tablet-setup handles no tablet gracefully" sh -c 'tablet-setup 2>&1 | grep -q "No stylus"'
 fi
 
-[ -n "$saved_active" ] && projects use "$saved_active" >/dev/null 2>&1
 printf '%s\n' "${results[@]}"
 echo "----"
 echo "PASS: $pass  FAIL: $fail"

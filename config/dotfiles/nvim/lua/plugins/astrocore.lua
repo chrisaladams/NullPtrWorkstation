@@ -15,8 +15,8 @@ return {
     diagnostics = { virtual_text = true, underline = true, update_in_insert = false },
     rooter = {
       enabled = true,
-      -- a nullptr project marker wins over everything else
-      detector = { { ".nullptr-project" }, "lsp", { ".git" }, { "CMakeLists.txt", "Makefile" } },
+      -- the git repository is the project; without git, the folder with the build file
+      detector = { { ".git" }, "lsp", { "CMakeLists.txt", "Makefile", "makefile", "GNUmakefile", "build.sh" } },
       ignore = { servers = {}, dirs = {} },
       autochdir = false,
       scope = "global",
@@ -48,23 +48,22 @@ return {
     },
     mappings = {
       n = {
-        -- nullptr: projects, build, run, debug  (Space m ...)
-        ["<Leader>m"] = { desc = "󰐊 Make / Game" },
-        ["<Leader>mb"] = { function() require("nullptr.project").build "debug" end, desc = "Build (Debug)" },
-        ["<Leader>mB"] = { function() require("nullptr.project").build "release" end, desc = "Build (Release)" },
-        ["<Leader>mr"] = { function() require("nullptr.project").run() end, desc = "Run game / ROM" },
-        ["<Leader>md"] = { function() require("nullptr.project").debug() end, desc = "Debug (build + start debugger)" },
-        ["<Leader>mc"] = { function() require("nullptr.project").clean() end, desc = "Clean build files" },
+        -- nullptr: build, run, debug any C project  (Space m ...)
+        ["<Leader>m"] = { desc = "󰐊 Make / Run" },
+        ["<Leader>mb"] = { function() require("nullptr.project").build() end, desc = "Build" },
+        ["<Leader>mr"] = { function() require("nullptr.project").run() end, desc = "Build + run" },
+        ["<Leader>md"] = { function() require("nullptr.project").debug() end, desc = "Build + debug (F5)" },
+        ["<Leader>mc"] = { function() require("nullptr.project").clean() end, desc = "Clean" },
+        ["<Leader>mT"] = { function() require("nullptr.project").choose_program() end, desc = "Choose program to run/debug" },
         ["<Leader>mp"] = { function() require("nullptr.project").pick() end, desc = "Open project" },
-        ["<Leader>mR"] = { function() require("nullptr.project").pick_recent() end, desc = "Recent projects" },
-        ["<Leader>mn"] = { function() require("nullptr.project").new() end, desc = "New project" },
+        ["<Leader>mg"] = { function() require("nullptr.project").clone() end, desc = "Clone from GitHub" },
         ["<Leader>mi"] = { function() require("nullptr.project").info() end, desc = "Project info" },
         ["<Leader>ma"] = { function() vim.system { "art" } end, desc = "Open LibreSprite (art)" },
         ["<Leader>mt"] = { function() vim.system { "tiles" } end, desc = "Open Tiled map editor (tiles)" },
         ["<Leader>fp"] = { function() require("nullptr.project").pick() end, desc = "Find project" },
         ["<Leader>gD"] = { "<Cmd>DiffviewOpen<CR>", desc = "Diffview: all changes in project" },
         ["<Leader>?"] = { function() require("nullptr.help").open "cheatsheet.txt" end, desc = "nullptr cheat sheet" },
-        -- F5: continue if debugging, otherwise build + start the right debugger
+        -- F5: continue if debugging, otherwise build + start the debugger
         ["<F5>"] = {
           function()
             local ok, dap = pcall(require, "dap")

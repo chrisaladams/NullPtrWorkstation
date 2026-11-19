@@ -4,20 +4,24 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
-# 3d [FILE.blend] — focus Blender on workspace 5 (blender), or start it (never starts a duplicate)
-case "${1:-}" in -h|--help) echo "Usage: 3d [FILE.blend]   Open Blender (workspace 5: blender). Starts in the active project's assets/"; exit 0 ;; esac
-nw_need_graphical "Blender"
-nw_have blender || nw_die "Blender is not installed (sudo apt install blender python3-numpy)."
-if [ $# -eq 0 ] && pgrep -u "$(id -u)" -x blender >/dev/null 2>&1; then
-  nw_i3 -q '[class="^Blender$"] focus' 2>/dev/null || nw_i3_workspace blender
+# 3d [FILE.bbmodel] — focus Blockbench on workspace 5, or start it (never starts a duplicate)
+case "${1:-}" in -h|--help) echo "Usage: 3d [FILE.bbmodel]   Open Blockbench (workspace 5: blockbench). Starts in the project you are working on."; exit 0 ;; esac
+nw_need_graphical "Blockbench"
+nw_have blockbench || nw_die "Blockbench is not installed (sudo /usr/local/src/nullptr-workstation/scripts/install/install-upstream.sh blockbench)."
+running() { pgrep -u "$(id -u)" -f '^/opt/Blockbench/blockbench' >/dev/null 2>&1; }
+if [ $# -eq 0 ] && running; then
+  nw_i3 -q '[class="^net\.blockbench\.blockbench$"] focus' 2>/dev/null || nw_i3_workspace blockbench
   exit 0
 fi
-dir="$HOME"
-if p="$(nw_active_get 2>/dev/null)"; then mkdir -p "$p/assets"; dir="$p/assets"; fi
-nw_i3_workspace blender
+p="$(nw_workdir)"; dir="$p"; [ -d "$p/assets" ] && dir="$p/assets"
+nw_i3_workspace blockbench
 cd "$dir"
-if [ $# -gt 0 ]; then f="$(readlink -f -- "$1")"; setsid -f blender "$f" >/dev/null 2>&1 </dev/null
-else setsid -f blender >/dev/null 2>&1 </dev/null; fi
-nw_info "Blender is starting on workspace 5. Export glTF (.glb) into: $dir"
+args=(); [ $# -gt 0 ] && args=("$(readlink -f -- "$1")")
+setsid -f blockbench "${args[@]}" >/dev/null 2>&1 </dev/null
+# Electron needs its sandbox; where the kernel refuses it, start without (as Debian's own Electron apps do)
+sleep 4
+if ! running; then
+  nw_warn "Blockbench did not start with its sandbox; starting it with --no-sandbox"
+  setsid -f blockbench --no-sandbox "${args[@]}" >/dev/null 2>&1 </dev/null
+fi
+nw_info "Blockbench is starting on workspace 5. Export models (File ▸ Export ▸ glTF/OBJ) into: $dir"

@@ -6,11 +6,11 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
  i3 (windows and workspaces)
  --------------------------------------------------------------------------
   Super+1            workspace 1: astro        (kitty → tmux → AstroVim)
-  Super+2            workspace 2: firefox      (Firefox, docs bookmarks)
+  Super+2            workspace 2: firefox      (Firefox, C docs bookmarks)
   Super+3            workspace 3: libresprite  (LibreSprite)
   Super+4            workspace 4: tiled        (Tiled map editor)
-  Super+5            workspace 5: blender      (Blender)
-  Super+6            workspace 6: game         (raylib games, Emulicious)
+  Super+5            workspace 5: blockbench   (Blockbench, 3D models)
+  Super+6            workspace 6: run          (windows of programs you run)
   Super+7            workspace 7: tools        (anything else)
   Super+Shift+1..7   move the focused window to that workspace
   Super+Enter        new terminal (plain shell)
@@ -19,7 +19,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   Super+E            file manager (Thunar), floating over this workspace
   Super+A            LibreSprite (focuses it if already open)
   Super+T            Tiled (focuses it if already open)
-  Super+B            Blender (focuses it if already open)
+  Super+B            Blockbench (focuses it if already open)
   Super+D            app launcher (type a program name)
   Super+F            fullscreen on/off
   Super+Arrows       move focus      Super+Shift+Arrows  move window
@@ -40,7 +40,7 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   Ctrl+b z           zoom the current pane in/out
   Ctrl+b d           detach (everything keeps running) — type  dev  to return
   Ctrl+b [           scroll mode (arrows/PgUp, q to leave)
-  Ctrl+b ?           this cheat sheet      Ctrl+b P   project picker
+  Ctrl+b ?           this cheat sheet
 
  AstroVim — the basics
  --------------------------------------------------------------------------
@@ -66,13 +66,13 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
   Space c            close the current file (buffer)
   ]b / [b            next / previous open file
 
- AstroVim — build, run, debug (works for raylib AND Game Boy projects)
+ AstroVim — build, run, debug any C project (CMake / Make / .nvim.lua)
  --------------------------------------------------------------------------
-  Space m b          build (Debug)          Space m B   build (Release)
-  Space m r          run the game / ROM     Space m c   clean
-  Space m d  or F5   build Debug + start the debugger
-  Space m p          open project           Space m R   recent projects
-  Space m n          new project            Space m i   project info
+  Space m b          build                  Space m c   clean
+  Space m r          build + run            Space m T   choose program
+  Space m d  or F5   build + start the debugger (LLDB, or the project's)
+  Space m p          open project           Space m g   clone from GitHub
+  Space m i          how this project builds and debugs
   Space m a          LibreSprite            Space m t   Tiled
   F9  (Space d b)    toggle breakpoint on this line
   F5                 continue               F10  step over
@@ -99,11 +99,10 @@ Super = the Windows key.   Space = the leader key inside AstroVim.
 
  Terminal commands
  --------------------------------------------------------------------------
-  dev   projects   code PATH   build   run-game   debug-game   web   art   tiles   3d
-  files   import-assets ZIP   github-login
-  new-c NAME   new-raylib NAME   new-gameboy NAME   projects adopt   build --clean
-  gb-build   gb-run   gb-debug
-  gb-clean   gb-info   tablet-info   tablet-setup   keys   helpme
+  dev   code PATH   web   art   tiles   3d   files   import-assets ZIP
+  github-login   gh repo clone OWNER/REPO ~/Projects/REPO
+  cmake -S . -B build -G Ninja && cmake --build build      bear -- make
+  lldb ./build/app   gdb -tui ./build/app   tablet-info   keys   helpme
   nmtui (Wi-Fi)   btop (monitor)   helpme tutorial   helpme recovery
   nullptr-update   (update the workstation from GitHub; --dry-run first)
   nullptr-iso      (download the GitHub-built ISO; --write /dev/sdX, --build)

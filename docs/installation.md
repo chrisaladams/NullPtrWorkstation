@@ -6,7 +6,7 @@ Target: Lenovo ThinkPad X1 Carbon Gen 6 (x86_64). Base: Debian 13 "trixie" amd64
 
 The ISO is built from this repository with Debian's `live-build`. It takes 30–90 minutes,
 ~25 GB of disk, and network access to `deb.debian.org`, `security.debian.org`, `github.com`
-(+ `release-assets.githubusercontent.com`) and `emulicious.net`.
+(+ `release-assets.githubusercontent.com`).
 
 On a Debian 13 machine:
 
@@ -40,7 +40,6 @@ Build switches (environment variables):
 
 | Variable | Default | Effect |
 |---|---|---|
-| `NULLPTR_WITH_EMULICIOUS` | `1` | `0` = don't bundle Emulicious (use this for an ISO you give to other people; see [licenses.md](licenses.md)) |
 | `NULLPTR_WITH_VSCODIUM` | `1` | `0` = skip the VSCodium fallback debugger UI (saves ~400 MB) |
 | `NULLPTR_MIRROR` | `http://deb.debian.org/debian/` | Debian mirror |
 
@@ -111,15 +110,9 @@ First things worth doing:
 ```bash
 nmtui                                    # connect Wi-Fi
 sudo apt update && sudo apt full-upgrade # security updates
-gb-info                                  # Game Boy toolchain status
+github-login                             # once: GitHub sign-in for git (Google works)
 ```
 
-If Emulicious was not bundled (`NULLPTR_WITH_EMULICIOUS=0`), install it now, while
-online:
-
-```bash
-sudo nullptr-install-emulicious
-```
 
 ## 7. Installing onto an existing Debian 13 system (without the ISO)
 

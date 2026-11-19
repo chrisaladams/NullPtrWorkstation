@@ -4,24 +4,23 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
-# import-assets PACK [--name NAME] [--url URL] [--project P]
+# import-assets PACK [--name NAME] [--url URL] [--to DIR]
 # Unpack an asset pack (itch.io .zip/.7z/.tar.*, or a folder) into PROJECT/assets/NAME, never
 # overwriting anything, and record where it came from and its license in PROJECT/CREDITS.md.
 usage() { cat <<'U'
-Usage: import-assets PACK [--name NAME] [--url URL] [--project PROJECT]
+Usage: import-assets PACK [--name NAME] [--url URL] [--to PROJECT_DIR]
   PACK            a .zip, .7z, .tar.gz/.tar.xz/.tgz or a folder (e.g. ~/Downloads/dungeon.zip)
   --name NAME     folder name under assets/ (default: from the file name)
   --url URL       where it came from (the itch.io page); written into CREDITS.md
-  --project P     project to import into (default: the active project)
+  --to DIR        project to import into (default: the repository you are in,
+                  else the one open in AstroVim)
 Result: PROJECT/assets/NAME/ plus a line in PROJECT/CREDITS.md. Existing files are never replaced.
 U
 }
 pack=""; name=""; url=""; proj=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --name) name="${2:?}"; shift ;; --url) url="${2:?}"; shift ;; --project) proj="${2:?}"; shift ;;
+    --name) name="${2:?}"; shift ;; --url) url="${2:?}"; shift ;; --to|--project) proj="${2:?}"; shift ;;
     -h|--help) usage; exit 0 ;; -*) usage >&2; exit 64 ;;
     *) [ -z "$pack" ] || { usage >&2; exit 64; }; pack="$1" ;;
   esac; shift
@@ -29,7 +28,15 @@ done
 [ -n "$pack" ] || { usage >&2; exit 64; }
 [ -e "$pack" ] || nw_die "Not found: $pack"
 pack="$(readlink -f -- "$pack")"
-root="$(nw_resolve_project "$proj")"
+if [ -n "$proj" ]; then
+  [ -d "$proj" ] || { [ -d "$NW_PROJECTS_DIR/$proj" ] && proj="$NW_PROJECTS_DIR/$proj"; }
+  [ -d "$proj" ] || nw_die "No such folder: $proj"
+  root="$(nw_git_root "$proj" || nw_abspath "$proj")"
+else
+  root="$(nw_workdir)"
+  [ "$root" != "$NW_PROJECTS_DIR" ] || nw_die "Which project? cd into it, open it in AstroVim, or use --to DIR."
+fi
+nw_info "Project: $root"
 if [ -z "$name" ]; then
   name="$(basename -- "$pack")"
   name="${name%.zip}"; name="${name%.7z}"; name="${name%.rar}"; name="${name%.tgz}"

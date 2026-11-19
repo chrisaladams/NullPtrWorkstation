@@ -4,18 +4,15 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # tiles [FILE.tmx] — focus Tiled on workspace 4, or start it (never starts a duplicate)
-case "${1:-}" in -h|--help) echo "Usage: tiles [FILE.tmx|.tsx]   Open the Tiled map editor (workspace 4: tiled). Starts in the active project's assets/"; exit 0 ;; esac
+case "${1:-}" in -h|--help) echo "Usage: tiles [FILE.tmx|.tsx]   Open the Tiled map editor (workspace 4: tiled). Starts in the project you are working on (its assets/ if it has one)"; exit 0 ;; esac
 nw_need_graphical "Tiled"
 nw_have tiled || nw_die "Tiled is not installed (sudo apt install tiled)."
 if [ $# -eq 0 ] && pgrep -u "$(id -u)" -x tiled >/dev/null 2>&1; then
   nw_i3 -q '[class="(?i)^tiled$"] focus' 2>/dev/null || nw_i3_workspace tiled
   exit 0
 fi
-dir="$HOME"
-if p="$(nw_active_get 2>/dev/null)"; then mkdir -p "$p/assets"; dir="$p/assets"; fi
+p="$(nw_workdir)"; dir="$p"; [ -d "$p/assets" ] && dir="$p/assets"
 nw_i3_workspace tiled
 cd "$dir"
 # with a file, Tiled hands it to the window that is already open (one instance)

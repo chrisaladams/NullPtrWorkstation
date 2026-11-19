@@ -4,10 +4,8 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # tmux window 1: AstroVim. When you quit AstroVim the window stays open.
-cd "$(nw_active_get 2>/dev/null || echo "$NW_PROJECTS_DIR")" 2>/dev/null || cd "$HOME"
+mkdir -p "$NW_PROJECTS_DIR"; cd "$NW_PROJECTS_DIR" 2>/dev/null || cd "$HOME"
 while true; do
   rm -f "$NW_NVIM_SOCKET" 2>/dev/null || true
   nvim --listen "$NW_NVIM_SOCKET" || true

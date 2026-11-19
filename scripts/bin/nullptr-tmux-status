@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# Right side of the tmux status bar: active project · battery · network.
+# Right side of the tmux status bar: repository + branch of the current pane · battery · network.
+# Called by tmux as: nullptr-tmux-status "#{pane_current_path}"
 # Prints tmux format strings; must be fast and must never fail.
 out=""
-state="${XDG_STATE_HOME:-$HOME/.local/state}/nullptr/active-project"
-if [ -f "$state" ]; then p="$(head -n1 "$state")"; [ -n "$p" ] && out+="#[fg=#bb9af7] ${p##*/} "; fi
+if [ -n "${1:-}" ] && top="$(git -C "$1" rev-parse --show-toplevel 2>/dev/null)"; then
+  br="$(git -C "$1" branch --show-current 2>/dev/null)"
+  out+="#[fg=#bb9af7] ${top##*/}${br:+ #[fg=#565f89]${br}} "
+fi
 for b in /sys/class/power_supply/BAT*; do
   [ -r "$b/capacity" ] || continue
   cap="$(cat "$b/capacity")"; st="$(cat "$b/status" 2>/dev/null)"

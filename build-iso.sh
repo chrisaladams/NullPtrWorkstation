@@ -15,11 +15,9 @@
 #   build.log                              full live-build log
 #
 # Needs: ~25 GB free disk, network access to deb.debian.org, security.debian.org,
-# github.com (+ release-assets.githubusercontent.com) and emulicious.net.
+# github.com (+ release-assets.githubusercontent.com).
 #
 # Options (environment variables)
-#   NULLPTR_WITH_EMULICIOUS=0   do not bundle Emulicious (for an ISO you will share)
-#   NULLPTR_WITH_VSCODIUM=0     skip the VSCodium fallback debugger UI (saves ~400 MB)
 #   NULLPTR_MIRROR=URL          Debian mirror (default http://deb.debian.org/debian/)
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -46,8 +44,7 @@ if [ "$mode" = docker ]; then
   command -v docker >/dev/null || die "docker not found"
   log "Building inside $DEBIAN_IMAGE (privileged: live-build needs mount/chroot)"
   exec docker run --rm --privileged \
-    -e NULLPTR_MIRROR -e NULLPTR_SECURITY_MIRROR -e NULLPTR_WITH_VSCODIUM -e NULLPTR_WITH_EMULICIOUS \
-    -e NULLPTR_ALLOW_MISSING_EMULICIOUS -e EMULICIOUS_SHA256 \
+    -e NULLPTR_MIRROR -e NULLPTR_SECURITY_MIRROR \
     -v "$REPO":/nullptr-workstation -w /nullptr-workstation \
     "$DEBIAN_IMAGE" ./build-iso.sh --inside-docker
 fi
@@ -103,14 +100,12 @@ log "All package names exist."
 log "Preflight: checking pinned upstream downloads are reachable"
 # shellcheck source=versions.lock
 . "$REPO/versions.lock"
-urls=("$NVIM_URL" "$GBDK_URL" "$LAZYGIT_URL" "$NERDFONT_URL" "$TREESITTER_CLI_URL")
-[ "${NULLPTR_WITH_EMULICIOUS:-1}" = 1 ] && urls+=("$EMULICIOUS_URL")
-[ "${NULLPTR_WITH_VSCODIUM:-1}" = 1 ] && urls+=("$VSCODIUM_URL" "$EMULICIOUS_VSIX_URL")
+urls=("$NVIM_URL" "$LAZYGIT_URL" "$NERDFONT_URL" "$TREESITTER_CLI_URL" "$BLOCKBENCH_URL")
 for u in "${urls[@]}"; do
   code="$(curl -sS -o /dev/null -w '%{http_code}' -I -L --max-time 30 "$u" || echo 000)"
-  case "$code" in 2*) echo "  ok   $u" ;; *) echo "  FAIL ($code) $u"; [ "$u" = "$EMULICIOUS_URL" ] && [ "${NULLPTR_ALLOW_MISSING_EMULICIOUS:-0}" = 1 ] || die "unreachable: $u" ;; esac
+  case "$code" in 2*) echo "  ok   $u" ;; *) echo "  FAIL ($code) $u"; die "unreachable: $u" ;; esac
 done
-for g in "$RAYLIB_GIT" "$LIBRESPRITE_GIT" https://github.com/folke/lazy.nvim https://github.com/AstroNvim/AstroNvim; do
+for g in "$LIBRESPRITE_GIT" https://github.com/folke/lazy.nvim https://github.com/AstroNvim/AstroNvim; do
   git ls-remote --exit-code "$g" HEAD >/dev/null 2>&1 && echo "  ok   $g" || die "git unreachable: $g"
 done
 [ "$mode" = preflight ] && { log "Preflight passed."; exit 0; }
@@ -137,23 +132,14 @@ done
 # Local .deb packages must be installed in the main pass too, otherwise the installer
 # removes them (it drops every package that was added after that pass, e.g. by hooks).
 mkdir -p config/packages.chroot
-if [ "${NULLPTR_WITH_VSCODIUM:-1}" = 1 ]; then
-  curl -fsSL --retry 4 -o config/packages.chroot/codium_amd64.deb "$VSCODIUM_URL"
-  echo "$VSCODIUM_SHA256  config/packages.chroot/codium_amd64.deb" | sha256sum -c --quiet - || die "VSCodium SHA-256 mismatch"
-fi
+curl -fsSL --retry 4 -o config/packages.chroot/blockbench_amd64.deb "$BLOCKBENCH_URL"
+echo "$BLOCKBENCH_SHA256  config/packages.chroot/blockbench_amd64.deb" | sha256sum -c --quiet - || die "Blockbench SHA-256 mismatch"
 # the repository itself goes into the image: the hooks install from it, and it
 # documents exactly how the image was built (/usr/local/src/nullptr-workstation)
 SRC=config/includes.chroot/usr/local/src/nullptr-workstation
 mkdir -p "$SRC"
 rsync -a --delete --exclude /work --exclude /out --exclude /.git "$REPO"/ "$SRC"/
 git -C "$REPO" rev-parse HEAD >"$SRC/BUILD-COMMIT" 2>/dev/null || echo unknown >"$SRC/BUILD-COMMIT"
-# live-build does not pass the host environment into chroot hooks: hand over the switches
-cat >"$SRC/build.env" <<EOF
-NULLPTR_WITH_EMULICIOUS=${NULLPTR_WITH_EMULICIOUS:-1}
-NULLPTR_WITH_VSCODIUM=${NULLPTR_WITH_VSCODIUM:-1}
-NULLPTR_ALLOW_MISSING_EMULICIOUS=${NULLPTR_ALLOW_MISSING_EMULICIOUS:-0}
-EMULICIOUS_SHA256=${EMULICIOUS_SHA256:-}
-EOF
 # debian-installer preseed (account name only; password and disks stay interactive)
 mkdir -p config/includes.installer
 cp "$REPO/installer/preseed.cfg" config/includes.installer/preseed.cfg

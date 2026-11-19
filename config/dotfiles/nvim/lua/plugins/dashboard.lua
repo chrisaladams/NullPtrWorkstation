@@ -17,18 +17,14 @@ return {
     end
     local function projects_section()
       local items = {}
-      local list = require("nullptr.project").list()
-      for i, root in ipairs(list) do
+      for i, root in ipairs(require("nullptr.project").list()) do
         if i > 9 then break end
-        local m = require("nullptr.project").meta(root)
-        local icon = ({ gameboy = "󰊴 ", raylib = "󰺵 " })[m.type] or "󰙱 "
-        local label = ({ gameboy = "Game Boy", raylib = "raylib", generic = "C" })[m.type] or (m.type or "?")
-        table.insert(items, item(tostring(i), icon,
-          ("%-18s %s"):format(m.name, label),
+        local short = root:gsub("^" .. vim.pesc(vim.env.HOME), "~")
+        table.insert(items, item(tostring(i), "󰙱 ", ("%-22s %s"):format(vim.fs.basename(root), short),
           function() require("nullptr.project").open(root) end))
       end
       if #items == 0 then
-        items = { { text = { { "  (none yet — Space m n, or new-c / new-raylib / new-gameboy NAME)", hl = "Comment" } } } }
+        items = { { text = { { "  (none yet: [G] clones a project from GitHub into ~/Projects)", hl = "Comment" } } } }
       end
       return items
     end
@@ -38,10 +34,10 @@ return {
       preset = {
         keys = {
           item("p", "󰝰 ", "Open Project", act "pick"),
+          item("g", "󰊢 ", "Clone from GitHub", act "clone"),
           item("f", "󰈞 ", "Find File", "<Leader>ff"),
           item("n", "󰝒 ", "New File", "<Cmd>enew<CR>"),
           item("e", "󰙅 ", "File Explorer", "<Cmd>Neotree toggle<CR>"),
-          item("r", "󰋚 ", "Recent Projects", act "pick_recent"),
           item("h", "󰋖 ", "Help", function() require("nullptr.help").open "cheatsheet.txt" end),
           item("q", "󰗼 ", "Quit", "<Cmd>qa<CR>"),
         },
@@ -50,7 +46,7 @@ return {
       sections = {
         { section = "header", padding = 1 },
         { section = "keys", gap = 0, padding = 1 },
-        { title = "Starter projects", padding = 1 },
+        { title = "Projects", padding = 1 },
         function() return projects_section() end,
         { text = { { require("nullptr.help").tip(), hl = "Comment" } }, padding = { 1, 1 }, align = "center" },
         { text = { { "i insert · Esc normal · :w save · :q quit · Space ? cheat sheet", hl = "NonText" } }, align = "center" },

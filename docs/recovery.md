@@ -7,7 +7,7 @@ The graphical session is a convenience layered on a normal Debian text system:
 - **tty1**: logging in starts Xorg + i3 automatically. If that fails you stay in a working shell on tty1 (this is tested).
 - **tty2–tty6** (Ctrl+Alt+F2…F6): plain consoles that never start X.
 - **Over SSH, inside tmux, or in nested shells**, X is never started.
-- All development tools (AstroVim, tmux, build, gdb, gb-build) work without X. Only running/debugging games, LibreSprite and Emulicious need it.
+- All development tools (AstroVim, tmux, clang, cmake, make, lldb, gdb) work without X. Only programs with windows, LibreSprite, Tiled, Blockbench and Firefox need it.
 
 ```text
 nullptr Workstation — recovery                                 (q to close)
@@ -31,7 +31,7 @@ nullptr Workstation — recovery                                 (q to close)
       init=/bin/bash
     to the  linux  line, Ctrl+X, then:  mount -o remount,rw /  … fix …  reboot -f
 
- No bar at the top, and LibreSprite / Blender / games will not open
+ No bar at the top, and LibreSprite / Blockbench / programs will not open
  --------------------------------------------------------------------------
   The graphical session is not running: you are looking at tmux in the
   text console. (On workspace 1 the bar is hidden on purpose, because kitty
@@ -39,7 +39,7 @@ nullptr Workstation — recovery                                 (q to close)
       Ctrl+Alt+F1               back to the graphical screen, if it runs
       Ctrl+b d                  leave tmux (everything keeps running), then
       startx                    start it again (on tty1), then Super+A / Super+B
-  art, tiles, 3d and run-game say which of these applies when you type them.
+  art, tiles, 3d and files say which of these applies when you type them.
 
  The screen is locked and you forgot the password
  --------------------------------------------------------------------------

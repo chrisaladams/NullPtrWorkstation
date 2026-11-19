@@ -4,8 +4,6 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # tablet-setup — configure a drawing tablet for the graphical session and save the settings.
 # Works with both X drivers:
 #   xf86-input-wacom   (Wacom; Huion via /usr/share/X11/xorg.conf.d/71-nullptr-huion.conf)

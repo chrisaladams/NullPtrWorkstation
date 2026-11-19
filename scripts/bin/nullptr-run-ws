@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+_d="$(dirname -- "$(readlink -f -- "$0")")"
+for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
+# shellcheck source=../lib/nullptr-common.sh
+. "$_l/nullptr-common.sh"
+# nullptr-run-ws — started by i3. When the last window on workspace "6: run" closes (your
+# program exited) while you are looking at it, go back to the editor on workspace 1.
+case "${1:-}" in -h|--help) echo "Usage: nullptr-run-ws   (started by i3; returns to workspace 1 when workspace 6 empties)"; exit 0 ;; esac
+nw_have i3-msg && nw_have python3 || exit 0
+check() {
+  nw_i3 -t get_tree 2>/dev/null | python3 -c '
+import json, sys
+t = json.load(sys.stdin)
+def find(n):
+    if n.get("type") == "workspace" and n.get("name") == "6: run": return n
+    for c in n.get("nodes", []):
+        r = find(c)
+        if r: return r
+def has_window(n):
+    return n.get("window") is not None or any(has_window(c) for c in n.get("nodes", []) + n.get("floating_nodes", []))
+ws = find(t)
+sys.exit(0 if ws is not None and ws.get("focused") and not has_window(ws) else 1)' && nw_i3 -q 'workspace number "1: astro"'
+}
+while pgrep -u "$(id -u)" -x i3 >/dev/null 2>&1; do
+  # one JSON line per window event; on close/move, look at workspace 6
+  nw_i3 -t subscribe -m '["window"]' 2>/dev/null | while IFS= read -r ev; do
+    case "$ev" in *'"change":"close"'*|*'"change":"move"'*) check || true ;; esac
+  done
+  sleep 2   # i3 restarted (Super+Shift+R): subscribe again
+done

@@ -4,8 +4,6 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # Identify drawing tablets: USB IDs, kernel input devices, X11 devices, driver in use.
 section() { printf '\n%s%s%s\n' "$NW_C_BOLD" "$1" "$NW_C_OFF"; }
 section "USB devices from common tablet vendors (Wacom 056a, Huion/Gaomon 256c, XP-Pen/UGEE 28bd, Veikk 2feb)"

@@ -1,52 +1,56 @@
 nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
 ==========================================================================
 
- 1. Open a project
-    In AstroVim's dashboard press  1  (raylib-hello).
-    The file explorer opens on the left and src/main.c on the right.
+ 1. Sign in to GitHub (once)
+    Ctrl+b 2 (a terminal), type  github-login  and follow it: Firefox opens
+    GitHub, you sign in with Google and enter the code it shows.
+    Ctrl+b 1 brings you back to AstroVim.
 
- 2. Browse and edit files
+ 2. Get a project
+    On the dashboard press  G  (or Space m g) and type a repository,
+    e.g.  yourname/pong  or any git URL. It is cloned into ~/Projects with
+    its submodules and opened. Your own new one: in a terminal
+    mkdir ~/Projects/pong && cd ~/Projects/pong && git init, write a
+    CMakeLists.txt (or Makefile) and main.c, then  code .
+
+ 3. Browse and edit files
     Space e        toggles the explorer. Move with the arrow keys, Enter opens.
-    Space f f      type "main" and press Enter to jump to a file by name.
-    In main.c, move the cursor to the text "Hello, raylib!".
-    Press  i  (Insert mode), change the text, press  Esc .
-
- 3. Save
-    Type  :w  and press Enter.  (Or Space w.)
+    Space f f      type part of a file name and press Enter.
+    i  types (Insert mode),  Esc  goes back,  :w  saves.
 
  4. Build
-    Space m b   — a terminal opens at the bottom and CMake/Ninja compile.
-    Errors? Space x x lists them; Enter jumps to the line.
-    Close the build output with  q  (in that window) or Ctrl+w o.
+    Space m b   — a terminal opens at the bottom: CMake + Ninja (Debug) or
+    make. Errors? Space x x lists them; Enter jumps to the line.
+    Close the build output with  q  (in that window).
+    clangd now knows the project's flags (compile_commands.json): K shows
+    documentation, g d jumps to a definition.
 
  5. Run
-    Space m r   — the game opens on workspace 6. Esc closes it and you are
-    back in AstroVim (Super+1 also takes you back).
+    Space m r   — a program with a window opens on workspace 6; closing it
+    brings you back here. A terminal program prints in the split below.
 
  6. Debug
-    Put the cursor on the line  frameCount++;  and press F9 (red dot).
-    Press F5 (or Space m d). The game starts; when it reaches the line,
-    AstroVim comes back with the debugger panels:
-      Locals shows frameCount, the stack shows where you are.
+    Put the cursor on a line inside a loop and press F9 (red dot).
+    Press F5 (or Space m d). It builds, starts the program with LLDB and
+    stops on that line with the debugger panels: variables, call stack.
     F10 = next line, F11 = step into, F5 = continue, Shift+F5 = stop.
 
- 7. Switch to a terminal
-    Ctrl+b 2   → the build terminal. Try:  build   then   run-game
-    Ctrl+b 1   → back to AstroVim.
+ 7. Teach a project something (optional)
+    Space m i shows what AstroVim detected. If a project needs another
+    build command, an emulator or a different debugger, put a .nvim.lua or
+    .vscode/launch.json in it (helpme, and docs/c-projects.md for GBA,
+    SDL3, raylib and Game Boy examples). AstroVim itself never changes.
 
- 8. Open LibreSprite
-    Super+A (or type  art ). LibreSprite opens on workspace 3, started in the
-    active project's assets/ folder. Draw a sprite, File ▸ Save As…, and save
-    it as ~/Projects/raylib-hello/assets/player.png.
+ 8. Commit and push
+    Ctrl+b 3 (LazyGit): Space stages a file, c commits, P pushes.
 
- 9. Return to AstroVim
-    Super+1.  The new file appears in the explorer under assets/.
+ 9. Art and assets
+    Super+A LibreSprite, Super+T Tiled, Super+B Blockbench, Super+E files.
+    import-assets ~/Downloads/pack.zip unpacks an itch.io pack into the
+    project's assets/ and adds the credit line.
 
-10. Switch between raylib and Game Boy
-    Space m p  → choose gameboy-hello.  (Or Space h, then 2.)
-    The tmux status bar now shows "gameboy-hello".
-    Space m b builds the ROM, Space m r runs it in Emulicious,
-    F9 on  keys = joypad();  then F5 debugs the C code in Emulicious.
-    Space m p → raylib-hello switches back.
+10. Switch projects
+    Space m p (or the dashboard's numbers). The tmux status bar shows the
+    repository and branch you are in.
 
  Next steps: keys (all shortcuts) · helpme · docs in /usr/local/share/nullptr/docs

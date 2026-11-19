@@ -32,8 +32,8 @@ set $ws1 "1: astro"
 set $ws2 "2: firefox"
 set $ws3 "3: libresprite"
 set $ws4 "4: tiled"
-set $ws5 "5: blender"
-set $ws6 "6: game"
+set $ws5 "5: blockbench"
+set $ws6 "6: run"
 set $ws7 "7: tools"
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
@@ -54,11 +54,13 @@ bindsym $mod+Shift+7 move container to workspace number $ws7
 assign [class="(?i)^firefox"] number $ws2
 assign [class="(?i)^libresprite$"] number $ws3
 assign [class="(?i)^tiled$"] number $ws4
-assign [class="^Blender$"] number $ws5
-assign [class="(?i)emulicious"] number $ws6
-assign [title="(?i)^emulicious"] number $ws6
-assign [class="(?i)^vscodium$"] number $ws7
+assign [class="^net\.blockbench\.blockbench$"] number $ws5
 for_window [class="^nullptr-dev$"] move container to workspace number $ws1, fullscreen enable
+# A program window that opens on the editor's workspace (behind the fullscreen terminal) goes to
+# workspace 6 and is shown: `./build/game`, Space m r and the debugger all land there. Programs
+# that draw only when visible (GLFW, SDL) need this. nullptr-run-ws returns you to the editor
+# when the last window there closes.
+for_window [workspace="^1: astro$" tiling class="^(?!nullptr-dev$|nullptr-help$|Thunar$)"] move container to workspace number $ws6, workspace number $ws6
 # the file manager floats over whatever you are doing, so files can be dragged into the app below
 for_window [class="^Thunar$"] floating enable, resize set 1400 850, move position center
 for_window [class="^nullptr-help$"] floating enable, resize set 1000 700, move position center
@@ -143,3 +145,4 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- nullptr-lock
 exec --no-startup-id xsetroot -solid '#1a1b26'
 exec --no-startup-id tablet-setup --apply
 exec --no-startup-id dev-terminal
+exec --no-startup-id nullptr-run-ws

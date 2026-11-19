@@ -4,8 +4,6 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # github-login — use your GitHub account (however you sign in to it, e.g. "Continue with Google")
 # for git, nullptr-update and nullptr-iso. No password and no SSH key: GitHub's sign-in page does
 # the login, the GitHub CLI keeps the token, and git asks the CLI for it.

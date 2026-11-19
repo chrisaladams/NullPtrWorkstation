@@ -89,10 +89,9 @@ PAD_BUTTON_1="key +ctrl z -ctrl"   # express keys 1..6, top to bottom (wacom dri
 
 ## Drawing in LibreSprite
 
-`art` (or `Super+A`) opens LibreSprite 1.2 on workspace 3, started in the active project's
-`assets/` folder. Save sprites into `assets/` and they show up in the project immediately:
-raylib loads `assets/x.png`, and Game Boy projects convert them with
-`/opt/gbdk/bin/png2asset` (see [gameboy-debugging.md](gameboy-debugging.md)).
+`art` (or `Super+A`) opens LibreSprite 1.2 on workspace 3, started in the project you are
+working on (its `assets/` folder if it has one). Save sprites there and they show up in the
+project immediately, ready for your game to load.
 
 ## Limitations (please read)
 

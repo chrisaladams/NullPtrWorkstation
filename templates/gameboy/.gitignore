@@ -1,9 +1,0 @@
-/build/
-*.o
-*.lst
-*.sym
-*.cdb
-*.noi
-*.map
-*.ihx
-*.sav

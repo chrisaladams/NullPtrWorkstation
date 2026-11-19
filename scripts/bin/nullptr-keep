@@ -4,18 +4,16 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
 # nullptr-keep CMD... — run CMD; when it exits, offer to restart instead of closing the tmux window.
 [ $# -gt 0 ] || { echo "Usage: nullptr-keep CMD [ARGS...]"; exit 64; }
 while true; do
   if [ "$1" = lazygit ]; then
-    # follow the active project; lazygit needs a git repository
-    p="$(nw_active_get 2>/dev/null || true)"
-    if [ -n "$p" ] && git -C "$p" rev-parse --git-dir >/dev/null 2>&1; then cd "$p"
+    # follow the project open in AstroVim; lazygit needs a git repository
+    p="$(nw_workdir)"
+    if git -C "$p" rev-parse --git-dir >/dev/null 2>&1; then cd "$p"
     else
-      echo "lazygit: the active project (${p:-none}) is not a git repository."
-      echo "Select a project with 'projects', or run 'git init' in it."
+      echo "lazygit: $p is not a git repository."
+      echo "Open a repository in AstroVim (Space m p), clone one (Space m g), or run 'git init' in it."
     fi
   fi
   "$@" || true

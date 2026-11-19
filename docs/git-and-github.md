@@ -33,7 +33,7 @@ This sign-in is what `nullptr-update`, `nullptr-iso` and your own projects use. 
 
 ## Put a project on GitHub
 
-`new-c`, `new-raylib` and `new-gameboy` already ran `git init`. Commit your work, then:
+Start with `git init` in a new project folder (cloned projects already are repositories). Commit your work, then:
 
 ```bash
 gh repo create pong --private --source . --push
@@ -48,7 +48,6 @@ Get a project onto another computer:
 gh repo clone <you>/pong ~/Projects/pong
 ```
 
-Then use `projects adopt` inside it if it has no `.nullptr-project` file.
 
 ## Everyday git
 
@@ -63,5 +62,5 @@ Then use `projects adopt` inside it if it has no `.nullptr-project` file.
 Commit small and often ("Add ball movement", "Fix paddle collision"). Every commit is a point
 you can go back to.
 
-The project templates include a `.gitignore` that leaves out `build/`, so compiled files never
-end up in the repository.
+Add a `.gitignore` with `build/` (and `compile_commands.json` if you like) so compiled files
+never end up in the repository.

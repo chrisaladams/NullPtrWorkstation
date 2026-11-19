@@ -4,12 +4,10 @@ _d="$(dirname -- "$(readlink -f -- "$0")")"
 for _l in "$_d/../lib/nullptr" "$_d/../lib"; do [ -f "$_l/nullptr-common.sh" ] && break; done
 # shellcheck source=../lib/nullptr-common.sh
 . "$_l/nullptr-common.sh"
-# shellcheck source=../lib/nullptr-actions.sh
-. "$_l/nullptr-actions.sh"
-# files [DIR] — Thunar, floating over the current workspace. Default: the active project's assets/
+# files [DIR] — Thunar, floating over the current workspace. Default: the project you work on
 case "${1:-}" in -h|--help) echo "Usage: files [DIR]   Open the file manager (Thunar) on top of the current workspace.
-  Default folder: the active project's assets/ (else ~/Projects). F3 = split view; drag from
-  Downloads into assets/, or straight into LibreSprite / Tiled. Unpack packs: import-assets"; exit 0 ;; esac
+  Default folder: the project open in AstroVim (else ~/Projects). F3 = split view; drag from
+  Downloads into the project, or straight into LibreSprite / Tiled. Unpack packs: import-assets"; exit 0 ;; esac
 nw_need_graphical "The file manager"
 nw_have thunar || nw_die "Thunar is not installed (sudo apt install thunar thunar-archive-plugin xarchiver tumbler)."
 mkdir -p "$HOME/Downloads" "$HOME/Projects"
@@ -20,7 +18,6 @@ if [ ! -e "$bm" ]; then
   printf 'file://%s Projects\nfile://%s Downloads\n' "$HOME/Projects" "$HOME/Downloads" >"$bm"
 fi
 if [ $# -gt 0 ]; then dir="$(readlink -f -- "$1")"
-elif p="$(nw_active_get 2>/dev/null)"; then mkdir -p "$p/assets"; dir="$p/assets"
-else dir="$HOME/Projects"; fi
+else dir="$(nw_workdir)"; fi
 [ -d "$dir" ] || nw_die "Not a folder: $dir"
 setsid -f thunar "$dir" >/dev/null 2>&1 </dev/null

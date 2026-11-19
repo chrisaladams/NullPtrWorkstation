@@ -6,53 +6,57 @@ Also available on the workstation: `helpme tutorial`, or `H` on the AstroVim das
 nullptr Workstation — first-use tutorial (about 15 minutes)    (q to close)
 ==========================================================================
 
- 1. Open a project
-    In AstroVim's dashboard press  1  (raylib-hello).
-    The file explorer opens on the left and src/main.c on the right.
+ 1. Sign in to GitHub (once)
+    Ctrl+b 2 (a terminal), type  github-login  and follow it: Firefox opens
+    GitHub, you sign in with Google and enter the code it shows.
+    Ctrl+b 1 brings you back to AstroVim.
 
- 2. Browse and edit files
+ 2. Get a project
+    On the dashboard press  G  (or Space m g) and type a repository,
+    e.g.  yourname/pong  or any git URL. It is cloned into ~/Projects with
+    its submodules and opened. Your own new one: in a terminal
+    mkdir ~/Projects/pong && cd ~/Projects/pong && git init, write a
+    CMakeLists.txt (or Makefile) and main.c, then  code .
+
+ 3. Browse and edit files
     Space e        toggles the explorer. Move with the arrow keys, Enter opens.
-    Space f f      type "main" and press Enter to jump to a file by name.
-    In main.c, move the cursor to the text "Hello, raylib!".
-    Press  i  (Insert mode), change the text, press  Esc .
-
- 3. Save
-    Type  :w  and press Enter.  (Or Space w.)
+    Space f f      type part of a file name and press Enter.
+    i  types (Insert mode),  Esc  goes back,  :w  saves.
 
  4. Build
-    Space m b   — a terminal opens at the bottom and CMake/Ninja compile.
-    Errors? Space x x lists them; Enter jumps to the line.
-    Close the build output with  q  (in that window) or Ctrl+w o.
+    Space m b   — a terminal opens at the bottom: CMake + Ninja (Debug) or
+    make. Errors? Space x x lists them; Enter jumps to the line.
+    Close the build output with  q  (in that window).
+    clangd now knows the project's flags (compile_commands.json): K shows
+    documentation, g d jumps to a definition.
 
  5. Run
-    Space m r   — the game opens on workspace 6. Esc closes it and you are
-    back in AstroVim (Super+1 also takes you back).
+    Space m r   — a program with a window opens on workspace 6; closing it
+    brings you back here. A terminal program prints in the split below.
 
  6. Debug
-    Put the cursor on the line  frameCount++;  and press F9 (red dot).
-    Press F5 (or Space m d). The game starts; when it reaches the line,
-    AstroVim comes back with the debugger panels:
-      Locals shows frameCount, the stack shows where you are.
+    Put the cursor on a line inside a loop and press F9 (red dot).
+    Press F5 (or Space m d). It builds, starts the program with LLDB and
+    stops on that line with the debugger panels: variables, call stack.
     F10 = next line, F11 = step into, F5 = continue, Shift+F5 = stop.
 
- 7. Switch to a terminal
-    Ctrl+b 2   → the build terminal. Try:  build   then   run-game
-    Ctrl+b 1   → back to AstroVim.
+ 7. Teach a project something (optional)
+    Space m i shows what AstroVim detected. If a project needs another
+    build command, an emulator or a different debugger, put a .nvim.lua or
+    .vscode/launch.json in it (helpme, and docs/c-projects.md for GBA,
+    SDL3, raylib and Game Boy examples). AstroVim itself never changes.
 
- 8. Open LibreSprite
-    Super+A (or type  art ). LibreSprite opens on workspace 3, started in the
-    active project's assets/ folder. Draw a sprite, File ▸ Save As…, and save
-    it as ~/Projects/raylib-hello/assets/player.png.
+ 8. Commit and push
+    Ctrl+b 3 (LazyGit): Space stages a file, c commits, P pushes.
 
- 9. Return to AstroVim
-    Super+1.  The new file appears in the explorer under assets/.
+ 9. Art and assets
+    Super+A LibreSprite, Super+T Tiled, Super+B Blockbench, Super+E files.
+    import-assets ~/Downloads/pack.zip unpacks an itch.io pack into the
+    project's assets/ and adds the credit line.
 
-10. Switch between raylib and Game Boy
-    Space m p  → choose gameboy-hello.  (Or Space h, then 2.)
-    The tmux status bar now shows "gameboy-hello".
-    Space m b builds the ROM, Space m r runs it in Emulicious,
-    F9 on  keys = joypad();  then F5 debugs the C code in Emulicious.
-    Space m p → raylib-hello switches back.
+10. Switch projects
+    Space m p (or the dashboard's numbers). The tmux status bar shows the
+    repository and branch you are in.
 
  Next steps: keys (all shortcuts) · helpme · docs in /usr/local/share/nullptr/docs
 ```
@@ -82,48 +86,42 @@ nullptr Workstation — beginner guide                           (q to close)
   Type  dev  in any terminal to get back to it.  Ctrl+b d  detaches.
 
   Super+2 shows Firefox (web), Super+3 LibreSprite (art), Super+4 Tiled
-  (tiles), Super+5 Blender (3d), Super+6 the running game, Super+7 is for
-  anything else.
+  (tiles), Super+5 Blockbench (3d), Super+6 the program you run, Super+7 is
+  for anything else.
   A workspace is dark until its program runs: switching never starts
   anything. Super+W (Firefox), Super+A (LibreSprite), Super+T (Tiled) and
-  Super+B (Blender) start the program, or jump to it if it is open.
+  Super+B (Blockbench) start the program, or jump to it if it is open.
+  A program with a window that you start from the editor or its terminals
+  opens on workspace 6; when it closes you are back in the editor.
   Super+1 brings you back to the editor.
 
  Projects
  --------------------------------------------------------------------------
-  Your code lives in ~/Projects. Two starters are ready:
-     raylib-hello    a C + raylib desktop game (CMake + Ninja)
-     gameboy-hello   a C Game Boy ROM (GBDK-2020)
-
-  The ACTIVE project is the one build/run/debug use. It changes when you
-     • open a project from the AstroVim dashboard ([P] or 1/2), or Space m p
-     • open/enter a file of another project in AstroVim
-     • run  projects  (picker),  projects use NAME,  code PATH,  new-raylib/new-gameboy
-  The tmux status bar shows the active project (purple, bottom right).
-  If your shell is inside project A while B is active, build refuses and
-  tells you how to choose — it never silently builds the wrong project.
+  A project is a folder in ~/Projects, usually a git repository. There
+  are no templates: you set up CMake or Make the way you want.
+     Space m g    clone from GitHub (owner/repo or URL, with submodules)
+     Space m p    open a project          (or the dashboard: P, G, 1-9)
+     Space m b    build: CMake (Ninja, Debug) or Make, detected
+     Space m r    build + run             Space m d / F5   build + debug
+     Space m i    how this project is built and debugged
+  A project can change all of that from its own files:
+     .vscode/launch.json   debug configurations (LLDB or GDB)
+     .nvim.lua             return { build = "...", run = "...", debug = {...} }
+  clang is the default compiler (cc, c++, CMake, make).
+  Details and examples (raylib/SDL3 in the project, GBA, Game Boy):
+     /usr/local/share/nullptr/docs/c-projects.md
 
  Commands
  --------------------------------------------------------------------------
   dev                 attach the tmux workspace (creates it if needed)
-  projects            choose a project and open it in AstroVim
   code PATH           open a file or folder in AstroVim
-  build [--release]   compile the active project
-  run-game            build + run (raylib window or ROM in Emulicious)
-  debug-game          build Debug + start the debugger in AstroVim
-  web [URL]           Firefox on workspace 2 (docs bookmarks in its toolbar)
+  web [URL]           Firefox on workspace 2 (C docs bookmarks in its toolbar)
   files [DIR]         file manager over the current workspace (Super+E)
   import-assets ZIP   unpack an itch.io pack into assets/ + CREDITS.md
-  art [FILE]          LibreSprite on workspace 3 (saves into assets/)
-  tiles [FILE.tmx]    Tiled map editor on workspace 4 (maps into assets/)
-  3d [FILE.blend]     Blender on workspace 5 (export .glb into assets/)
-  new-c NAME          new plain C project (CMake, no libraries) in ~/Projects/NAME
-  new-raylib NAME     new raylib project in ~/Projects/NAME
-  new-gameboy NAME    new Game Boy project in ~/Projects/NAME
-  projects adopt      make the current folder a project (writes .nullptr-project)
-  build --clean       remove build output
-  gb-build gb-run gb-debug gb-clean gb-info    Game Boy specific
-  (all new-* commands accept --no-git; details: docs/c-projects.md)
+  art [FILE]          LibreSprite on workspace 3
+  tiles [FILE.tmx]    Tiled map editor on workspace 4
+  3d [FILE.bbmodel]   Blockbench on workspace 5 (export .glb / .obj)
+  gh repo clone owner/repo ~/Projects/repo     clone in a terminal
   tablet-info  tablet-setup                     drawing tablets
   nmtui               Wi-Fi and network settings (text UI)
   keys                shortcut cheat sheet

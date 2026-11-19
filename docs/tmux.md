@@ -13,8 +13,8 @@ command key. "`Ctrl+b 2`" means `Ctrl+b`, release, `2`.
 | Window | Opens with | Contents |
 |---|---|---|
 | 1 | `Ctrl+b 1` | AstroVim (quitting it shows *[Enter] reopen / [s] shell*; the window stays) |
-| 2 | `Ctrl+b 2` | build terminal: `build`, `run-game`, `gb-build` … |
-| 3 | `Ctrl+b 3` | LazyGit for the active project (quitting offers a restart) |
+| 2 | `Ctrl+b 2` | a terminal for builds and your own commands (`cmake`, `make`, `./build/app` …) |
+| 3 | `Ctrl+b 3` | LazyGit for the project open in AstroVim (quitting offers a restart) |
 | 4 | `Ctrl+b 4` | a spare shell |
 | 5 | `Ctrl+b 5` | btop system monitor |
 

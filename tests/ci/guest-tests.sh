@@ -20,8 +20,7 @@ r "home is /home/nullptr" test "$(getent passwd nullptr | cut -d: -f6)" = /home/
 r "nullptr is in group sudo" sh -c 'id -nG | grep -qw sudo'
 r "sudo asks for a password (no NOPASSWD)" sh -c '! sudo -n true'
 r "no live-boot/live-config left in the installed system" sh -c '! dpkg -s live-boot >/dev/null 2>&1 && ! dpkg -s live-config >/dev/null 2>&1'
-r "~/Projects starter projects present" test -f "$HOME/Projects/raylib-hello/src/main.c" -a -f "$HOME/Projects/gameboy-hello/Makefile"
-r "~/Projects owned by nullptr and writable" sh -c 'test "$(stat -c %U ~/Projects/raylib-hello/src/main.c)" = nullptr && touch ~/Projects/.w && rm ~/Projects/.w'
+r "~/Projects exists, owned by nullptr, no preset projects" sh -c 'test "$(stat -c %U ~/Projects)" = nullptr && touch ~/Projects/.w && rm ~/Projects/.w && [ -z "$(ls -A ~/Projects)" ]'
 r "NetworkManager running (nmtui available)" sh -c 'systemctl is-active --quiet NetworkManager && command -v nmtui'
 r "TLP enabled, power-profiles-daemon absent" sh -c 'systemctl is-enabled --quiet tlp && ! systemctl is-active --quiet power-profiles-daemon'
 r "PipeWire running for the user" sh -c 'systemctl --user is-active --quiet pipewire || pgrep -x pipewire'
@@ -43,42 +42,56 @@ def f(n,ws=None):
 sys.exit(0 if f(t) else 1)"'
 
 echo "--- toolchains"
-gb-info
-for c in gcc clang clangd clang-format clang-tidy gdb cmake ninja make pkg-config git nvim lazygit tree-sitter firefox-esr web libresprite tiled tiles emulicious codium java blender gh github-login thunar files import-assets 7z nullptr-update nullptr-iso; do
+for c in gcc clang clangd clang-format clang-tidy lldb lldb-dap gdb gdb-multiarch cmake ninja make bear pkg-config git nvim lazygit tree-sitter firefox-esr web libresprite tiled tiles blockbench 3d gh github-login thunar files import-assets 7z nullptr-update nullptr-iso nullptr-run-ws; do
   r "command $c" command -v "$c"
 done
+cc --version | head -1; lldb --version | head -1; gdb --version | head -1
 r "GDB version >= 16" sh -c 'v=$(gdb --version | head -1 | grep -o "[0-9][0-9]*\.[0-9]*" | head -1); [ "${v%%.*}" -ge 16 ]'
-r "raylib 5.5 via pkg-config" sh -c 'pkg-config --modversion raylib | grep -q "^5\.5"'
-r "GBDK 4.5.0 lcc" test -x /opt/gbdk/bin/lcc
-r "Emulicious installed" test -f /opt/emulicious/Emulicious.jar
 r "JetBrainsMono Nerd Font installed" sh -c 'fc-list | grep -q "JetBrainsMono Nerd Font"'
 r "AstroNvim plugins pre-installed (offline)" test -d "$HOME/.local/share/nvim/lazy/AstroNvim"
 r "treesitter parsers pre-compiled" test -f "$HOME/.local/share/nvim/site/parser/c.so"
 
-echo "--- workflow suite"
-bash "$T/workflow-tests.sh" 2>&1 | sed 's/^PASS  /RESULT PASS workflow: /; s/^FAIL  /RESULT FAIL workflow: /'
-projects use raylib-hello >/dev/null 2>&1
-
-echo "--- raylib: GDB through nvim-dap"
-rv "raylib C breakpoint, variables, step, continue (GDB + nvim-dap)" bash "$T/dap/raylib-dap-test.sh"
+echo "--- workflow suite (includes AstroVim build/clangd/debug on CMake, Make, launch.json, .nvim.lua repos)"
+bash "$T/workflow-tests.sh" 2>&1 | tee /tmp/workflow.out | sed 's/^PASS  /RESULT PASS workflow: /; s/^FAIL  /RESULT FAIL workflow: /'
+cat /tmp/nwtest-editor.out 2>/dev/null | grep '^     ' | cut -c1-300
 ws "1: astro"
 
-echo "--- Game Boy: Emulicious debug adapter"
-rv "Game Boy C breakpoint, variables, step, continue (Emulicious DAP)" bash "$T/dap/gameboy-dap-test.sh"
-sleep 2; pkill -f Emulicious.jar; sleep 2
-gbroot="$HOME/Projects/gameboy-hello"
-gbline="$(grep -n 'keys = joypad();' "$gbroot/src/main.c" | cut -d: -f1)"
-rv "Game Boy C breakpoint via AstroVim's nvim-dap (Emulicious adapter)" sh -c "cd '$gbroot' && NW_TEST_ROOT='$gbroot' NW_TEST_LINE=$gbline NW_TEST_VAR=keys NW_TEST_OUT=/tmp/nvim-dap-gb.json timeout 300 nvim --headless -c 'luafile $T/dap/nvim_dap_test.lua' >/dev/null 2>&1; cat /tmp/nvim-dap-gb.json; python3 -c 'import json,sys; sys.exit(0 if json.load(open(\"/tmp/nvim-dap-gb.json\")).get(\"PASS\") else 1)'"
-sleep 2; pkill -f Emulicious.jar; ws "1: astro"
+echo "--- screenshots: AstroVim building and debugging a cloned C project"
+demo="$HOME/Projects/hello-c"
+mkdir -p "$demo" && git -C "$demo" init -q
+cat >"$demo/main.c" <<'C'
+#include <stdio.h>
+#include <unistd.h>
+
+static int score(int frame) { return frame * 10; }
+
+int main(void) {
+    int total = 0;
+    for (int frame = 0; frame < 100; frame++) {
+        total += score(frame);
+        printf("frame %d total %d\n", frame, total);
+        usleep(100000);
+    }
+    return 0;
+}
+C
+printf 'cmake_minimum_required(VERSION 3.20)\nproject(hello C)\nadd_executable(hello main.c)\n' >"$demo/CMakeLists.txt"
+nvr() { nvim --server "$sock" --remote-send "$1" >/dev/null 2>&1; }
+tmux select-window -t dev:1; sleep 1
+nvr '<C-\><C-n>:NullptrOpen '"$demo"'/main.c<CR>'; sleep 4
+nvr ':NullptrBuild<CR>'; sleep 20
+shot vm-02-build-in-editor
+nvr ':9<CR>'; sleep 1; nvr '<F9>'; sleep 1; nvr '<F5>'; sleep 25
+r "F5 in the running AstroVim stops at the breakpoint (LLDB)" sh -c "nvim --server '$sock' --remote-expr 'luaeval(\"(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()\")' | grep -qx 9"
+shot vm-03-debugger-breakpoint
+nvr '<C-\><C-n>:lua require("dap").terminate(); pcall(function() require("dapui").close() end)<CR>'; sleep 3
+nvr ':enew<CR>:only<CR>'; sleep 1
+tmux select-window -t dev:2
 
 echo "--- screenshots of the installed system"
+tmux select-window -t dev:1; sleep 1; nvr ':lua Snacks.dashboard()<CR>'; sleep 2
 shot vm-01-editor-after-login
-(run-game raylib-hello >/dev/null 2>&1 &) ; sleep 12; shot vm-02-raylib-running; pkill -x raylib-hello; sleep 2
-projects use gameboy-hello >/dev/null 2>&1
-gb-run gameboy-hello >/dev/null 2>&1; sleep 25
-r "Emulicious window opens with the ROM" sh -c 'xdotool search --name "[Ee]mulicious" | grep -q . || xdotool search --class "[Ee]mulicious" | grep -q .'
-shot vm-03-gameboy-emulicious
-pkill -f Emulicious.jar; sleep 2
+tmux select-window -t dev:2
 art >/dev/null 2>&1; sleep 12; shot vm-04-libresprite; pkill -x libresprite
 
 echo "--- Firefox: docs bookmarks toolbar (system policy)"
@@ -86,17 +99,17 @@ fp="$(mktemp -d)"
 (timeout 60 firefox-esr --headless --no-remote --profile "$fp" about:blank >/dev/null 2>&1 &); sleep 40; pkill -f -- "--profile $fp" ; sleep 3
 rv "Firefox applies the policy: docs bookmarks on the toolbar" python3 - "$fp/places.sqlite" <<'PY'
 import sqlite3,sys,shutil,tempfile,os
-d=tempfile.mkdtemp(); 
+d=tempfile.mkdtemp()
 for ext in ("","-wal"):
     if os.path.exists(sys.argv[1]+ext): shutil.copy(sys.argv[1]+ext, os.path.join(d,"p.sqlite"+ext))
 c=sqlite3.connect(os.path.join(d,"p.sqlite"))
 rows=c.execute("select b.title,p.url from moz_bookmarks b join moz_places p on p.id=b.fk where b.parent=(select id from moz_bookmarks where guid='toolbar_____')").fetchall()
 for r in rows: print("  ",r[0],"->",r[1])
 titles={r[0] for r in rows}
-need={"raylib cheatsheet","C reference","GBDK docs","Pan Docs (Game Boy)","Tiled manual"}
+need={"C reference","Clang","CMake tutorial","LLDB","GDB","Blockbench wiki"}
 sys.exit(0 if need<=titles else 1)
 PY
-web https://www.raylib.com/cheatsheet/cheatsheet.html >/dev/null 2>&1; sleep 25; shot vm-09-firefox-workspace; pkill -x firefox-esr; sleep 2
+web https://en.cppreference.com/w/c >/dev/null 2>&1; sleep 25; shot vm-09-firefox-workspace; pkill -x firefox-esr; sleep 2
 
 echo "--- GitHub sign-in for git (fake token, scratch home: no real account involved)"
 gh_home="$(mktemp -d)"
@@ -113,15 +126,11 @@ echo "--- Tiled: map export from the command line"
 rv "Tiled exports a TMX map to JSON and CSV" bash "$T/tiled/export-test.sh"
 QT_QPA_PLATFORM=offscreen tiled --version 2>/dev/null || true
 
-echo "--- Blender -> glTF -> raylib"
-bt="$(mktemp -d)"
-r "Blender exports a glTF diorama headless" blender -b --factory-startup --python-exit-code 1 --python "$T/blender/make_diorama.py" -- "$bt/room.glb"
-r "raylib loads the Blender .glb (4 meshes)" sh -c "cc -O1 '$T/blender/load_glb.c' -o '$bt/load_glb' \$(pkg-config --cflags --libs raylib) -lm && '$bt/load_glb' '$bt/room.glb' 4"
-cat /tmp/r.out
-
-3d >/dev/null 2>&1; sleep 20; shot vm-07-blender-workspace; pkill -x blender; sleep 2
+echo "--- Blockbench"
+dpkg-query -W -f='blockbench ${Version}\n' blockbench
+3d >/dev/null 2>&1; sleep 25; shot vm-07-blockbench-workspace; pkill -f '^/opt/Blockbench/blockbench'; sleep 2
 tiles "$T/tiled/room.tmx" >/dev/null 2>&1; sleep 12; shot vm-08-tiled-workspace; pkill -x tiled; sleep 2
-projects use raylib-hello >/dev/null 2>&1
+rm -rf "$demo"
 ws "1: astro"; sleep 2; shot vm-05-back-to-editor
 
 echo "=== END nullptr guest tests"
