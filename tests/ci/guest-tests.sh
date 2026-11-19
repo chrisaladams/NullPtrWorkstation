@@ -79,10 +79,11 @@ printf 'cmake_minimum_required(VERSION 3.20)\nproject(hello C)\nadd_executable(h
 nvr() { nvim --server "$sock" --remote-send "$1" >/dev/null 2>&1; }
 tmux select-window -t dev:1; sleep 1
 nvr '<C-\><C-n>:NullptrOpen '"$demo"'/main.c<CR>'; sleep 4
-nvr ':NullptrBuild<CR>'; sleep 20
-shot vm-02-build-in-editor
+nvr ':NullptrBuild<CR>'; sleep 3
+shot vm-02-build-in-editor   # while CMake/Ninja run in the split (it closes when the build succeeds)
+sleep 15
 nvr ':9<CR>'; sleep 1; nvr '<F9>'; sleep 1; nvr '<F5>'; sleep 25
-r "F5 in the running AstroVim stops at the breakpoint (LLDB)" sh -c "nvim --server '$sock' --remote-expr 'luaeval(\"(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()\")' | grep -qx 9"
+r "F5 in the running AstroVim stops at the breakpoint (LLDB)" sh -c "nvim --server '$sock' --remote-expr 'luaeval(\"(function() local s=require([[dap]]).session(); return s and s.current_frame and s.current_frame.line or 0 end)()\")' 2>&1 | grep -qx 9"
 shot vm-03-debugger-breakpoint
 nvr '<C-\><C-n>:lua require("dap").terminate(); pcall(function() require("dapui").close() end)<CR>'; sleep 3
 nvr ':enew<CR>:only<CR>'; sleep 1
