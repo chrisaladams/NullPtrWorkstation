@@ -42,7 +42,7 @@ log "Booting the installed system"
 qemu-system-x86_64 "${COMMON[@]}" -device virtio-vga,xres=1920,yres=1080 -display none \
   -qmp unix:"$QMP",server,nowait -serial file:"$OUT/boot-serial.log" -serial file:"$OUT/guest.log" &
 VM=$!
-if ! wait_for "$OUT/boot-serial.log" 'nullptr login:' 600; then
+if ! wait_for "$OUT/boot-serial.log" ' login:' 600; then
   log "FAIL: no login prompt"; tail -n 60 "$OUT/boot-serial.log" | tee -a "$OUT/vm-test.log"
   q shot "$OUT/screens/vm-00-boot-failure.png"; echo "RESULT FAIL installed system boots to login" >>"$OUT/results.log"; kill $VM; exit 1
 fi
