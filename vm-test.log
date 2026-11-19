@@ -1,0 +1,258 @@
+
+[vm-test 05:03:32] Extracting the installer kernel from the ISO
+
+[vm-test 05:03:32] Installing (unattended CI preseed; the ISO's own preseed is loaded too)
+
+[vm-test 05:07:08] Installer exited with 0
+[0m[H[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[J[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 19 [37m 5:03 [32m][0m[2;80H [3;80H [4;80H [5;80H [6;80H [7;80H [8;80H [9;80H [10;80H [11;80H [12;80H [13;80H [14;80H [15;80H [16;80H [17;80H [18;80H [19;80H [20;80H [21;80H [22;80H [23;80H [24;80H [H[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 19 [37m 5:03 [32m][24;80H[0m[2;1H[H[7m[m[32m[40m[                [37m0 start  2- shell  [31m ([37m3*shell[31m)[37m                 [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[J[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 19 [37m 5:03 [32m][0m[2;80H [3;80H [4;80H [5;80H [6;80H [7;80H [8;80H [9;80H [10;80H [11;80H [12;80H [13;80H [14;80H [15;80H [16;80H [17;80H [18;80H [19;80H [20;80H [21;80H [22;80H [23;80H [24;80H [H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 19 [37m 5:03 [32m][24;80H[0m[2;1H[H[7m[m[32m[40m[             [37m0 start  2 shell  3- shell  [31m ([37m4*log[31m)[37m             [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[J[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 19 [37m 5:03 [32m][0m[2;80H [3;80H [4;80H [5;80H [6;80H [7;80H [8;80H [9;80H [10;80H [11;80H [12;80H [13;80H [14;80H [15;80H [16;80H [17;80H [18;80H [19;80H [20;80H [21;80H [22;80H [23;80H [24;80H [H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 19 [37m 5:03 [32m][24;80H[0m[2;1H[H[7m[m[32m[40m[        [37m0 start  [31m ([37m1*shell[31m)[37m  2 shell  3 shell  4- log         [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[      [37m0 start  [31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log       [32m][[34m Nov 19 [37m 5:03 [32m]
+[0m[H[7m[m[32m[40m[      [37m0 start  [31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log       [32m][[34m Nov 19 [37m 5:03 [32m]
+[0mDetecting hardware to find installation media  ... 2%... 95%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 19 [37m 5:03 [32m][2;61H[0m... 100%
+Scanning installation media  ... 2%... 10%... 21%... 32%... 40%... 51%... 62%... 70%... 81%... 91%... 100%
+Loading additional components  ... 0%... 10%... 20%... 30%... 40%... 50%... 60%... 70%... 80%... 90%... 100%
+Detecting network hardware  ... 2%... 95%... 100%
+Detecting link on enp0s1; please wait...  ... 0%
+Waiting for link-local address...  ... 16%... 25%... 33%... 41%... 50%... 100%
+Attempting IPv6 autoconfiguration...  ... 8%... 100%
+Attempting IPv6 autoconfiguration...  ... 5%... 10%... 20%... 30%... 40%... 50%... 60%... 70%... 80%... 90%... 100%
+Configuring the network with DHCP  [H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 19 [37m 5:04 [32m][13;36H[0m... 4%... 100%
+Detecting disks and all other hardware  ... 2%... 95%... 100%
+Loading additional components  ... 12%... 25%... 37%... 50%... 62%... 75%... 87%... 100%
+Loading additional components  ... 25%... 50%... 75%... 100%
+Starting up the partitioner  ... 4%... 13%... 21%... 30%... 43%... 52%... 60%... 73%... 82%... 91%... 100%
+Guided partitioning  ... 20%... 40%... 60%... 80%
+Partitions formatting  ... 33%
+Partitions formatting  
+Partitions formatting  
+Installing the system...  ... 0%... 10%... 20%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 19 [37m 5:05 [32m][24;47H[0m... 30%... 40%... 50%... 60%... 70[2;24r[24;1H
+[23;80H0%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 19 [37m 5:06 [32m][24;2H[0m... 80%... 90%... 100%
+Configuring apt  ... 6%... 12%... 25%... 31%... 43%... 50%... 56%... 62%... 75%.
+[23;80H... 81%... 93%... 100%
+Installing GRUB boot loader  ... 16%... 33%... 50%... 66%... 83%... 100%
+Finishing the installation  ... 3%... 10%... 20%... 30%... 33%... 40%[H[7m[m[32m[40m[           [37m[31m ([37m1*installer[31m)[37m  2 shell  3 shell  4- log           [32m][[34m Nov 19 [37m 5:07 [32m][24;70H[0m... 50%... 
+[23;80H 60%... 70%... 80%... 90%The system is going down NOW!
+Sent SIGTERM to all processes
+Sent SIGKILL to all processes
+Requesting system poweroff
+[  213.679675] reboot: Power down
+
+[vm-test 05:07:08] Booting the installed system
+
+[vm-test 05:07:38] Logging in on tty1
+
+[vm-test 05:09:22] Running guest tests in tmux window 2
+
+[vm-test 05:10:48] screenshot vm-02-build-in-editor
+
+[vm-test 05:11:39] screenshot vm-03-debugger-breakpoint
+
+[vm-test 05:11:55] screenshot vm-01-editor-after-login
+
+[vm-test 05:12:13] screenshot vm-04-libresprite
+
+[vm-test 05:13:27] screenshot vm-09-firefox-workspace
+
+[vm-test 05:13:58] screenshot vm-10-file-manager
+
+[vm-test 05:14:34] screenshot vm-07-blockbench-workspace
+
+[vm-test 05:14:54] screenshot vm-08-tiled-workspace
+
+[vm-test 05:15:06] screenshot vm-05-back-to-editor
+
+[vm-test 05:15:12] Checking tty2
+
+[vm-test 05:15:59] Full guest log:
+[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01HBdsDxe: loading Boot0001 "nullptr" from HD(1,GPT,F5D5DACE-6460-4D32-8136-CBFA2FCF91CA,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+BdsDxe: starting Boot0001 "nullptr" from HD(1,GPT,F5D5DACE-6460-4D32-8136-CBFA2FCF91CA,0x800,0x1E8000)/\EFI\nullptr\grubx64.efi
+=== BEGIN nullptr guest tests
+--- system
+debian 13.7  kernel 6.12.117+deb13-amd64  user uid=1000(nullptr) gid=1000(nullptr) groups=1000(nullptr),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),992(render),996(input)
+RESULT PASS running as user nullptr
+RESULT PASS home is /home/nullptr
+RESULT PASS nullptr is in group sudo
+RESULT PASS sudo asks for a password (no NOPASSWD)
+RESULT PASS no live-boot/live-config left in the installed system
+RESULT PASS ~/Projects exists, owned by nullptr, no preset projects
+RESULT PASS NetworkManager running (nmtui available)
+RESULT PASS TLP enabled, power-profiles-daemon absent
+RESULT PASS PipeWire running for the user
+--- graphical session (started by the tty1 login)
+RESULT PASS Xorg running on tty1
+RESULT PASS i3 running
+RESULT PASS kitty (nullptr-dev) running
+RESULT PASS tmux session dev with windows 1-5
+RESULT PASS AstroVim running in window 1
+RESULT PASS AstroVim shows the dashboard
+RESULT PASS kitty is fullscreen on workspace 1
+--- toolchains
+RESULT PASS command gcc
+RESULT PASS command clang
+RESULT PASS command clangd
+RESULT PASS command clang-format
+RESULT PASS command clang-tidy
+RESULT PASS command lldb
+RESULT PASS command lldb-dap
+RESULT PASS command gdb
+RESULT PASS command gdb-multiarch
+RESULT PASS command cmake
+RESULT PASS command ninja
+RESULT PASS command make
+RESULT PASS command bear
+RESULT PASS command pkg-config
+RESULT PASS command git
+RESULT PASS command nvim
+RESULT PASS command lazygit
+RESULT PASS command tree-sitter
+RESULT PASS command firefox-esr
+RESULT PASS command web
+RESULT PASS command libresprite
+RESULT PASS command tiled
+RESULT PASS command tiles
+RESULT PASS command blockbench
+RESULT PASS command 3d
+RESULT PASS command gh
+RESULT PASS command github-login
+RESULT PASS command thunar
+RESULT PASS command files
+RESULT PASS command import-assets
+RESULT PASS command 7z
+RESULT PASS command nullptr-update
+RESULT PASS command nullptr-iso
+RESULT PASS command nullptr-run-ws
+Debian clang version 19.1.7 (3+b1)
+lldb version 19.1.7
+GNU gdb (Debian 16.3-1) 16.3
+RESULT PASS GDB version >= 16
+RESULT PASS JetBrainsMono Nerd Font installed
+RESULT PASS AstroNvim plugins pre-installed (offline)
+RESULT PASS treesitter parsers pre-compiled
+--- workflow suite (includes AstroVim build/clangd/debug on CMake, Make, launch.json, .nvim.lua repos)
+Warning: Missing charsets in String to FontSet conversion
+RESULT PASS workflow: cc is clang
+RESULT PASS workflow: c++ is clang++
+RESULT PASS workflow: CMake picks Clang by default
+RESULT PASS workflow: lldb-dap available (AstroVim's debugger)
+RESULT PASS workflow: gdb >= 14 (built-in DAP)
+RESULT PASS workflow: gdb-multiarch for other CPUs (ARM)
+RESULT PASS workflow: bear writes compile_commands.json for Make
+RESULT PASS workflow: no 'build' any more (removed)
+RESULT PASS workflow: no 'run-game' any more (removed)
+RESULT PASS workflow: no 'debug-game' any more (removed)
+RESULT PASS workflow: no 'projects' any more (removed)
+RESULT PASS workflow: no 'new-c' any more (removed)
+RESULT PASS workflow: no 'new-raylib' any more (removed)
+RESULT PASS workflow: no 'new-gameboy' any more (removed)
+RESULT PASS workflow: no 'gb-build' any more (removed)
+RESULT PASS workflow: no 'lcc' any more (removed)
+RESULT PASS workflow: no 'emulicious' any more (removed)
+RESULT PASS workflow: no 'codium' any more (removed)
+RESULT PASS workflow: no 'blender' any more (removed)
+RESULT PASS workflow: no raylib installed system-wide
+RESULT PASS workflow: git clone --recurse-submodules into ~/Projects
+RESULT PASS workflow: a cloned CMake project builds with plain cmake
+RESULT PASS workflow: AstroVim records the open project (tools follow it)
+RESULT PASS workflow: tmux status shows the pane's repository
+RESULT PASS workflow: editor: cmake (CMake build, lldb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: make (Make build, lldb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: launchjson (CMake build, gdb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: nvimlua (.nvim.lua build, gdb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: .nvim.lua build command was used
+RESULT PASS workflow: editor: Make project gets compile_commands.json (bear) for clangd
+RESULT PASS workflow: autostart: local login on tty1 starts X
+RESULT PASS workflow: autostart: tty2 stays text (recovery console)
+RESULT PASS workflow: autostart: never for SSH
+RESULT PASS workflow: autostart: never inside tmux
+RESULT PASS workflow: autostart: never for nested shells
+RESULT PASS workflow: autostart: not when X already running
+RESULT PASS workflow: autostart: ~/.config/nullptr/no-autostart disables X
+RESULT PASS workflow: X failure falls back to text console with recovery hints
+RESULT PASS workflow: import-assets unpacks a zip
+RESULT PASS workflow: wrapping folder flattened
+RESULT PASS workflow: macOS clutter dropped
+RESULT PASS workflow: CREDITS.md names pack, URL, license
+RESULT PASS workflow: import-assets refuses to overwrite
+RESULT PASS workflow: pack paths cannot escape assets/
+RESULT PASS workflow: import-assets uses the repository you are in
+RESULT PASS workflow: tablet-info runs without a tablet
+RESULT PASS workflow: keys prints the cheat sheet
+RESULT PASS workflow: helpme prints the guide
+RESULT PASS workflow: art launches LibreSprite
+RESULT PASS workflow: LibreSprite window appears
+RESULT PASS workflow: LibreSprite lands on workspace 3 (libresprite)
+RESULT PASS workflow: art again focuses, no duplicate
+RESULT PASS workflow: web launches Firefox
+RESULT PASS workflow: Firefox lands on workspace 2 (firefox)
+RESULT PASS workflow: web again focuses Firefox, no second window
+RESULT PASS workflow: tiles launches Tiled
+RESULT PASS workflow: Tiled window appears
+RESULT PASS workflow: Tiled lands on workspace 4 (tiled)
+RESULT PASS workflow: tiles again focuses Tiled, no duplicate
+RESULT PASS workflow: 3d launches Blockbench
+RESULT PASS workflow: Blockbench window appears
+RESULT PASS workflow: Blockbench lands on workspace 5 (blockbench)
+RESULT PASS workflow: 3d again focuses Blockbench, no second window
+RESULT PASS workflow: a program started on workspace 1 opens on workspace 6 (run), shown
+RESULT PASS workflow: closing it returns to the editor (workspace 1)
+RESULT PASS workflow: files opens Thunar
+RESULT PASS workflow: Thunar floats on the current workspace
+RESULT PASS workflow: file manager sidebar has Projects and Downloads
+RESULT PASS workflow: tablet-setup handles no tablet gracefully
+----
+PASS: 69  FAIL: 0
+     {"PASS":true,"compile_commands":true,"nvim":"0.12.6+v0.12.6","variable":{"value":"0","name":"frame"},"clangd_attached":true,"programs":["build/counter"],"after_step_line":9,"after_continue_line":8,"cwd":"/tmp/tmp.nQdfSeOtud/cmake","stops":["breakpoint","step","breakpoint"],"adapter":"lldb","con
+     {"PASS":true,"after_continue_line":8,"stopped_line":8,"nvim":"0.12.6+v0.12.6","adapter":"lldb","root":"/tmp/tmp.nQdfSeOtud/make","cwd":"/tmp/tmp.nQdfSeOtud/make","clangd_attached":true,"stops":["breakpoint","step","breakpoint"],"variable":{"name":"frame","value":"0"},"compile_commands":true,"co
+     {"build_kind":"CMake","nvim":"0.12.6+v0.12.6","programs":["build/counter"],"PASS":true,"after_continue_line":8,"stopped_line":8,"config_name":"counter (GDB, from launch.json)","adapter":"gdb","after_step_line":9,"variable":{"value":"0","name":"frame"},"clangd_attached":true,"stops":["breakpoint
+     {"adapter":"gdb","nvim":"0.12.6+v0.12.6","PASS":true,"clangd_attached":true,"stops":["breakpoint","step","breakpoint"],"programs":["out/app"],"compile_commands":false,"after_step_line":9,"build_cmd":"sh -c mkdir -p out && cc -g -O0 -o out/app main.c && touch out/built-by-nvim-lua","build_kind":
+--- screenshots: AstroVim building and debugging a cloned C project
+SCREENSHOT vm-02-build-in-editor
+debugger stopped at line 9
+RESULT PASS F5 in the running AstroVim stops at the breakpoint (LLDB)
+SCREENSHOT vm-03-debugger-breakpoint
+--- screenshots of the installed system
+SCREENSHOT vm-01-editor-after-login
+SCREENSHOT vm-04-libresprite
+--- Firefox: docs bookmarks toolbar (system policy)
+   C reference -> https://en.cppreference.com/w/c
+   Clang -> https://clang.llvm.org/docs/UsersManual.html
+   CMake tutorial -> https://cmake.org/cmake/help/latest/guide/tutorial/index.html
+   GNU Make -> https://www.gnu.org/software/make/manual/make.html
+   LLDB -> https://lldb.llvm.org/use/tutorial.html
+   GDB -> https://sourceware.org/gdb/current/onlinedocs/gdb.html/
+   Tiled manual -> https://doc.mapeditor.org/en/stable/
+   Blockbench wiki -> https://www.blockbench.net/wiki/
+   itch.io assets -> https://itch.io/game-assets
+   NullPtrWorkstation -> https://github.com/chrisaladams/NullPtrWorkstation
+RESULT PASS Firefox applies the policy: docs bookmarks on the toolbar
+SCREENSHOT vm-09-firefox-workspace
+--- GitHub sign-in for git (fake token, scratch home: no real account involved)
+[38;5;150m ✔ [0m Already signed in to GitHub
+[38;5;150m ✔ [0m git uses your GitHub sign-in for https://github.com/… repositories
+[38;5;221m !  [0m Could not read your GitHub profile. Set your commit name and e-mail yourself:
+   git config --global user.name "Your Name"
+   git config --global user.email "you@example.com"
+RESULT PASS github-login sets git up to use the GitHub CLI sign-in
+RESULT PASS nullptr-update follows the GitHub sign-in (https)
+--- file manager: thumbnails of a sprite folder
+SCREENSHOT vm-10-file-manager
+--- Tiled: map export from the command line
+JSON ok: 8x6, 24 floor tiles
+CSV ok: room.csv (0-based tile indexes)
+RESULT PASS Tiled exports a TMX map to JSON and CSV
+Tiled 1.11.0
+--- Blockbench
+blockbench 5.2.2
+SCREENSHOT vm-07-blockbench-workspace
+SCREENSHOT vm-08-tiled-workspace
+SCREENSHOT vm-05-back-to-editor
+=== END nullptr guest tests
+TTY2 tty=/dev/tty2 display=[] xorgs=1

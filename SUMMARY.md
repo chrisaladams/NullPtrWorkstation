@@ -1,0 +1,135 @@
+# VM verification: 131 passed, 0 failed
+
+```
+RESULT PASS unattended installation finished (debian-installer, UEFI, 40 GB virtio disk)
+RESULT PASS installed system boots to a login prompt
+RESULT PASS running as user nullptr
+RESULT PASS home is /home/nullptr
+RESULT PASS nullptr is in group sudo
+RESULT PASS sudo asks for a password (no NOPASSWD)
+RESULT PASS no live-boot/live-config left in the installed system
+RESULT PASS ~/Projects exists, owned by nullptr, no preset projects
+RESULT PASS NetworkManager running (nmtui available)
+RESULT PASS TLP enabled, power-profiles-daemon absent
+RESULT PASS PipeWire running for the user
+RESULT PASS Xorg running on tty1
+RESULT PASS i3 running
+RESULT PASS kitty (nullptr-dev) running
+RESULT PASS tmux session dev with windows 1-5
+RESULT PASS AstroVim running in window 1
+RESULT PASS AstroVim shows the dashboard
+RESULT PASS kitty is fullscreen on workspace 1
+RESULT PASS command gcc
+RESULT PASS command clang
+RESULT PASS command clangd
+RESULT PASS command clang-format
+RESULT PASS command clang-tidy
+RESULT PASS command lldb
+RESULT PASS command lldb-dap
+RESULT PASS command gdb
+RESULT PASS command gdb-multiarch
+RESULT PASS command cmake
+RESULT PASS command ninja
+RESULT PASS command make
+RESULT PASS command bear
+RESULT PASS command pkg-config
+RESULT PASS command git
+RESULT PASS command nvim
+RESULT PASS command lazygit
+RESULT PASS command tree-sitter
+RESULT PASS command firefox-esr
+RESULT PASS command web
+RESULT PASS command libresprite
+RESULT PASS command tiled
+RESULT PASS command tiles
+RESULT PASS command blockbench
+RESULT PASS command 3d
+RESULT PASS command gh
+RESULT PASS command github-login
+RESULT PASS command thunar
+RESULT PASS command files
+RESULT PASS command import-assets
+RESULT PASS command 7z
+RESULT PASS command nullptr-update
+RESULT PASS command nullptr-iso
+RESULT PASS command nullptr-run-ws
+RESULT PASS GDB version >= 16
+RESULT PASS JetBrainsMono Nerd Font installed
+RESULT PASS AstroNvim plugins pre-installed (offline)
+RESULT PASS treesitter parsers pre-compiled
+RESULT PASS workflow: cc is clang
+RESULT PASS workflow: c++ is clang++
+RESULT PASS workflow: CMake picks Clang by default
+RESULT PASS workflow: lldb-dap available (AstroVim's debugger)
+RESULT PASS workflow: gdb >= 14 (built-in DAP)
+RESULT PASS workflow: gdb-multiarch for other CPUs (ARM)
+RESULT PASS workflow: bear writes compile_commands.json for Make
+RESULT PASS workflow: no 'build' any more (removed)
+RESULT PASS workflow: no 'run-game' any more (removed)
+RESULT PASS workflow: no 'debug-game' any more (removed)
+RESULT PASS workflow: no 'projects' any more (removed)
+RESULT PASS workflow: no 'new-c' any more (removed)
+RESULT PASS workflow: no 'new-raylib' any more (removed)
+RESULT PASS workflow: no 'new-gameboy' any more (removed)
+RESULT PASS workflow: no 'gb-build' any more (removed)
+RESULT PASS workflow: no 'lcc' any more (removed)
+RESULT PASS workflow: no 'emulicious' any more (removed)
+RESULT PASS workflow: no 'codium' any more (removed)
+RESULT PASS workflow: no 'blender' any more (removed)
+RESULT PASS workflow: no raylib installed system-wide
+RESULT PASS workflow: git clone --recurse-submodules into ~/Projects
+RESULT PASS workflow: a cloned CMake project builds with plain cmake
+RESULT PASS workflow: AstroVim records the open project (tools follow it)
+RESULT PASS workflow: tmux status shows the pane's repository
+RESULT PASS workflow: editor: cmake (CMake build, lldb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: make (Make build, lldb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: launchjson (CMake build, gdb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: nvimlua (.nvim.lua build, gdb debugger: breakpoint, variable, step, continue)
+RESULT PASS workflow: editor: .nvim.lua build command was used
+RESULT PASS workflow: editor: Make project gets compile_commands.json (bear) for clangd
+RESULT PASS workflow: autostart: local login on tty1 starts X
+RESULT PASS workflow: autostart: tty2 stays text (recovery console)
+RESULT PASS workflow: autostart: never for SSH
+RESULT PASS workflow: autostart: never inside tmux
+RESULT PASS workflow: autostart: never for nested shells
+RESULT PASS workflow: autostart: not when X already running
+RESULT PASS workflow: autostart: ~/.config/nullptr/no-autostart disables X
+RESULT PASS workflow: X failure falls back to text console with recovery hints
+RESULT PASS workflow: import-assets unpacks a zip
+RESULT PASS workflow: wrapping folder flattened
+RESULT PASS workflow: macOS clutter dropped
+RESULT PASS workflow: CREDITS.md names pack, URL, license
+RESULT PASS workflow: import-assets refuses to overwrite
+RESULT PASS workflow: pack paths cannot escape assets/
+RESULT PASS workflow: import-assets uses the repository you are in
+RESULT PASS workflow: tablet-info runs without a tablet
+RESULT PASS workflow: keys prints the cheat sheet
+RESULT PASS workflow: helpme prints the guide
+RESULT PASS workflow: art launches LibreSprite
+RESULT PASS workflow: LibreSprite window appears
+RESULT PASS workflow: LibreSprite lands on workspace 3 (libresprite)
+RESULT PASS workflow: art again focuses, no duplicate
+RESULT PASS workflow: web launches Firefox
+RESULT PASS workflow: Firefox lands on workspace 2 (firefox)
+RESULT PASS workflow: web again focuses Firefox, no second window
+RESULT PASS workflow: tiles launches Tiled
+RESULT PASS workflow: Tiled window appears
+RESULT PASS workflow: Tiled lands on workspace 4 (tiled)
+RESULT PASS workflow: tiles again focuses Tiled, no duplicate
+RESULT PASS workflow: 3d launches Blockbench
+RESULT PASS workflow: Blockbench window appears
+RESULT PASS workflow: Blockbench lands on workspace 5 (blockbench)
+RESULT PASS workflow: 3d again focuses Blockbench, no second window
+RESULT PASS workflow: a program started on workspace 1 opens on workspace 6 (run), shown
+RESULT PASS workflow: closing it returns to the editor (workspace 1)
+RESULT PASS workflow: files opens Thunar
+RESULT PASS workflow: Thunar floats on the current workspace
+RESULT PASS workflow: file manager sidebar has Projects and Downloads
+RESULT PASS workflow: tablet-setup handles no tablet gracefully
+RESULT PASS F5 in the running AstroVim stops at the breakpoint (LLDB)
+RESULT PASS Firefox applies the policy: docs bookmarks on the toolbar
+RESULT PASS github-login sets git up to use the GitHub CLI sign-in
+RESULT PASS nullptr-update follows the GitHub sign-in (https)
+RESULT PASS Tiled exports a TMX map to JSON and CSV
+RESULT PASS tty2 login stays a text console (no second X server)
+```
