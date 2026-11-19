@@ -20,9 +20,11 @@ log in on tty1 ─► Xorg + i3 ─► kitty (fullscreen, workspace 1) ─► tm
 | `Super+6` | windows of the programs you run: anything started from the editor workspace lands here |
 | `Super+7` | anything else |
 
-> **Status:** see [tests/REPORT.md](tests/REPORT.md). Every GitHub build installs the ISO in a
-> UEFI virtual machine and runs the checks there, as the user would. Laptop hardware (tablet,
-> Wi-Fi, battery, suspend, GPU, keys) can only be checked on the X1 Carbon.
+> **Status:** a fresh install in a UEFI virtual machine passed **131/131** checks, run as the
+> user would: tty1 login → graphical session → AstroVim building and debugging CMake, Make,
+> `launch.json` and `.nvim.lua` projects with LLDB/GDB → the art tools → tty2 recovery.
+> Laptop hardware (tablet, Wi-Fi, battery, suspend, GPU, keys) can only be checked on the
+> X1 Carbon. Details: [tests/REPORT.md](tests/REPORT.md).
 
 ## How C projects work
 
@@ -53,9 +55,10 @@ From the automated test of a fresh installation (1920×1080, the X1 Carbon's pan
 
 ![AstroVim dashboard](docs/screenshots/01-dashboard.png)
 
-**Build without leaving the editor** (`Space m b`): a cloned CMake project, built with Ninja.
+**A cloned project open:** clangd and clang-format attached (status line), treesitter
+highlighting. `Space m b` builds it in a split at the bottom (CMake + Ninja here).
 
-![Build in the editor](docs/screenshots/02-build-in-editor.png)
+![A C project in the editor](docs/screenshots/02-build-in-editor.png)
 
 **Debug** (`F9`, then `F5`): stopped at a breakpoint in LLDB, with variables, call stack and the
 program's output.
@@ -68,11 +71,11 @@ program's output.
 ![Tiled workspace](docs/screenshots/14-tiled-workspace.png)
 ![Blockbench](docs/screenshots/17-blockbench.png)
 
-**Docs one key away** (`Super+W`), and **files** (`Super+E`): Thunar floats over the current
-workspace with thumbnails. `import-assets pack.zip` unpacks an itch.io pack into the project
-and records its license ([docs/files-and-assets.md](docs/files-and-assets.md)).
+**Docs one key away** (`Super+W`: Firefox with a C/clang/CMake/LLDB/GDB toolbar), and
+**files** (`Super+E`): Thunar floats over the current workspace with thumbnails.
+`import-assets pack.zip` unpacks an itch.io pack into the project and records its license
+([docs/files-and-assets.md](docs/files-and-assets.md)).
 
-![Firefox](docs/screenshots/15-firefox-workspace.png)
 ![File manager](docs/screenshots/16-file-manager.png)
 
 ### Straight from the installed ISO
